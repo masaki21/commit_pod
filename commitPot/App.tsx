@@ -466,7 +466,7 @@ export default function App() {
           ing.unitWeight && ing.unitName ? Math.ceil(roundedGrams / ing.unitWeight) : null;
         return {
           id,
-          name: ing.name,
+          name: t(ing.name),
           category: proteinIds.includes(id) ? 'protein' : vegIds.includes(id) ? 'veg' : 'carb',
           roundedGrams,
           units,
@@ -1371,7 +1371,7 @@ export default function App() {
                       )}
                     </View>
                     <View style={{ flex: 1 }}>
-                      <Text style={styles.ingredientName}>{ing.name}</Text>
+                      <Text style={styles.ingredientName}>{t(ing.name)}</Text>
                       <Text style={styles.ingredientMeta}>
                         {t('ui.protein_meta', { value: ing.pPer100g })}
                       </Text>
@@ -1446,7 +1446,7 @@ export default function App() {
                             )}
                           </View>
                           <View style={{ flex: 1 }}>
-                            <Text style={styles.ingredientName}>{ing.name}</Text>
+                            <Text style={styles.ingredientName}>{t(ing.name)}</Text>
                           </View>
                         </Pressable>
                       ))}
@@ -1485,7 +1485,7 @@ export default function App() {
                             )}
                           </View>
                           <View style={{ flex: 1 }}>
-                            <Text style={styles.ingredientName}>{ing.name}</Text>
+                            <Text style={styles.ingredientName}>{t(ing.name)}</Text>
                           </View>
                         </Pressable>
                       ))}
@@ -1529,7 +1529,7 @@ export default function App() {
                   >
                     <Image source={ing.photoSmall ?? ing.photo} style={styles.carbImage} />
                     <View style={{ flex: 1 }}>
-                      <Text style={styles.baseTitle}>{ing.name}</Text>
+                      <Text style={styles.baseTitle}>{t(ing.name)}</Text>
                       <Text style={styles.baseSubtitle}>{getEffectLead(t(ing.effect))}</Text>
                     </View>
                   </Pressable>
@@ -1770,7 +1770,7 @@ export default function App() {
                   <Image source={ing.photo} style={styles.bigImage} />
                   <View style={styles.bigCardBody}>
                     <View style={styles.cardHeaderRow}>
-                      <Text style={styles.cardTitle}>{ing.name}</Text>
+                      <Text style={styles.cardTitle}>{t(ing.name)}</Text>
                       <Text
                         style={[
                           styles.categoryTag,

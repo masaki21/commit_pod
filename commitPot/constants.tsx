@@ -5,7 +5,7 @@ export const INGREDIENTS: Ingredient[] = [
   // Proteins
   {
     id: 'p1',
-    name: 'むね肉',
+    name: 'ingredients.chicken_breast',
     category: 'protein',
     pPer100g: 23,
     fPer100g: 1.5,
@@ -19,7 +19,7 @@ export const INGREDIENTS: Ingredient[] = [
   },
   {
     id: 'p2',
-    name: '豚ロース',
+    name: 'ingredients.pork_loin',
     category: 'protein',
     pPer100g: 19,
     fPer100g: 14,
@@ -33,7 +33,7 @@ export const INGREDIENTS: Ingredient[] = [
   },
   {
     id: 'p8',
-    name: '牛もも肉',
+    name: 'ingredients.beef_round',
     category: 'protein',
     pPer100g: 21,
     fPer100g: 8,
@@ -47,7 +47,7 @@ export const INGREDIENTS: Ingredient[] = [
   },
   {
     id: 'p9',
-    name: '鶏レバー',
+    name: 'ingredients.chicken_liver',
     category: 'protein',
     pPer100g: 18,
     fPer100g: 4,
@@ -61,7 +61,7 @@ export const INGREDIENTS: Ingredient[] = [
   },
   {
     id: 'p3',
-    name: 'タラ',
+    name: 'ingredients.cod',
     category: 'protein',
     pPer100g: 17,
     fPer100g: 0.2,
@@ -75,7 +75,7 @@ export const INGREDIENTS: Ingredient[] = [
   },
   {
     id: 'p10',
-    name: 'サーモン',
+    name: 'ingredients.salmon',
     category: 'protein',
     pPer100g: 20,
     fPer100g: 13,
@@ -89,7 +89,7 @@ export const INGREDIENTS: Ingredient[] = [
   },
   {
     id: 'p4',
-    name: '木綿豆腐',
+    name: 'ingredients.firm_tofu',
     category: 'protein',
     pPer100g: 7,
     fPer100g: 3,
@@ -103,7 +103,7 @@ export const INGREDIENTS: Ingredient[] = [
   },
   {
     id: 'p6',
-    name: 'さば水煮缶',
+    name: 'ingredients.canned_mackerel',
     category: 'protein',
     pPer100g: 20,
     fPer100g: 10,
@@ -117,7 +117,7 @@ export const INGREDIENTS: Ingredient[] = [
   },
   {
     id: 'p7',
-    name: '卵',
+    name: 'ingredients.egg',
     category: 'protein',
     pPer100g: 12,
     fPer100g: 10,
@@ -132,7 +132,7 @@ export const INGREDIENTS: Ingredient[] = [
   // Veggies
   {
     id: 'v1',
-    name: 'ブロッコリー',
+    name: 'ingredients.broccoli',
     category: 'veg',
     pPer100g: 4,
     fPer100g: 0.5,
@@ -146,7 +146,7 @@ export const INGREDIENTS: Ingredient[] = [
   },
   {
     id: 'v3',
-    name: 'しめじ',
+    name: 'ingredients.shimeji',
     category: 'veg',
     pPer100g: 2,
     fPer100g: 0.3,
@@ -160,7 +160,7 @@ export const INGREDIENTS: Ingredient[] = [
   },
   {
     id: 'v4',
-    name: '小松菜',
+    name: 'ingredients.komatsuna',
     category: 'veg',
     pPer100g: 2.8,
     fPer100g: 0.4,
@@ -174,7 +174,7 @@ export const INGREDIENTS: Ingredient[] = [
   },
   {
     id: 'v5',
-    name: '玉ねぎ',
+    name: 'ingredients.onion',
     category: 'veg',
     pPer100g: 1,
     fPer100g: 0.1,
@@ -188,7 +188,7 @@ export const INGREDIENTS: Ingredient[] = [
   },
   {
     id: 'v6',
-    name: '大根',
+    name: 'ingredients.daikon',
     category: 'veg',
     pPer100g: 0.5,
     fPer100g: 0.1,
@@ -202,7 +202,7 @@ export const INGREDIENTS: Ingredient[] = [
   },
   {
     id: 'v7',
-    name: 'にんじん',
+    name: 'ingredients.carrot',
     category: 'veg',
     pPer100g: 0.7,
     fPer100g: 0.2,
@@ -216,7 +216,7 @@ export const INGREDIENTS: Ingredient[] = [
   },
   {
     id: 'v8',
-    name: 'ほうれん草',
+    name: 'ingredients.spinach',
     category: 'veg',
     pPer100g: 2.2,
     fPer100g: 0.4,
@@ -230,7 +230,7 @@ export const INGREDIENTS: Ingredient[] = [
   },
   {
     id: 'v9',
-    name: '舞茸',
+    name: 'ingredients.maitake',
     category: 'veg',
     pPer100g: 2,
     fPer100g: 0.3,
@@ -244,7 +244,7 @@ export const INGREDIENTS: Ingredient[] = [
   },
   {
     id: 'v10',
-    name: 'えのき',
+    name: 'ingredients.enoki',
     category: 'veg',
     pPer100g: 2.7,
     fPer100g: 0.2,
@@ -258,7 +258,7 @@ export const INGREDIENTS: Ingredient[] = [
   },
   {
     id: 'v11',
-    name: 'アスパラガス',
+    name: 'ingredients.asparagus',
     category: 'veg',
     pPer100g: 2.6,
     fPer100g: 0.2,
@@ -272,7 +272,7 @@ export const INGREDIENTS: Ingredient[] = [
   },
   {
     id: 'v12',
-    name: 'トマト',
+    name: 'ingredients.tomato',
     category: 'veg',
     pPer100g: 0.7,
     fPer100g: 0.1,
@@ -286,7 +286,7 @@ export const INGREDIENTS: Ingredient[] = [
   },
   {
     id: 'v13',
-    name: 'パプリカ',
+    name: 'ingredients.paprika',
     category: 'veg',
     pPer100g: 1,
     fPer100g: 0.2,
@@ -301,7 +301,7 @@ export const INGREDIENTS: Ingredient[] = [
   // Carbs
   {
     id: 'c2',
-    name: 'うどん',
+    name: 'ingredients.udon',
     category: 'carb',
     pPer100g: 2.6,
     fPer100g: 0.4,
@@ -315,7 +315,7 @@ export const INGREDIENTS: Ingredient[] = [
   },
   {
     id: 'c3',
-    name: '白ごはん',
+    name: 'ingredients.white_rice',
     category: 'carb',
     pPer100g: 2.5,
     fPer100g: 0.3,
@@ -329,7 +329,7 @@ export const INGREDIENTS: Ingredient[] = [
   },
   {
     id: 'c4',
-    name: 'そば',
+    name: 'ingredients.soba',
     category: 'carb',
     pPer100g: 4.8,
     fPer100g: 0.6,
@@ -343,7 +343,7 @@ export const INGREDIENTS: Ingredient[] = [
   },
   {
     id: 'c5',
-    name: 'さつまいも',
+    name: 'ingredients.sweet_potato',
     category: 'carb',
     pPer100g: 1.2,
     fPer100g: 0.2,
@@ -357,7 +357,7 @@ export const INGREDIENTS: Ingredient[] = [
   },
   {
     id: 'c6',
-    name: '全粒粉パン',
+    name: 'ingredients.whole_wheat_bread',
     category: 'carb',
     pPer100g: 7.9,
     fPer100g: 5.7,
@@ -371,7 +371,7 @@ export const INGREDIENTS: Ingredient[] = [
   },
   {
     id: 'c7',
-    name: 'パスタ',
+    name: 'ingredients.pasta',
     category: 'carb',
     pPer100g: 12,
     fPer100g: 2,
