@@ -91,7 +91,10 @@
     "category_protein": "Đạm",
     "category_veg": "Rau",
     "category_carb": "Tinh bột",
-    "ok": "OK"
+    "ok": "OK",
+    "language": "Ngôn ngữ",
+    "language_title": "Chọn ngôn ngữ",
+    "language_auto": "Ngôn ngữ thiết bị (Tự động)"
   },
   "alerts": {
     "login_required_title": "Cần đăng nhập",

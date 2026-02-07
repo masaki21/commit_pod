@@ -91,7 +91,10 @@
     "category_protein": "Protein",
     "category_veg": "Sayur",
     "category_carb": "Karbo",
-    "ok": "OK"
+    "ok": "OK",
+    "language": "Bahasa",
+    "language_title": "Pilih bahasa",
+    "language_auto": "Bahasa perangkat (Otomatis)"
   },
   "alerts": {
     "login_required_title": "Perlu login",

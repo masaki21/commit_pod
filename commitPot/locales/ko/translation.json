@@ -91,7 +91,10 @@
     "category_protein": "단백질",
     "category_veg": "야채",
     "category_carb": "탄수화물",
-    "ok": "OK"
+    "ok": "OK",
+    "language": "언어",
+    "language_title": "언어 선택",
+    "language_auto": "기기 언어(자동)"
   },
   "alerts": {
     "login_required_title": "로그인이 필요합니다",

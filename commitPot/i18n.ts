@@ -1,6 +1,8 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import * as Localization from 'expo-localization';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Platform } from 'react-native';
 
 import ja from './locales/ja/translation.json';
 import en from './locales/en/translation.json';
@@ -15,6 +17,7 @@ import id from './locales/id/translation.json';
 const SUPPORTED_LANGUAGES = ['ja', 'en', 'vi', 'es', 'it', 'pt', 'ko', 'zh', 'id'] as const;
 
 type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
+const LANGUAGE_STORAGE_KEY = 'commitpot_language';
 
 const normalizeLanguage = (language: string): SupportedLanguage => {
   const base = language.toLowerCase().split('-')[0];
@@ -29,6 +32,47 @@ const getDeviceLanguage = (): SupportedLanguage => {
     (typeof Localization.locale === 'string' ? Localization.locale : '') ||
     'ja';
   return normalizeLanguage(candidate);
+};
+
+const loadStoredLanguage = async (): Promise<SupportedLanguage | null> => {
+  try {
+    if (Platform.OS === 'web') {
+      const stored = typeof window !== 'undefined' ? window.localStorage.getItem(LANGUAGE_STORAGE_KEY) : null;
+      return stored ? normalizeLanguage(stored) : null;
+    }
+    const stored = await AsyncStorage.getItem(LANGUAGE_STORAGE_KEY);
+    return stored ? normalizeLanguage(stored) : null;
+  } catch (error) {
+    return null;
+  }
+};
+
+const saveStoredLanguage = async (language: SupportedLanguage): Promise<void> => {
+  try {
+    if (Platform.OS === 'web') {
+      if (typeof window !== 'undefined') {
+        window.localStorage.setItem(LANGUAGE_STORAGE_KEY, language);
+      }
+      return;
+    }
+    await AsyncStorage.setItem(LANGUAGE_STORAGE_KEY, language);
+  } catch (error) {
+    // ignore storage errors and fall back to device language
+  }
+};
+
+const clearStoredLanguage = async (): Promise<void> => {
+  try {
+    if (Platform.OS === 'web') {
+      if (typeof window !== 'undefined') {
+        window.localStorage.removeItem(LANGUAGE_STORAGE_KEY);
+      }
+      return;
+    }
+    await AsyncStorage.removeItem(LANGUAGE_STORAGE_KEY);
+  } catch (error) {
+    // ignore storage errors and fall back to device language
+  }
 };
 
 const deviceLanguage = getDeviceLanguage();
@@ -58,4 +102,12 @@ void i18n
   });
 
 export default i18n;
-export { getDeviceLanguage };
+export {
+  SUPPORTED_LANGUAGES,
+  getDeviceLanguage,
+  loadStoredLanguage,
+  saveStoredLanguage,
+  clearStoredLanguage,
+  normalizeLanguage,
+};
+export type { SupportedLanguage };

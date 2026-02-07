@@ -91,7 +91,10 @@
     "category_protein": "タンパク質",
     "category_veg": "野菜",
     "category_carb": "炭水化物",
-    "ok": "OK"
+    "ok": "OK",
+    "language": "言語",
+    "language_title": "言語を選択",
+    "language_auto": "端末の言語（自動）"
   },
   "alerts": {
     "login_required_title": "ログインが必要です",

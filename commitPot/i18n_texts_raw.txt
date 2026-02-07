@@ -1,0 +1,264 @@
+/Users/mac/commit_pod/commitPot/constants.tsx:8:    name: 'むね肉',
+/Users/mac/commit_pod/commitPot/constants.tsx:14:    effect: '筋肉合成: 高タンパク低脂質で必要量を満たしやすい。回復: ロイシンを含み筋修復を効率化。',
+/Users/mac/commit_pod/commitPot/constants.tsx:15:    photo: require('./assets/food_photos/むね肉.jpg'),
+/Users/mac/commit_pod/commitPot/constants.tsx:16:    photoSmall: require('./assets/food_photos/むね肉_sm.jpg'),
+/Users/mac/commit_pod/commitPot/constants.tsx:18:    unitName: '枚'
+/Users/mac/commit_pod/commitPot/constants.tsx:22:    name: '豚ロース',
+/Users/mac/commit_pod/commitPot/constants.tsx:28:    effect: '筋肉合成: 良質なたんぱく質で筋維持を支える。実践性: 脂質も確保でき増量期の総摂取カロリーを作りやすい。',
+/Users/mac/commit_pod/commitPot/constants.tsx:29:    photo: require('./assets/food_photos/豚ロース.jpg'),
+/Users/mac/commit_pod/commitPot/constants.tsx:30:    photoSmall: require('./assets/food_photos/豚ロース_sm.jpg'),
+/Users/mac/commit_pod/commitPot/constants.tsx:32:    unitName: 'パック'
+/Users/mac/commit_pod/commitPot/constants.tsx:36:    name: '牛もも肉',
+/Users/mac/commit_pod/commitPot/constants.tsx:42:    effect: '筋肉合成: 赤身由来の高タンパクで筋修復を支援。健康維持: ヘム鉄と亜鉛が代謝・体調管理をサポート。',
+/Users/mac/commit_pod/commitPot/constants.tsx:43:    photo: require('./assets/food_photos/牛ロース.jpg'),
+/Users/mac/commit_pod/commitPot/constants.tsx:44:    photoSmall: require('./assets/food_photos/牛ロース_sm.jpg'),
+/Users/mac/commit_pod/commitPot/constants.tsx:46:    unitName: 'パック'
+/Users/mac/commit_pod/commitPot/constants.tsx:50:    name: '鶏レバー',
+/Users/mac/commit_pod/commitPot/constants.tsx:56:    effect: '筋肉合成: たんぱく質とビタミンB群でエネルギー産生を支える。健康維持: 鉄が酸素運搬を助け持久力を補強。',
+/Users/mac/commit_pod/commitPot/constants.tsx:57:    photo: require('./assets/food_photos/鶏レバー.jpg'),
+/Users/mac/commit_pod/commitPot/constants.tsx:58:    photoSmall: require('./assets/food_photos/鶏レバー_sm.jpg'),
+/Users/mac/commit_pod/commitPot/constants.tsx:60:    unitName: 'パック'
+/Users/mac/commit_pod/commitPot/constants.tsx:64:    name: 'タラ',
+/Users/mac/commit_pod/commitPot/constants.tsx:70:    effect: '筋肉合成: 低脂質高タンパクで減量中もP量を確保しやすい。回復: 消化が軽くトレ前後にも合わせやすい。',
+/Users/mac/commit_pod/commitPot/constants.tsx:71:    photo: require('./assets/food_photos/たら.jpg'),
+/Users/mac/commit_pod/commitPot/constants.tsx:72:    photoSmall: require('./assets/food_photos/たら_sm.jpg'),
+/Users/mac/commit_pod/commitPot/constants.tsx:74:    unitName: '切れ'
+/Users/mac/commit_pod/commitPot/constants.tsx:78:    name: 'サーモン',
+/Users/mac/commit_pod/commitPot/constants.tsx:84:    effect: '筋肉合成: 高タンパクで筋修復を促進。回復: オメガ3脂肪酸が炎症を抑え、EPA・DHAが回復と健康維持を支える。',
+/Users/mac/commit_pod/commitPot/constants.tsx:85:    photo: require('./assets/food_photos/サーモン.jpg'),
+/Users/mac/commit_pod/commitPot/constants.tsx:86:    photoSmall: require('./assets/food_photos/サーモン_sm.jpg'),
+/Users/mac/commit_pod/commitPot/constants.tsx:88:    unitName: '切れ'
+/Users/mac/commit_pod/commitPot/constants.tsx:92:    name: '木綿豆腐',
+/Users/mac/commit_pod/commitPot/constants.tsx:98:    effect: '筋肉合成: 植物性たんぱく質を追加でき総P量の底上げに有効。健康維持: カルシウムとマグネシウムが骨・神経機能を補助。',
+/Users/mac/commit_pod/commitPot/constants.tsx:99:    photo: require('./assets/food_photos/木綿豆腐.jpg'),
+/Users/mac/commit_pod/commitPot/constants.tsx:100:    photoSmall: require('./assets/food_photos/木綿豆腐_sm.jpg'),
+/Users/mac/commit_pod/commitPot/constants.tsx:102:    unitName: '丁'
+/Users/mac/commit_pod/commitPot/constants.tsx:106:    name: 'さば水煮缶',
+/Users/mac/commit_pod/commitPot/constants.tsx:112:    effect: '筋肉合成: 高タンパクで手軽にPを補給。回復: DHA・EPAの抗炎症作用で筋ダメージ後のコンディション調整に有効。',
+/Users/mac/commit_pod/commitPot/constants.tsx:113:    photo: require('./assets/food_photos/さば水煮缶.jpg'),
+/Users/mac/commit_pod/commitPot/constants.tsx:114:    photoSmall: require('./assets/food_photos/さば水煮缶_sm.jpg'),
+/Users/mac/commit_pod/commitPot/constants.tsx:116:    unitName: '缶'
+/Users/mac/commit_pod/commitPot/constants.tsx:120:    name: '卵',
+/Users/mac/commit_pod/commitPot/constants.tsx:126:    effect: '筋肉合成: 必須アミノ酸バランスが良く筋タンパク合成を後押し。健康維持: ビタミン群と脂質でホルモン生成を支える。',
+/Users/mac/commit_pod/commitPot/constants.tsx:127:    photo: require('./assets/food_photos/たまご.jpg'),
+/Users/mac/commit_pod/commitPot/constants.tsx:128:    photoSmall: require('./assets/food_photos/たまご_sm.jpg'),
+/Users/mac/commit_pod/commitPot/constants.tsx:130:    unitName: '個'
+/Users/mac/commit_pod/commitPot/constants.tsx:135:    name: 'ブロッコリー',
+/Users/mac/commit_pod/commitPot/constants.tsx:141:    effect: '筋肉サポート: ビタミンC・葉酸で回復と代謝を補助。健康維持: 食物繊維が腸内環境を整え、栄養吸収効率に寄与。',
+/Users/mac/commit_pod/commitPot/constants.tsx:142:    photo: require('./assets/food_photos/ブロッコリー.jpg'),
+/Users/mac/commit_pod/commitPot/constants.tsx:143:    photoSmall: require('./assets/food_photos/ブロッコリー_sm.jpg'),
+/Users/mac/commit_pod/commitPot/constants.tsx:145:    unitName: '個'
+/Users/mac/commit_pod/commitPot/constants.tsx:149:    name: 'しめじ',
+/Users/mac/commit_pod/commitPot/constants.tsx:155:    effect: '筋肉サポート: 低カロリーでかさ増しし減量継続を支援。健康維持: 食物繊維とβ-グルカンが腸内環境を整える。',
+/Users/mac/commit_pod/commitPot/constants.tsx:156:    photo: require('./assets/food_photos/しめじ.jpg'),
+/Users/mac/commit_pod/commitPot/constants.tsx:157:    photoSmall: require('./assets/food_photos/しめじ_sm.jpg'),
+/Users/mac/commit_pod/commitPot/constants.tsx:159:    unitName: 'パック'
+/Users/mac/commit_pod/commitPot/constants.tsx:163:    name: '小松菜',
+/Users/mac/commit_pod/commitPot/constants.tsx:169:    effect: '筋肉サポート: 鉄が酸素運搬を助けトレーニング効率を維持。健康維持: カルシウムとビタミンKが骨代謝を支える。',
+/Users/mac/commit_pod/commitPot/constants.tsx:170:    photo: require('./assets/food_photos/小松菜.jpg'),
+/Users/mac/commit_pod/commitPot/constants.tsx:171:    photoSmall: require('./assets/food_photos/小松菜_sm.jpg'),
+/Users/mac/commit_pod/commitPot/constants.tsx:173:    unitName: '袋'
+/Users/mac/commit_pod/commitPot/constants.tsx:177:    name: '玉ねぎ',
+/Users/mac/commit_pod/commitPot/constants.tsx:183:    effect: '筋肉サポート: 糖質補給で運動時のエネルギー切れを防ぐ。健康維持: 硫化アリル系成分が血流・代謝の維持を補助。',
+/Users/mac/commit_pod/commitPot/constants.tsx:184:    photo: require('./assets/food_photos/玉ねぎ.jpg'),
+/Users/mac/commit_pod/commitPot/constants.tsx:185:    photoSmall: require('./assets/food_photos/玉ねぎ_sm.jpg'),
+/Users/mac/commit_pod/commitPot/constants.tsx:187:    unitName: '個'
+/Users/mac/commit_pod/commitPot/constants.tsx:191:    name: '大根',
+/Users/mac/commit_pod/commitPot/constants.tsx:197:    effect: '筋肉サポート: 低カロリーで満腹感を作り体脂肪管理に有効。健康維持: 消化酵素と水分が胃腸負担の軽減に寄与。',
+/Users/mac/commit_pod/commitPot/constants.tsx:198:    photo: require('./assets/food_photos/大根.jpg'),
+/Users/mac/commit_pod/commitPot/constants.tsx:199:    photoSmall: require('./assets/food_photos/大根_sm.jpg'),
+/Users/mac/commit_pod/commitPot/constants.tsx:201:    unitName: '1/3本'
+/Users/mac/commit_pod/commitPot/constants.tsx:205:    name: 'にんじん',
+/Users/mac/commit_pod/commitPot/constants.tsx:211:    effect: '筋肉サポート: 抗酸化ビタミンでトレ後の酸化ストレス対策。健康維持: β-カロテンが粘膜・免疫機能の維持に有効。',
+/Users/mac/commit_pod/commitPot/constants.tsx:212:    photo: require('./assets/food_photos/にんじん.jpg'),
+/Users/mac/commit_pod/commitPot/constants.tsx:213:    photoSmall: require('./assets/food_photos/にんじん_sm.jpg'),
+/Users/mac/commit_pod/commitPot/constants.tsx:215:    unitName: '本'
+/Users/mac/commit_pod/commitPot/constants.tsx:219:    name: 'ほうれん草',
+/Users/mac/commit_pod/commitPot/constants.tsx:225:    effect: '筋肉サポート: 鉄・葉酸で酸素利用を支えパフォーマンス維持。健康維持: ビタミンCがコラーゲン生成と回復を補助。',
+/Users/mac/commit_pod/commitPot/constants.tsx:226:    photo: require('./assets/food_photos/ほうれん草.jpg'),
+/Users/mac/commit_pod/commitPot/constants.tsx:227:    photoSmall: require('./assets/food_photos/ほうれん草_sm.jpg'),
+/Users/mac/commit_pod/commitPot/constants.tsx:229:    unitName: '袋'
+/Users/mac/commit_pod/commitPot/constants.tsx:233:    name: '舞茸',
+/Users/mac/commit_pod/commitPot/constants.tsx:239:    effect: '筋肉サポート: 低エネルギーで食事量を確保し減量継続を支援。健康維持: 食物繊維とビタミンD前駆体で体調管理を補助。',
+/Users/mac/commit_pod/commitPot/constants.tsx:240:    photo: require('./assets/food_photos/舞茸.jpg'),
+/Users/mac/commit_pod/commitPot/constants.tsx:241:    photoSmall: require('./assets/food_photos/舞茸_sm.jpg'),
+/Users/mac/commit_pod/commitPot/constants.tsx:243:    unitName: 'パック'
+/Users/mac/commit_pod/commitPot/constants.tsx:247:    name: 'えのき',
+/Users/mac/commit_pod/commitPot/constants.tsx:253:    effect: '筋肉サポート: カリウムで水分バランスを整えコンディション維持。健康維持: 食物繊維で腸内環境を整えやすい。',
+/Users/mac/commit_pod/commitPot/constants.tsx:254:    photo: require('./assets/food_photos/えのき.jpg'),
+/Users/mac/commit_pod/commitPot/constants.tsx:255:    photoSmall: require('./assets/food_photos/えのき_sm.jpg'),
+/Users/mac/commit_pod/commitPot/constants.tsx:257:    unitName: '袋'
+/Users/mac/commit_pod/commitPot/constants.tsx:261:    name: 'アスパラガス',
+/Users/mac/commit_pod/commitPot/constants.tsx:267:    effect: '筋肉サポート: アスパラギン酸がエネルギー代謝を補助。健康維持: 葉酸とカリウムで疲労管理とむくみ対策に有効。',
+/Users/mac/commit_pod/commitPot/constants.tsx:268:    photo: require('./assets/food_photos/アスパラガス.jpg'),
+/Users/mac/commit_pod/commitPot/constants.tsx:269:    photoSmall: require('./assets/food_photos/アスパラガス_sm.jpg'),
+/Users/mac/commit_pod/commitPot/constants.tsx:271:    unitName: '束'
+/Users/mac/commit_pod/commitPot/constants.tsx:275:    name: 'トマト',
+/Users/mac/commit_pod/commitPot/constants.tsx:281:    effect: '筋肉サポート: 抗酸化成分がトレ後の回復環境を整える。健康維持: リコピンが心血管コンディション維持に寄与。',
+/Users/mac/commit_pod/commitPot/constants.tsx:282:    photo: require('./assets/food_photos/トマト.jpg'),
+/Users/mac/commit_pod/commitPot/constants.tsx:283:    photoSmall: require('./assets/food_photos/トマト_sm.jpg'),
+/Users/mac/commit_pod/commitPot/constants.tsx:285:    unitName: '個'
+/Users/mac/commit_pod/commitPot/constants.tsx:289:    name: 'パプリカ',
+/Users/mac/commit_pod/commitPot/constants.tsx:295:    effect: '筋肉サポート: ビタミンCが結合組織の修復を支える。健康維持: 抗酸化成分が炎症ストレス対策に有効。',
+/Users/mac/commit_pod/commitPot/constants.tsx:296:    photo: require('./assets/food_photos/パプリカ.jpg'),
+/Users/mac/commit_pod/commitPot/constants.tsx:297:    photoSmall: require('./assets/food_photos/パプリカ_sm.jpg'),
+/Users/mac/commit_pod/commitPot/constants.tsx:299:    unitName: '個'
+/Users/mac/commit_pod/commitPot/constants.tsx:304:    name: 'うどん',
+/Users/mac/commit_pod/commitPot/constants.tsx:310:    effect: '筋力発揮: 消化しやすい糖質でトレ前後のエネルギー補給に最適。実践性: 脂質が少なくPFC調整がしやすい。',
+/Users/mac/commit_pod/commitPot/constants.tsx:311:    photo: require('./assets/food_photos/うどん.jpg'),
+/Users/mac/commit_pod/commitPot/constants.tsx:312:    photoSmall: require('./assets/food_photos/うどん_sm.jpg'),
+/Users/mac/commit_pod/commitPot/constants.tsx:314:    unitName: '玉'
+/Users/mac/commit_pod/commitPot/constants.tsx:318:    name: '白ごはん',
+/Users/mac/commit_pod/commitPot/constants.tsx:324:    effect: '筋力発揮: 主な糖質源としてグリコーゲン回復を支える。実践性: 他食材と合わせやすく継続摂取しやすい。',
+/Users/mac/commit_pod/commitPot/constants.tsx:325:    photo: require('./assets/food_photos/白ごはん.jpg'),
+/Users/mac/commit_pod/commitPot/constants.tsx:326:    photoSmall: require('./assets/food_photos/白ごはん_sm.jpg'),
+/Users/mac/commit_pod/commitPot/constants.tsx:328:    unitName: '杯'
+/Users/mac/commit_pod/commitPot/constants.tsx:332:    name: 'そば',
+/Users/mac/commit_pod/commitPot/constants.tsx:338:    effect: '筋力発揮: 糖質とたんぱく質を同時に補給できる。健康維持: ルチン由来の働きで血流コンディション維持を支援。',
+/Users/mac/commit_pod/commitPot/constants.tsx:339:    photo: require('./assets/food_photos/そば.jpg'),
+/Users/mac/commit_pod/commitPot/constants.tsx:340:    photoSmall: require('./assets/food_photos/そば_sm.jpg'),
+/Users/mac/commit_pod/commitPot/constants.tsx:342:    unitName: '袋'
+/Users/mac/commit_pod/commitPot/constants.tsx:346:    name: 'さつまいも',
+/Users/mac/commit_pod/commitPot/constants.tsx:352:    effect: '筋力発揮: 緩やかな糖質供給で長時間の活動を支える。健康維持: カリウムと食物繊維でむくみ・腸内環境を補助。',
+/Users/mac/commit_pod/commitPot/constants.tsx:353:    photo: require('./assets/food_photos/さつまいも.jpg'),
+/Users/mac/commit_pod/commitPot/constants.tsx:354:    photoSmall: require('./assets/food_photos/さつまいも_sm.jpg'),
+/Users/mac/commit_pod/commitPot/constants.tsx:356:    unitName: '本'
+/Users/mac/commit_pod/commitPot/constants.tsx:360:    name: '全粒粉パン',
+/Users/mac/commit_pod/commitPot/constants.tsx:366:    effect: '筋力発揮: 糖質補給に加えたんぱく質も取りやすい。健康維持: 食物繊維が血糖変動を抑え体脂肪管理を助ける。',
+/Users/mac/commit_pod/commitPot/constants.tsx:367:    photo: require('./assets/food_photos/全粒粉パン.jpg'),
+/Users/mac/commit_pod/commitPot/constants.tsx:368:    photoSmall: require('./assets/food_photos/全粒粉パン_sm.jpg'),
+/Users/mac/commit_pod/commitPot/constants.tsx:370:    unitName: '枚'
+/Users/mac/commit_pod/commitPot/constants.tsx:374:    name: 'パスタ',
+/Users/mac/commit_pod/commitPot/constants.tsx:380:    effect: '筋力発揮: 高糖質でトレーニング量を確保しやすい。実践性: 摂取量の調整幅が広く増量・維持の両方に対応。',
+/Users/mac/commit_pod/commitPot/constants.tsx:381:    photo: require('./assets/food_photos/パスタ.jpg'),
+/Users/mac/commit_pod/commitPot/constants.tsx:382:    photoSmall: require('./assets/food_photos/パスタ_sm.jpg'),
+/Users/mac/commit_pod/commitPot/constants.tsx:384:    unitName: '束'
+/Users/mac/commit_pod/commitPot/constants.tsx:389:  { id: 'yose', name: '寄せ鍋', description: 'あっさり醤油ベース。素材の味を活かす。', color: '#fef3c7' },
+/Users/mac/commit_pod/commitPot/constants.tsx:390:  { id: 'miso', name: '味噌鍋', description: 'コクのある味噌味。満足度が高い。', color: '#ffedd5' },
+/Users/mac/commit_pod/commitPot/constants.tsx:391:  { id: 'kimchi', name: 'キムチ鍋', description: 'カプサイシンで代謝アップ。ご飯が進む。', color: '#fee2e2' },
+/Users/mac/commit_pod/commitPot/App.tsx:97:      name: 'ダシ入り合わせ味噌（マルコメ）',
+/Users/mac/commit_pod/commitPot/App.tsx:103:      name: '鶏がらスープ顆粒',
+/Users/mac/commit_pod/commitPot/App.tsx:106:      note: '少々',
+/Users/mac/commit_pod/commitPot/App.tsx:110:      name: '生姜チューブ（生でもOK）',
+/Users/mac/commit_pod/commitPot/App.tsx:118:      name: 'シマヤ 粉de鍋だし 濃コク旨キムチ鍋',
+/Users/mac/commit_pod/commitPot/App.tsx:124:      name: '鶏がらスープ顆粒',
+/Users/mac/commit_pod/commitPot/App.tsx:127:      note: '味が薄い場合',
+/Users/mac/commit_pod/commitPot/App.tsx:133:      name: 'シマヤ 粉de鍋だし 旨寄せ鍋',
+/Users/mac/commit_pod/commitPot/App.tsx:139:      name: '鶏がらスープ顆粒',
+/Users/mac/commit_pod/commitPot/App.tsx:142:      note: '味が薄い場合',
+/Users/mac/commit_pod/commitPot/App.tsx:183:  return sections.length > 0 ? sections : [{ title: 'ポイント', body: effect }];
+/Users/mac/commit_pod/commitPot/App.tsx:283:    title: '鍋に水を入れて沸騰させる',
+/Users/mac/commit_pod/commitPot/App.tsx:284:    description: '鍋の半分ぐらい水を入れ、強火で沸騰させます',
+/Users/mac/commit_pod/commitPot/App.tsx:285:    tip: '「火をかけてすぐに、カットした野菜から順に鍋に入れていくと、時短ができるよ」',
+/Users/mac/commit_pod/commitPot/App.tsx:291:    title: '野菜を洗って切る',
+/Users/mac/commit_pod/commitPot/App.tsx:292:    description: 'すべての野菜を一口大にカットします',
+/Users/mac/commit_pod/commitPot/App.tsx:293:    tip: '「カットが面倒なら冷凍野菜がおすすめ。業務スーパーなどに売ってるよ」',
+/Users/mac/commit_pod/commitPot/App.tsx:299:    title: '野菜を鍋に詰めて煮詰める',
+/Users/mac/commit_pod/commitPot/App.tsx:300:    description: '火の通りにくい野菜から入れて、ふたして30分中火で煮込みます',
+/Users/mac/commit_pod/commitPot/App.tsx:301:    tip: '「芯や根菜は下・葉物は上が基本だよ」',
+/Users/mac/commit_pod/commitPot/App.tsx:307:    title: 'タンパク質を一口大に',
+/Users/mac/commit_pod/commitPot/App.tsx:308:    description: 'メインとなるお肉や魚、豆腐などを適度な大きさにカットします',
+/Users/mac/commit_pod/commitPot/App.tsx:309:    tip: '「鶏肉は皮を剥ぐと大幅に脂質をカットでき、バルクアップ中も安心だよ」',
+/Users/mac/commit_pod/commitPot/App.tsx:315:    title: 'スープを準備する',
+/Users/mac/commit_pod/commitPot/App.tsx:316:    description: '1度火を止めて、選んだベース（寄せ/味噌/キムチ）にお湯を合わせてスープを作ります',
+/Users/mac/commit_pod/commitPot/App.tsx:317:    tip: '「お好みでニンニクや生姜を加えると血行が良くなり、代謝が爆上がり！」',
+/Users/mac/commit_pod/commitPot/App.tsx:323:    title: 'タンパク質を鍋に詰める',
+/Users/mac/commit_pod/commitPot/App.tsx:324:    description: '野菜の上にタンパク質を敷き詰め、弱火で10分煮ます',
+/Users/mac/commit_pod/commitPot/App.tsx:325:    tip: '「お肉には火が通り過ぎないように、一煮立ちしたら火を止めて余熱で通してね」',
+/Users/mac/commit_pod/commitPot/App.tsx:331:    title: '小分けして冷凍',
+/Users/mac/commit_pod/commitPot/App.tsx:332:    description: '冷めたら、1食分ずつ容器や袋に分けて冷凍します',
+/Users/mac/commit_pod/commitPot/App.tsx:333:    tip: '「袋なら平らにして空気を抜く→日付を書いて保存。乾燥を防げて、解凍も早いよ」',
+/Users/mac/commit_pod/commitPot/App.tsx:383:  const MEAL_SHARE = 0.3; // 1食 = 1日の10分の3
+/Users/mac/commit_pod/commitPot/App.tsx:703:      Alert.alert('ログインが必要です', 'Supabaseに反映するにはログインしてください。');
+/Users/mac/commit_pod/commitPot/App.tsx:714:        Alert.alert('更新に失敗しました', error.message);
+/Users/mac/commit_pod/commitPot/App.tsx:727:        Alert.alert('更新に失敗しました', error.message);
+/Users/mac/commit_pod/commitPot/App.tsx:735:    Alert.alert('エネルギー補給完了！', '今日もナイス筋トレ！');
+/Users/mac/commit_pod/commitPot/App.tsx:747:      const ok = window.confirm('鍋を削除しますか？\nこのストックは元に戻せません。');
+/Users/mac/commit_pod/commitPot/App.tsx:752:    Alert.alert('鍋を削除しますか？', 'このストックは元に戻せません。', [
+/Users/mac/commit_pod/commitPot/App.tsx:753:      { text: 'キャンセル', style: 'cancel' },
+/Users/mac/commit_pod/commitPot/App.tsx:754:      { text: '削除', style: 'destructive', onPress: performDelete },
+/Users/mac/commit_pod/commitPot/App.tsx:813:            <Text style={styles.splashSubtitle}>自炊でコミットくん</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:829:            <Text style={styles.authSubtitle}>サインインしてコミットを保存</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:850:                {authMode === 'signIn' ? 'サインイン' : 'サインアップ'}
+/Users/mac/commit_pod/commitPot/App.tsx:858:                {authMode === 'signIn' ? '初めての方はこちら' : 'すでにアカウントをお持ちですか？'}
+/Users/mac/commit_pod/commitPot/App.tsx:879:            <Text style={styles.splashSubtitle}>自炊でコミットくん</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:901:                  <Text style={styles.ghostButtonText}>ログアウト</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:905:              {onboardingStep === 1 ? 'まず体の情報を入力' : '活動量と目的を選択してください'}
+/Users/mac/commit_pod/commitPot/App.tsx:909:                ? 'プロチームが、あなたに最適な計画を作成します。'
+/Users/mac/commit_pod/commitPot/App.tsx:910:                : '選択に合わせて計画を自動調整します。'}
+/Users/mac/commit_pod/commitPot/App.tsx:935:                  <Text style={styles.label}>身長 (cm)</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:944:                  <Text style={styles.label}>体重 (kg)</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:956:                  <Text style={styles.label}>年齢</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:965:                  <Text style={styles.label}>性別</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:982:                          {g === 'male' ? '男性' : '女性'}
+/Users/mac/commit_pod/commitPot/App.tsx:993:                <Text style={styles.label}>活動量</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:1012:                        {level === 'low' ? '低い' : level === 'normal' ? '普通' : '高い'}
+/Users/mac/commit_pod/commitPot/App.tsx:1020:                <Text style={styles.label}>ボディメイクの目的</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:1037:                        {g === 'bulk' ? '増量' : g === 'recomp' ? '細マッチョ' : 'ダイエット'}
+/Users/mac/commit_pod/commitPot/App.tsx:1054:                    <Text style={styles.darkCaption}>あなたの目標摂取カロリー（1日）</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:1060:                    <Text style={styles.darkCaption}>あなたの消費カロリー（1日）</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:1069:                    <Text style={styles.pfcLabelAccent}>タンパク質</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:1073:                    <Text style={styles.pfcLabel}>脂質</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:1077:                    <Text style={styles.pfcLabel}>炭水化物</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:1093:            <Text style={styles.primaryButtonText}>次へ</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:1099:              <Text style={styles.secondaryButtonText}>戻る</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:1102:              <Text style={styles.primaryButtonText}>この体でコミットする</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:1121:                <Text style={styles.dashboardTitle}>ダッシュボード</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:1133:              <Text style={styles.actionText}>新しく鍋を作る</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:1139:              <Text style={styles.actionTextDark}>食材図鑑</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:1145:              <SectionTitle>鍋のストック状況</SectionTitle>
+/Users/mac/commit_pod/commitPot/App.tsx:1149:                <Text style={styles.emptyTitle}>ストックが空っぽです</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:1150:                <Text style={styles.emptyText}>「新しく鍋を作る」から筋トレ飯を開始しましょう！</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:1167:                          残り {Number.isFinite(plan.remaining) ? plan.remaining : plan.servings} / {plan.servings} 食
+/Users/mac/commit_pod/commitPot/App.tsx:1175:                          <Text style={styles.darkButtonText}>食べた！</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:1220:                <Text style={styles.builderTitle}>プラン作成</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:1228:              <SectionTitle>何食分作りますか？</SectionTitle>
+/Users/mac/commit_pod/commitPot/App.tsx:1251:                    <Text style={styles.choiceUnit}>食分</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:1260:              <SectionTitle>ベースを選択</SectionTitle>
+/Users/mac/commit_pod/commitPot/App.tsx:1304:                タンパク質 (2つ選択)
+/Users/mac/commit_pod/commitPot/App.tsx:1336:                      <Text style={styles.ingredientMeta}>タンパク質: {ing.pPer100g}g/100g</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:1349:                <Text style={styles.fullButtonText}>次へ ({currentPlan.proteins?.length}/2)</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:1357:                野菜 (2つ選択)・きのこ (1つ選択)
+/Users/mac/commit_pod/commitPot/App.tsx:1373:                    <Text style={styles.sectionLabel}>野菜を2つ選択</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:1412:                    <Text style={styles.sectionLabel}>きのこ類を1つ選択</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:1457:                        次へ (野菜 {selectedVeggies.length}/2・きのこ {selectedMushrooms.length}/1)
+/Users/mac/commit_pod/commitPot/App.tsx:1469:                炭水化物を1つ選択
+/Users/mac/commit_pod/commitPot/App.tsx:1497:              <Text style={styles.commitTitle}>今回のコミット鍋</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:1502:                  <Text style={styles.darkPanelLabelText}>食材と必要な量</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:1517:                <Text style={styles.listSectionLabel}>調味料</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:1531:                  <Text style={styles.sideCardTitle}>1食あたりの理想バランス</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:1532:                  <Text style={styles.sideCardNote}>※ 1食=1日の10分の3で計算</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:1535:                      <Text style={styles.pfcLabel}>タンパク質</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:1541:                      <Text style={styles.pfcLabel}>脂質</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:1547:                      <Text style={styles.pfcLabel}>炭水化物</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:1556:                  <Text style={styles.sideCardTitleAccent}>今回の1食あたりの実績値</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:1570:                            <Text style={styles.pfcLabel}>タンパク質</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:1574:                            <Text style={styles.pfcLabel}>脂質</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:1578:                            <Text style={styles.pfcLabel}>炭水化物</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:1584:                            <Text style={styles.pfcLabel}>カロリー</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:1605:                  <Text style={styles.primaryButtonText}>このプランで確定</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:1608:                  <Text style={styles.linkButtonText}>最初からやり直す</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:1624:              <Text style={styles.modalTitle}>注意</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:1625:              <Text style={styles.modalBody}>５食分を作るためには30cm以上の鍋が必要です</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:1637:                <Text style={styles.modalCheckLabel}>次回から表示しない</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:1668:              <Text style={styles.modalTitle}>確認</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:1670:                この食材と調味料は、ダッシュボードのSHOPタグに保存されます。買い物の時に見てね！
+/Users/mac/commit_pod/commitPot/App.tsx:1679:                <Text style={styles.modalCheckLabel}>次回から表示しない</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:1715:              <Text style={styles.pageTitle}>筋肉食材の <Text style={styles.pageTitleAccent}>身体への効果</Text></Text>
+/Users/mac/commit_pod/commitPot/App.tsx:1748:                        <Text style={styles.statLabel}>カロリー</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:1752:                        <Text style={styles.statLabel}>タンパク質</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:1756:                        <Text style={styles.statLabel}>脂質</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:1760:                        <Text style={styles.statLabel}>炭水化物</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:1790:              <Text style={styles.pageTitleSimple}>買い物リスト</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:1796:              <Text style={styles.emptyTitleLarge}>まだ買うものがありません</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:1801:                <SectionTitle>タンパク質</SectionTitle>
+/Users/mac/commit_pod/commitPot/App.tsx:1816:                <SectionTitle>野菜</SectionTitle>
+/Users/mac/commit_pod/commitPot/App.tsx:1831:                <SectionTitle>炭水化物</SectionTitle>
+/Users/mac/commit_pod/commitPot/App.tsx:1846:                <SectionTitle>調味料</SectionTitle>
+/Users/mac/commit_pod/commitPot/App.tsx:1867:                <Text style={styles.primaryButtonText}>仕込みモードを開始する</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:1883:              <Text style={styles.modalTitle}>お知らせ</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:1885:                買い物が終わったら下の仕込みモードから自炊をしてね
+/Users/mac/commit_pod/commitPot/App.tsx:1894:                <Text style={styles.modalCheckLabel}>次回から表示しない</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:1934:                <Text style={styles.builderTitle}>仕込みモード</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:1957:                    <Text style={styles.tipLabelText}>コミット・ポイント</Text>
+/Users/mac/commit_pod/commitPot/App.tsx:1974:              <Text style={styles.primaryButtonText}>{cookStep < 6 ? '次の工程へ' : '仕込み完了！'}</Text>

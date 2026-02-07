@@ -1,0 +1,133 @@
+);
+
+const COOK_STEPS = [
+  {
+    title: '鍋に水を入れて沸騰させる',
+    description: '鍋の半分ぐらい水を入れ、強火で沸騰させます',
+    tip: '「火をかけてすぐに、カットした野菜から順に鍋に入れていくと、時短ができるよ」',
+    photo: require('./assets/cook_steps_optimized/step1.jpg'),
+    icon:
+,
+    bgColor: '#fee2e2',
+  },
+  {
+    title: '野菜を洗って切る',
+    description: 'すべての野菜を一口大にカットします',
+    tip: '「カットが面倒なら冷凍野菜がおすすめ。業務スーパーなどに売ってるよ」',
+    photo: require('./assets/cook_steps_optimized/step2.jpg'),
+    icon:
+,
+    bgColor: '#dcfce7',
+  },
+  {
+    title: '野菜を鍋に詰めて煮詰める',
+    description: '火の通りにくい野菜から入れて、ふたして30分中火で煮込みます',
+    tip: '「芯や根菜は下・葉物は上が基本だよ」',
+    photo: require('./assets/cook_steps_optimized/step3.jpg'),
+    icon:
+,
+    bgColor: '#ffedd5',
+  },
+  {
+    title: 'タンパク質を一口大に',
+    description: 'メインとなるお肉や魚、豆腐などを適度な大きさにカットします',
+    tip: '「鶏肉は皮を剥ぐと大幅に脂質をカットでき、バルクアップ中も安心だよ」',
+    photo: require('./assets/cook_steps_optimized/step4.jpg'),
+    icon:
+,
+    bgColor: '#fee2e2',
+  },
+  {
+    title: 'スープを準備する',
+    description: '1度火を止めて、選んだベース（寄せ/味噌/キムチ）にお湯を合わせてスープを作ります',
+    tip: '「お好みでニンニクや生姜を加えると血行が良くなり、代謝が爆上がり！」',
+    photo: require('./assets/cook_steps_optimized/step5.jpg'),
+    icon:
+,
+    bgColor: '#dbeafe',
+  },
+  {
+    title: 'タンパク質を鍋に詰める',
+    description: '野菜の上にタンパク質を敷き詰め、弱火で10分煮ます',
+    tip: '「お肉には火が通り過ぎないように、一煮立ちしたら火を止めて余熱で通してね」',
+    photo: require('./assets/cook_steps_optimized/step6.jpg'),
+    icon:
+,
+    bgColor: '#d1fae5',
+  },
+  {
+    title: '小分けして冷凍',
+    description: '冷めたら、1食分ずつ容器や袋に分けて冷凍します',
+    tip: '「袋なら平らにして空気を抜く→日付を書いて保存。乾燥を防げて、解凍も早いよ」',
+    photo: require('./assets/cook_steps_optimized/step7.jpg'),
+    icon:
+自炊でコミットくん
+サインインしてコミットを保存
+{authMode === 'signIn' ? 'サインイン' : 'サインアップ'}
+{authMode === 'signIn' ? '初めての方はこちら' : 'すでにアカウントをお持ちですか？'}
+ログアウト
+{onboardingStep === 1 ? 'まず体の情報を入力' : '活動量と目的を選択してください'}
+{onboardingStep === 1
+                ? 'プロチームが、あなたに最適な計画を作成します。'
+                : '選択に合わせて計画を自動調整します。'}
+身長 (cm)
+体重 (kg)
+年齢
+性別
+{g === 'male' ? '男性' : '女性'}
+活動量
+{level === 'low' ? '低い' : level === 'normal' ? '普通' : '高い'}
+ボディメイクの目的
+{g === 'bulk' ? '増量' : g === 'recomp' ? '細マッチョ' : 'ダイエット'}
+あなたの目標摂取カロリー（1日）
+あなたの消費カロリー（1日）
+タンパク質
+脂質
+炭水化物
+次へ
+戻る
+この体でコミットする
+ダッシュボード
+新しく鍋を作る
+食材図鑑
+鍋のストック状況
+ストックが空っぽです
+「新しく鍋を作る」から筋トレ飯を開始しましょう！
+残り {Number.isFinite(plan.remaining) ? plan.remaining : plan.servings} / {plan.servings} 食
+食べた！
+プラン作成
+何食分作りますか？
+食分
+ベースを選択
+タンパク質 (2つ選択)
+タンパク質: {ing.pPer100g}g/100g
+次へ ({currentPlan.proteins?.length}/2)
+野菜 (2つ選択)・きのこ (1つ選択)
+野菜を2つ選択
+きのこ類を1つ選択
+次へ (野菜 {selectedVeggies.length}/2・きのこ {selectedMushrooms.length}/1)
+炭水化物を1つ選択
+今回のコミット鍋
+食材と必要な量
+調味料
+1食あたりの理想バランス
+※ 1食=1日の10分の3で計算
+今回の1食あたりの実績値
+カロリー
+このプランで確定
+最初からやり直す
+注意
+５食分を作るためには30cm以上の鍋が必要です
+次回から表示しない
+確認
+この食材と調味料は、ダッシュボードのSHOPタグに保存されます。買い物の時に見てね！
+筋肉食材の
+身体への効果
+買い物リスト
+まだ買うものがありません
+野菜
+仕込みモードを開始する
+お知らせ
+買い物が終わったら下の仕込みモードから自炊をしてね
+仕込みモード
+コミット・ポイント

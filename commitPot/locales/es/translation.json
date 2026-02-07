@@ -91,7 +91,10 @@
     "category_protein": "Proteína",
     "category_veg": "Verduras",
     "category_carb": "Carbohidratos",
-    "ok": "OK"
+    "ok": "OK",
+    "language": "Idioma",
+    "language_title": "Elige idioma",
+    "language_auto": "Idioma del dispositivo (Automático)"
   },
   "alerts": {
     "login_required_title": "Se requiere inicio de sesión",

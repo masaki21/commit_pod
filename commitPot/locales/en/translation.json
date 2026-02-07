@@ -91,7 +91,10 @@
     "category_protein": "Protein",
     "category_veg": "Veggies",
     "category_carb": "Carbs",
-    "ok": "OK"
+    "ok": "OK",
+    "language": "Language",
+    "language_title": "Choose language",
+    "language_auto": "Device language (Auto)"
   },
   "alerts": {
     "login_required_title": "Login required",

@@ -18,6 +18,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Session } from '@supabase/supabase-js';
 import {
   BookOpen,
+  Check,
   CheckCircle2,
   ChefHat,
   ChevronLeft,
@@ -25,6 +26,7 @@ import {
   Dumbbell,
   Droplets,
   Flame,
+  Globe,
   Home,
   Layers,
   Plus,
@@ -39,7 +41,13 @@ import {
 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { INGREDIENTS, POT_BASES } from './constants';
-import { getDeviceLanguage } from './i18n';
+import {
+  SupportedLanguage,
+  clearStoredLanguage,
+  getDeviceLanguage,
+  loadStoredLanguage,
+  saveStoredLanguage,
+} from './i18n';
 import { ActivityLevel, Gender, Goal, PFC, Plan, PotBase, UserProfile } from './types';
 import { supabase } from './supabase';
 
@@ -346,23 +354,41 @@ const COOK_STEPS = [
 export default function App() {
   const isWeb = Platform.OS === 'web';
   const { t, i18n } = useTranslation();
+  const [languageMode, setLanguageMode] = useState<'auto' | SupportedLanguage>('auto');
+  const [showLanguageModal, setShowLanguageModal] = useState(false);
 
   useEffect(() => {
-    const syncLanguage = () => {
+    let isMounted = true;
+
+    const syncLanguage = async () => {
+      const stored = await loadStoredLanguage();
+      if (!isMounted) return;
+      if (stored) {
+        setLanguageMode(stored);
+        if (i18n.language !== stored) {
+          await i18n.changeLanguage(stored);
+        }
+        return;
+      }
+
+      setLanguageMode('auto');
       const nextLanguage = getDeviceLanguage();
       if (i18n.language !== nextLanguage) {
-        void i18n.changeLanguage(nextLanguage);
+        await i18n.changeLanguage(nextLanguage);
       }
     };
 
-    syncLanguage();
+    void syncLanguage();
     const subscription = AppState.addEventListener('change', (state) => {
       if (state === 'active') {
-        syncLanguage();
+        void syncLanguage();
       }
     });
 
-    return () => subscription.remove();
+    return () => {
+      isMounted = false;
+      subscription.remove();
+    };
   }, [i18n]);
   const [screen, setScreen] = useState<
     'splash' | 'onboarding' | 'dashboard' | 'builder' | 'shopping' | 'cook' | 'cards'
@@ -406,6 +432,34 @@ export default function App() {
   const tdee = useMemo(() => calculateTDEE(profile), [profile]);
   const targetPFC = useMemo(() => calculateTargetPFC(profile, tdee), [profile, tdee]);
   const MEAL_SHARE = 0.3; // 1食 = 1日の10分の3
+  const languageOptions: Array<{ value: 'auto' | SupportedLanguage; label: string }> = [
+    { value: 'auto', label: t('ui.language_auto') },
+    { value: 'ja', label: '日本語' },
+    { value: 'en', label: 'English' },
+    { value: 'vi', label: 'Tiếng Việt' },
+    { value: 'es', label: 'Español' },
+    { value: 'it', label: 'Italiano' },
+    { value: 'pt', label: 'Português' },
+    { value: 'ko', label: '한국어' },
+    { value: 'zh', label: '中文' },
+    { value: 'id', label: 'Bahasa Indonesia' },
+  ];
+
+  const handleSelectLanguage = async (value: 'auto' | SupportedLanguage) => {
+    if (value === 'auto') {
+      await clearStoredLanguage();
+      const nextLanguage = getDeviceLanguage();
+      await i18n.changeLanguage(nextLanguage);
+      setLanguageMode('auto');
+      setShowLanguageModal(false);
+      return;
+    }
+
+    await saveStoredLanguage(value);
+    await i18n.changeLanguage(value);
+    setLanguageMode(value);
+    setShowLanguageModal(false);
+  };
 
   const formatUnits = (units: number | null, unitName?: string) => {
     if (!units || !unitName) return '';
@@ -418,6 +472,38 @@ export default function App() {
     const needsSpace = /[A-Za-z]/.test(unitName);
     return `${units}${needsSpace ? ' ' : ''}${unitName}`;
   };
+
+  const languageButton = (
+    <Pressable style={styles.languageButton} onPress={() => setShowLanguageModal(true)}>
+      <Globe size={16} color="#6b7280" />
+      <Text style={styles.languageButtonText}>{t('ui.language')}</Text>
+    </Pressable>
+  );
+
+  const languageModal = (
+    <Modal visible={showLanguageModal} transparent animationType="fade">
+      <Pressable style={styles.languageBackdrop} onPress={() => setShowLanguageModal(false)}>
+        <Pressable style={styles.languageModalCard} onPress={() => null}>
+          <Text style={styles.languageModalTitle}>{t('ui.language_title')}</Text>
+          <View style={styles.languageList}>
+            {languageOptions.map((option) => {
+              const active = languageMode === option.value;
+              return (
+                <Pressable
+                  key={option.value}
+                  onPress={() => handleSelectLanguage(option.value)}
+                  style={[styles.languageOptionRow, active && styles.languageOptionActive]}
+                >
+                  <Text style={styles.languageOptionText}>{option.label}</Text>
+                  {active ? <Check size={16} color="#f97316" strokeWidth={3} /> : null}
+                </Pressable>
+              );
+            })}
+          </View>
+        </Pressable>
+      </Pressable>
+    </Modal>
+  );
 
   const buildShoppingEntries = (plan: Partial<Plan>): ShoppingEntry[] => {
     const servings = plan.servings || 5;
@@ -851,6 +937,7 @@ export default function App() {
             style={styles.authWrap}
             behavior={Platform.OS === 'ios' ? 'padding' : undefined}
           >
+            <View style={styles.authTopRow}>{languageButton}</View>
             <Text style={styles.authTitle}>COMMIT POT</Text>
             <Text style={styles.authSubtitle}>{t('ui.auth_subtitle')}</Text>
             <TextInput
@@ -886,6 +973,7 @@ export default function App() {
             </Pressable>
           </KeyboardAvoidingView>
         )}
+        {languageModal}
       </SafeAreaView>
     );
   }
@@ -926,6 +1014,7 @@ export default function App() {
                 <Pressable onPress={handleSignOut} style={styles.ghostButton}>
                   <Text style={styles.ghostButtonText}>{t('ui.logout')}</Text>
                 </Pressable>
+                {languageButton}
               </View>
               <Text style={styles.headerTitle}>
               {onboardingStep === 1 ? t('ui.onboarding_step1_title') : t('ui.onboarding_step2_title')}
@@ -1140,6 +1229,7 @@ export default function App() {
             </Pressable>
           </View>
         )}
+        {languageModal}
       </SafeAreaView>
     );
   }
@@ -1156,9 +1246,12 @@ export default function App() {
                 </View>
                 <Text style={styles.dashboardTitle}>{t('ui.dashboard')}</Text>
               </View>
-              <Pressable onPress={() => setScreen('onboarding')} style={styles.roundButton}>
-                <User size={20} color="#9ca3af" />
-              </Pressable>
+              <View style={styles.dashboardActions}>
+                {languageButton}
+                <Pressable onPress={() => setScreen('onboarding')} style={styles.roundButton}>
+                  <User size={20} color="#9ca3af" />
+                </Pressable>
+              </View>
             </View>
 
           <View style={styles.grid2}>
@@ -1238,6 +1331,7 @@ export default function App() {
             </Pressable>
           </View>
         )}
+        {languageModal}
       </SafeAreaView>
     );
   }
@@ -2057,9 +2151,48 @@ const styles = StyleSheet.create({
   splashSubtitle: { marginTop: 8, color: '#9ca3af', fontWeight: '700', letterSpacing: 2, fontSize: 12 },
   screenPad: { padding: 24, paddingBottom: 120 },
   headerBlock: { marginBottom: 24 },
-  headerRow: { flexDirection: 'row', justifyContent: 'flex-end', marginBottom: 8 },
+  headerRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8, alignItems: 'center' },
   ghostButton: { paddingVertical: 6, paddingHorizontal: 10, borderRadius: 12, backgroundColor: '#f3f4f6' },
   ghostButtonText: { fontSize: 12, fontWeight: '700', color: '#6b7280' },
+  languageButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: 12,
+    backgroundColor: '#f3f4f6',
+  },
+  languageButtonText: { fontSize: 12, fontWeight: '700', color: '#6b7280' },
+  languageBackdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(15, 23, 42, 0.45)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 24,
+  },
+  languageModalCard: {
+    width: '100%',
+    maxWidth: 420,
+    backgroundColor: '#ffffff',
+    borderRadius: 20,
+    padding: 20,
+  },
+  languageModalTitle: { fontSize: 16, fontWeight: '800', color: '#111827', marginBottom: 12 },
+  languageList: { gap: 8 },
+  languageOptionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+    backgroundColor: '#ffffff',
+  },
+  languageOptionActive: { borderColor: '#f97316', backgroundColor: '#fff7ed' },
+  languageOptionText: { fontSize: 14, fontWeight: '600', color: '#111827' },
   headerTitle: { fontSize: 28, fontWeight: '800', color: '#111827' },
   headerSubtitle: { marginTop: 8, color: '#6b7280', fontWeight: '600', fontSize: 16 },
   grid2: { flexDirection: 'row', gap: 12 },
@@ -2170,6 +2303,7 @@ const styles = StyleSheet.create({
   primaryButtonText: { color: '#ffffff', fontWeight: '800' },
   dashboardPad: { padding: 24, paddingBottom: 120 },
   dashboardHeader: { marginBottom: 24, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  dashboardActions: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   dashboardSectionSpacer: { marginTop: 8 },
   dashboardTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   dashboardIcon: {
@@ -2369,6 +2503,7 @@ const styles = StyleSheet.create({
   },
   modalButtonText: { color: '#ffffff', fontWeight: '800', fontSize: 14 },
   authWrap: { flex: 1, padding: 24, justifyContent: 'center', gap: 12 },
+  authTopRow: { alignItems: 'flex-end', marginBottom: 10 },
   authTitle: { fontSize: 28, fontWeight: '800', color: '#111827', textAlign: 'center' },
   authSubtitle: { textAlign: 'center', color: '#9ca3af', marginBottom: 12, fontWeight: '600' },
   authInput: { backgroundColor: '#f9fafb', borderRadius: 16, padding: 12, fontWeight: '600', color: '#111827' },
