@@ -782,11 +782,12 @@ export default function App() {
   const handleAuth = async () => {
     setAuthLoading(true);
     setAuthError(null);
+    const normalizedEmail = email.trim().toLowerCase();
     if (authMode === 'signIn') {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      const { error } = await supabase.auth.signInWithPassword({ email: normalizedEmail, password });
       if (error) setAuthError(error.message);
     } else {
-      const { error } = await supabase.auth.signUp({ email, password });
+      const { error } = await supabase.auth.signUp({ email: normalizedEmail, password });
       if (error) setAuthError(error.message);
     }
     setAuthLoading(false);
