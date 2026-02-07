@@ -54,8 +54,8 @@ export const INGREDIENTS: Ingredient[] = [
     cPer100g: 1,
     kcalPer100g: 111,
     effect: '筋肉合成: たんぱく質とビタミンB群でエネルギー産生を支える。健康維持: 鉄が酸素運搬を助け持久力を補強。',
-    photo: require('./assets/food_photos/鶏レバー.jpg'),
-    photoSmall: require('./assets/food_photos/鶏レバー_sm.jpg'),
+    photo: require('./assets/food_photos/鶏レバー.jpg'),
+    photoSmall: require('./assets/food_photos/鶏レバー_sm.jpg'),
     unitWeight: 200,
     unitName: 'パック'
   },
