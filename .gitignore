@@ -1,3 +1,8 @@
 .venv
 自炊でコミットくん.zip
 jisui_commit/
+.env
+commitPot/supabase-mcp-server/
+.expo/
+commitPot/.cursor/
+commitPot/.local/
