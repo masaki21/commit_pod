@@ -11,11 +11,11 @@ export const INGREDIENTS: Ingredient[] = [
     fPer100g: 1.5,
     cPer100g: 0,
     kcalPer100g: 108,
-    effect: '筋肉合成: 高タンパク低脂質で必要量を満たしやすい。回復: ロイシンを含み筋修復を効率化。',
+    effect: 'effects.p1',
     photo: require('./assets/food_photos/むね肉.jpg'),
     photoSmall: require('./assets/food_photos/むね肉_sm.jpg'),
     unitWeight: 300,
-    unitName: '枚'
+    unitName: 'units.slice'
   },
   {
     id: 'p2',
@@ -25,11 +25,11 @@ export const INGREDIENTS: Ingredient[] = [
     fPer100g: 14,
     cPer100g: 0,
     kcalPer100g: 230,
-    effect: '筋肉合成: 良質なたんぱく質で筋維持を支える。実践性: 脂質も確保でき増量期の総摂取カロリーを作りやすい。',
+    effect: 'effects.p2',
     photo: require('./assets/food_photos/豚ロース.jpg'),
     photoSmall: require('./assets/food_photos/豚ロース_sm.jpg'),
     unitWeight: 200,
-    unitName: 'パック'
+    unitName: 'units.pack'
   },
   {
     id: 'p8',
@@ -39,11 +39,11 @@ export const INGREDIENTS: Ingredient[] = [
     fPer100g: 8,
     cPer100g: 0,
     kcalPer100g: 171,
-    effect: '筋肉合成: 赤身由来の高タンパクで筋修復を支援。健康維持: ヘム鉄と亜鉛が代謝・体調管理をサポート。',
+    effect: 'effects.p8',
     photo: require('./assets/food_photos/牛ロース.jpg'),
     photoSmall: require('./assets/food_photos/牛ロース_sm.jpg'),
     unitWeight: 200,
-    unitName: 'パック'
+    unitName: 'units.pack'
   },
   {
     id: 'p9',
@@ -53,11 +53,11 @@ export const INGREDIENTS: Ingredient[] = [
     fPer100g: 4,
     cPer100g: 1,
     kcalPer100g: 111,
-    effect: '筋肉合成: たんぱく質とビタミンB群でエネルギー産生を支える。健康維持: 鉄が酸素運搬を助け持久力を補強。',
+    effect: 'effects.p9',
     photo: require('./assets/food_photos/鶏レバー.jpg'),
     photoSmall: require('./assets/food_photos/鶏レバー_sm.jpg'),
     unitWeight: 200,
-    unitName: 'パック'
+    unitName: 'units.pack'
   },
   {
     id: 'p3',
@@ -67,11 +67,11 @@ export const INGREDIENTS: Ingredient[] = [
     fPer100g: 0.2,
     cPer100g: 0,
     kcalPer100g: 77,
-    effect: '筋肉合成: 低脂質高タンパクで減量中もP量を確保しやすい。回復: 消化が軽くトレ前後にも合わせやすい。',
+    effect: 'effects.p3',
     photo: require('./assets/food_photos/たら.jpg'),
     photoSmall: require('./assets/food_photos/たら_sm.jpg'),
     unitWeight: 100,
-    unitName: '切れ'
+    unitName: 'units.fillet'
   },
   {
     id: 'p10',
@@ -81,11 +81,11 @@ export const INGREDIENTS: Ingredient[] = [
     fPer100g: 13,
     cPer100g: 0,
     kcalPer100g: 206,
-    effect: '筋肉合成: 高タンパクで筋修復を促進。回復: オメガ3脂肪酸が炎症を抑え、EPA・DHAが回復と健康維持を支える。',
+    effect: 'effects.p10',
     photo: require('./assets/food_photos/サーモン.jpg'),
     photoSmall: require('./assets/food_photos/サーモン_sm.jpg'),
     unitWeight: 100,
-    unitName: '切れ'
+    unitName: 'units.fillet'
   },
   {
     id: 'p4',
@@ -95,11 +95,11 @@ export const INGREDIENTS: Ingredient[] = [
     fPer100g: 3,
     cPer100g: 2,
     kcalPer100g: 60,
-    effect: '筋肉合成: 植物性たんぱく質を追加でき総P量の底上げに有効。健康維持: カルシウムとマグネシウムが骨・神経機能を補助。',
+    effect: 'effects.p4',
     photo: require('./assets/food_photos/木綿豆腐.jpg'),
     photoSmall: require('./assets/food_photos/木綿豆腐_sm.jpg'),
     unitWeight: 400,
-    unitName: '丁'
+    unitName: 'units.block'
   },
   {
     id: 'p6',
@@ -109,11 +109,11 @@ export const INGREDIENTS: Ingredient[] = [
     fPer100g: 10,
     cPer100g: 0,
     kcalPer100g: 190,
-    effect: '筋肉合成: 高タンパクで手軽にPを補給。回復: DHA・EPAの抗炎症作用で筋ダメージ後のコンディション調整に有効。',
+    effect: 'effects.p6',
     photo: require('./assets/food_photos/さば水煮缶.jpg'),
     photoSmall: require('./assets/food_photos/さば水煮缶_sm.jpg'),
     unitWeight: 190,
-    unitName: '缶'
+    unitName: 'units.can'
   },
   {
     id: 'p7',
@@ -123,11 +123,11 @@ export const INGREDIENTS: Ingredient[] = [
     fPer100g: 10,
     cPer100g: 1,
     kcalPer100g: 151,
-    effect: '筋肉合成: 必須アミノ酸バランスが良く筋タンパク合成を後押し。健康維持: ビタミン群と脂質でホルモン生成を支える。',
+    effect: 'effects.p7',
     photo: require('./assets/food_photos/たまご.jpg'),
     photoSmall: require('./assets/food_photos/たまご_sm.jpg'),
     unitWeight: 70,
-    unitName: '個'
+    unitName: 'units.piece'
   },
   // Veggies
   {
@@ -138,11 +138,11 @@ export const INGREDIENTS: Ingredient[] = [
     fPer100g: 0.5,
     cPer100g: 5,
     kcalPer100g: 33,
-    effect: '筋肉サポート: ビタミンC・葉酸で回復と代謝を補助。健康維持: 食物繊維が腸内環境を整え、栄養吸収効率に寄与。',
+    effect: 'effects.v1',
     photo: require('./assets/food_photos/ブロッコリー.jpg'),
     photoSmall: require('./assets/food_photos/ブロッコリー_sm.jpg'),
     unitWeight: 250,
-    unitName: '個'
+    unitName: 'units.piece'
   },
   {
     id: 'v3',
@@ -152,11 +152,11 @@ export const INGREDIENTS: Ingredient[] = [
     fPer100g: 0.3,
     cPer100g: 4,
     kcalPer100g: 18,
-    effect: '筋肉サポート: 低カロリーでかさ増しし減量継続を支援。健康維持: 食物繊維とβ-グルカンが腸内環境を整える。',
+    effect: 'effects.v3',
     photo: require('./assets/food_photos/しめじ.jpg'),
     photoSmall: require('./assets/food_photos/しめじ_sm.jpg'),
     unitWeight: 100,
-    unitName: 'パック'
+    unitName: 'units.pack'
   },
   {
     id: 'v4',
@@ -166,11 +166,11 @@ export const INGREDIENTS: Ingredient[] = [
     fPer100g: 0.4,
     cPer100g: 3.5,
     kcalPer100g: 14,
-    effect: '筋肉サポート: 鉄が酸素運搬を助けトレーニング効率を維持。健康維持: カルシウムとビタミンKが骨代謝を支える。',
+    effect: 'effects.v4',
     photo: require('./assets/food_photos/小松菜.jpg'),
     photoSmall: require('./assets/food_photos/小松菜_sm.jpg'),
     unitWeight: 200,
-    unitName: '袋'
+    unitName: 'units.bag'
   },
   {
     id: 'v5',
@@ -180,11 +180,11 @@ export const INGREDIENTS: Ingredient[] = [
     fPer100g: 0.1,
     cPer100g: 9,
     kcalPer100g: 37,
-    effect: '筋肉サポート: 糖質補給で運動時のエネルギー切れを防ぐ。健康維持: 硫化アリル系成分が血流・代謝の維持を補助。',
+    effect: 'effects.v5',
     photo: require('./assets/food_photos/玉ねぎ.jpg'),
     photoSmall: require('./assets/food_photos/玉ねぎ_sm.jpg'),
     unitWeight: 250,
-    unitName: '個'
+    unitName: 'units.piece'
   },
   {
     id: 'v6',
@@ -194,11 +194,11 @@ export const INGREDIENTS: Ingredient[] = [
     fPer100g: 0.1,
     cPer100g: 4,
     kcalPer100g: 18,
-    effect: '筋肉サポート: 低カロリーで満腹感を作り体脂肪管理に有効。健康維持: 消化酵素と水分が胃腸負担の軽減に寄与。',
+    effect: 'effects.v6',
     photo: require('./assets/food_photos/大根.jpg'),
     photoSmall: require('./assets/food_photos/大根_sm.jpg'),
     unitWeight: 300,
-    unitName: '1/3本'
+    unitName: 'units.third_stick'
   },
   {
     id: 'v7',
@@ -208,11 +208,11 @@ export const INGREDIENTS: Ingredient[] = [
     fPer100g: 0.2,
     cPer100g: 7,
     kcalPer100g: 37,
-    effect: '筋肉サポート: 抗酸化ビタミンでトレ後の酸化ストレス対策。健康維持: β-カロテンが粘膜・免疫機能の維持に有効。',
+    effect: 'effects.v7',
     photo: require('./assets/food_photos/にんじん.jpg'),
     photoSmall: require('./assets/food_photos/にんじん_sm.jpg'),
     unitWeight: 150,
-    unitName: '本'
+    unitName: 'units.stick'
   },
   {
     id: 'v8',
@@ -222,11 +222,11 @@ export const INGREDIENTS: Ingredient[] = [
     fPer100g: 0.4,
     cPer100g: 3.1,
     kcalPer100g: 20,
-    effect: '筋肉サポート: 鉄・葉酸で酸素利用を支えパフォーマンス維持。健康維持: ビタミンCがコラーゲン生成と回復を補助。',
+    effect: 'effects.v8',
     photo: require('./assets/food_photos/ほうれん草.jpg'),
     photoSmall: require('./assets/food_photos/ほうれん草_sm.jpg'),
     unitWeight: 200,
-    unitName: '袋'
+    unitName: 'units.bag'
   },
   {
     id: 'v9',
@@ -236,11 +236,11 @@ export const INGREDIENTS: Ingredient[] = [
     fPer100g: 0.3,
     cPer100g: 5,
     kcalPer100g: 22,
-    effect: '筋肉サポート: 低エネルギーで食事量を確保し減量継続を支援。健康維持: 食物繊維とビタミンD前駆体で体調管理を補助。',
+    effect: 'effects.v9',
     photo: require('./assets/food_photos/舞茸.jpg'),
     photoSmall: require('./assets/food_photos/舞茸_sm.jpg'),
     unitWeight: 100,
-    unitName: 'パック'
+    unitName: 'units.pack'
   },
   {
     id: 'v10',
@@ -250,11 +250,11 @@ export const INGREDIENTS: Ingredient[] = [
     fPer100g: 0.2,
     cPer100g: 7,
     kcalPer100g: 22,
-    effect: '筋肉サポート: カリウムで水分バランスを整えコンディション維持。健康維持: 食物繊維で腸内環境を整えやすい。',
+    effect: 'effects.v10',
     photo: require('./assets/food_photos/えのき.jpg'),
     photoSmall: require('./assets/food_photos/えのき_sm.jpg'),
     unitWeight: 150,
-    unitName: '袋'
+    unitName: 'units.bag'
   },
   {
     id: 'v11',
@@ -264,11 +264,11 @@ export const INGREDIENTS: Ingredient[] = [
     fPer100g: 0.2,
     cPer100g: 3.9,
     kcalPer100g: 21,
-    effect: '筋肉サポート: アスパラギン酸がエネルギー代謝を補助。健康維持: 葉酸とカリウムで疲労管理とむくみ対策に有効。',
+    effect: 'effects.v11',
     photo: require('./assets/food_photos/アスパラガス.jpg'),
     photoSmall: require('./assets/food_photos/アスパラガス_sm.jpg'),
     unitWeight: 200,
-    unitName: '束'
+    unitName: 'units.bunch'
   },
   {
     id: 'v12',
@@ -278,11 +278,11 @@ export const INGREDIENTS: Ingredient[] = [
     fPer100g: 0.1,
     cPer100g: 3.9,
     kcalPer100g: 18,
-    effect: '筋肉サポート: 抗酸化成分がトレ後の回復環境を整える。健康維持: リコピンが心血管コンディション維持に寄与。',
+    effect: 'effects.v12',
     photo: require('./assets/food_photos/トマト.jpg'),
     photoSmall: require('./assets/food_photos/トマト_sm.jpg'),
     unitWeight: 200,
-    unitName: '個'
+    unitName: 'units.piece'
   },
   {
     id: 'v13',
@@ -292,11 +292,11 @@ export const INGREDIENTS: Ingredient[] = [
     fPer100g: 0.2,
     cPer100g: 6,
     kcalPer100g: 31,
-    effect: '筋肉サポート: ビタミンCが結合組織の修復を支える。健康維持: 抗酸化成分が炎症ストレス対策に有効。',
+    effect: 'effects.v13',
     photo: require('./assets/food_photos/パプリカ.jpg'),
     photoSmall: require('./assets/food_photos/パプリカ_sm.jpg'),
     unitWeight: 150,
-    unitName: '個'
+    unitName: 'units.piece'
   },
   // Carbs
   {
@@ -307,11 +307,11 @@ export const INGREDIENTS: Ingredient[] = [
     fPer100g: 0.4,
     cPer100g: 21,
     kcalPer100g: 105,
-    effect: '筋力発揮: 消化しやすい糖質でトレ前後のエネルギー補給に最適。実践性: 脂質が少なくPFC調整がしやすい。',
+    effect: 'effects.c2',
     photo: require('./assets/food_photos/うどん.jpg'),
     photoSmall: require('./assets/food_photos/うどん_sm.jpg'),
     unitWeight: 250,
-    unitName: '玉'
+    unitName: 'units.ball'
   },
   {
     id: 'c3',
@@ -321,11 +321,11 @@ export const INGREDIENTS: Ingredient[] = [
     fPer100g: 0.3,
     cPer100g: 37,
     kcalPer100g: 168,
-    effect: '筋力発揮: 主な糖質源としてグリコーゲン回復を支える。実践性: 他食材と合わせやすく継続摂取しやすい。',
+    effect: 'effects.c3',
     photo: require('./assets/food_photos/白ごはん.jpg'),
     photoSmall: require('./assets/food_photos/白ごはん_sm.jpg'),
     unitWeight: 200,
-    unitName: '杯'
+    unitName: 'units.cup'
   },
   {
     id: 'c4',
@@ -335,11 +335,11 @@ export const INGREDIENTS: Ingredient[] = [
     fPer100g: 0.6,
     cPer100g: 26,
     kcalPer100g: 132,
-    effect: '筋力発揮: 糖質とたんぱく質を同時に補給できる。健康維持: ルチン由来の働きで血流コンディション維持を支援。',
+    effect: 'effects.c4',
     photo: require('./assets/food_photos/そば.jpg'),
     photoSmall: require('./assets/food_photos/そば_sm.jpg'),
     unitWeight: 260,
-    unitName: '袋'
+    unitName: 'units.bag'
   },
   {
     id: 'c5',
@@ -349,11 +349,11 @@ export const INGREDIENTS: Ingredient[] = [
     fPer100g: 0.2,
     cPer100g: 31,
     kcalPer100g: 132,
-    effect: '筋力発揮: 緩やかな糖質供給で長時間の活動を支える。健康維持: カリウムと食物繊維でむくみ・腸内環境を補助。',
+    effect: 'effects.c5',
     photo: require('./assets/food_photos/さつまいも.jpg'),
     photoSmall: require('./assets/food_photos/さつまいも_sm.jpg'),
     unitWeight: 300,
-    unitName: '本'
+    unitName: 'units.stick'
   },
   {
     id: 'c6',
@@ -363,11 +363,11 @@ export const INGREDIENTS: Ingredient[] = [
     fPer100g: 5.7,
     cPer100g: 45.5,
     kcalPer100g: 251,
-    effect: '筋力発揮: 糖質補給に加えたんぱく質も取りやすい。健康維持: 食物繊維が血糖変動を抑え体脂肪管理を助ける。',
+    effect: 'effects.c6',
     photo: require('./assets/food_photos/全粒粉パン.jpg'),
     photoSmall: require('./assets/food_photos/全粒粉パン_sm.jpg'),
     unitWeight: 100,
-    unitName: '枚'
+    unitName: 'units.slice'
   },
   {
     id: 'c7',
@@ -377,16 +377,16 @@ export const INGREDIENTS: Ingredient[] = [
     fPer100g: 2,
     cPer100g: 72,
     kcalPer100g: 371,
-    effect: '筋力発揮: 高糖質でトレーニング量を確保しやすい。実践性: 摂取量の調整幅が広く増量・維持の両方に対応。',
+    effect: 'effects.c7',
     photo: require('./assets/food_photos/パスタ.jpg'),
     photoSmall: require('./assets/food_photos/パスタ_sm.jpg'),
     unitWeight: 100,
-    unitName: '束'
+    unitName: 'units.bunch'
   }
 ];
 
 export const POT_BASES: { id: PotBase; name: string; description: string; color: string }[] = [
-  { id: 'yose', name: '寄せ鍋', description: 'あっさり醤油ベース。素材の味を活かす。', color: '#fef3c7' },
-  { id: 'miso', name: '味噌鍋', description: 'コクのある味噌味。満足度が高い。', color: '#ffedd5' },
-  { id: 'kimchi', name: 'キムチ鍋', description: 'カプサイシンで代謝アップ。ご飯が進む。', color: '#fee2e2' },
+  { id: 'yose', name: 'bases.names.yose', description: 'bases.desc.yose', color: '#fef3c7' },
+  { id: 'miso', name: 'bases.names.miso', description: 'bases.desc.miso', color: '#ffedd5' },
+  { id: 'kimchi', name: 'bases.names.kimchi', description: 'bases.desc.kimchi', color: '#fee2e2' },
 ];

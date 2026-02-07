@@ -36,6 +36,7 @@ import {
   Utensils,
   Zap,
 } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
 import { INGREDIENTS, POT_BASES } from './constants';
 import { ActivityLevel, Gender, Goal, PFC, Plan, PotBase, UserProfile } from './types';
 import { supabase } from './supabase';
@@ -94,20 +95,20 @@ const POT_BASE_SEASONINGS: Record<PotBase, SeasoningDefinition[]> = {
   miso: [
     {
       id: 's_miso',
-      name: 'ダシ入り合わせ味噌（マルコメ）',
+      name: 'seasonings.miso_mix',
       gramsByServings: { 2: 70, 5: 175 },
       nutrition: { kcalPer100g: 194, pPer100g: 10.8, fPer100g: 4.1, cPer100g: 27.1 },
     },
     {
       id: 's_chicken',
-      name: '鶏がらスープ顆粒',
+      name: 'seasonings.chicken_stock',
       gramsByServings: { 2: 2, 5: 5 },
       nutrition: { kcalPer100g: 0, pPer100g: 0, fPer100g: 0, cPer100g: 0 },
-      note: '少々',
+      note: 'seasonings.note_small',
     },
     {
       id: 's_ginger',
-      name: '生姜チューブ（生でもOK）',
+      name: 'seasonings.ginger_tube',
       gramsByServings: { 2: 2, 5: 5 },
       nutrition: { kcalPer100g: 0, pPer100g: 0, fPer100g: 0, cPer100g: 0 },
     },
@@ -115,31 +116,31 @@ const POT_BASE_SEASONINGS: Record<PotBase, SeasoningDefinition[]> = {
   kimchi: [
     {
       id: 's_kimchi_soup',
-      name: 'シマヤ 粉de鍋だし 濃コク旨キムチ鍋',
+      name: 'seasonings.shimaya_kimchi',
       gramsByServings: { 2: 20, 5: 50 },
       nutrition: SHIMAYA_POWDER_NUTRITION,
     },
     {
       id: 's_chicken',
-      name: '鶏がらスープ顆粒',
+      name: 'seasonings.chicken_stock',
       gramsByServings: { 2: 2, 5: 5 },
       nutrition: { kcalPer100g: 0, pPer100g: 0, fPer100g: 0, cPer100g: 0 },
-      note: '味が薄い場合',
+      note: 'seasonings.note_thin',
     },
   ],
   yose: [
     {
       id: 's_yose_soup',
-      name: 'シマヤ 粉de鍋だし 旨寄せ鍋',
+      name: 'seasonings.shimaya_yose',
       gramsByServings: { 2: 20, 5: 50 },
       nutrition: SHIMAYA_POWDER_NUTRITION,
     },
     {
       id: 's_chicken',
-      name: '鶏がらスープ顆粒',
+      name: 'seasonings.chicken_stock',
       gramsByServings: { 2: 2, 5: 5 },
       nutrition: { kcalPer100g: 0, pPer100g: 0, fPer100g: 0, cPer100g: 0 },
-      note: '味が薄い場合',
+      note: 'seasonings.note_thin',
     },
   ],
 };
@@ -165,9 +166,12 @@ const normalizePlanForPotBase = (
   };
 };
 
-const parseEffectSections = (effect: string): { title: string; body: string }[] => {
+const parseEffectSections = (
+  effect: string,
+  fallbackTitle: string
+): { title: string; body: string }[] => {
   const sections = effect
-    .split('。')
+    .split(/[。.]/)
     .map((line) => line.trim())
     .filter(Boolean)
     .map((line) => {
@@ -180,11 +184,11 @@ const parseEffectSections = (effect: string): { title: string; body: string }[] 
     })
     .filter((item): item is { title: string; body: string } => item !== null);
 
-  return sections.length > 0 ? sections : [{ title: 'ポイント', body: effect }];
+  return sections.length > 0 ? sections : [{ title: fallbackTitle, body: effect }];
 };
 
 const getEffectLead = (effect: string): string => {
-  const firstSentence = effect.split('。').find((line) => line.trim().length > 0);
+  const firstSentence = effect.split(/[。.]/).find((line) => line.trim().length > 0);
   return firstSentence?.trim() || effect;
 };
 
@@ -280,57 +284,57 @@ const SectionTitle = ({ children, subtitle }: { children: React.ReactNode; subti
 
 const COOK_STEPS = [
   {
-    title: '鍋に水を入れて沸騰させる',
-    description: '鍋の半分ぐらい水を入れ、強火で沸騰させます',
-    tip: '「火をかけてすぐに、カットした野菜から順に鍋に入れていくと、時短ができるよ」',
+    titleKey: 'cook.steps.step1.title',
+    descriptionKey: 'cook.steps.step1.description',
+    tipKey: 'cook.tips.tip1',
     photo: require('./assets/cook_steps_optimized/step1.jpg'),
     icon: <Flame size={40} color="#dc2626" />,
     bgColor: '#fee2e2',
   },
   {
-    title: '野菜を洗って切る',
-    description: 'すべての野菜を一口大にカットします',
-    tip: '「カットが面倒なら冷凍野菜がおすすめ。業務スーパーなどに売ってるよ」',
+    titleKey: 'cook.steps.step2.title',
+    descriptionKey: 'cook.steps.step2.description',
+    tipKey: 'cook.tips.tip2',
     photo: require('./assets/cook_steps_optimized/step2.jpg'),
     icon: <Scissors size={40} color="#16a34a" />,
     bgColor: '#dcfce7',
   },
   {
-    title: '野菜を鍋に詰めて煮詰める',
-    description: '火の通りにくい野菜から入れて、ふたして30分中火で煮込みます',
-    tip: '「芯や根菜は下・葉物は上が基本だよ」',
+    titleKey: 'cook.steps.step3.title',
+    descriptionKey: 'cook.steps.step3.description',
+    tipKey: 'cook.tips.tip3',
     photo: require('./assets/cook_steps_optimized/step3.jpg'),
     icon: <Layers size={40} color="#ea580c" />,
     bgColor: '#ffedd5',
   },
   {
-    title: 'タンパク質を一口大に',
-    description: 'メインとなるお肉や魚、豆腐などを適度な大きさにカットします',
-    tip: '「鶏肉は皮を剥ぐと大幅に脂質をカットでき、バルクアップ中も安心だよ」',
+    titleKey: 'cook.steps.step4.title',
+    descriptionKey: 'cook.steps.step4.description',
+    tipKey: 'cook.tips.tip4',
     photo: require('./assets/cook_steps_optimized/step4.jpg'),
     icon: <ChefHat size={40} color="#dc2626" />,
     bgColor: '#fee2e2',
   },
   {
-    title: 'スープを準備する',
-    description: '1度火を止めて、選んだベース（寄せ/味噌/キムチ）にお湯を合わせてスープを作ります',
-    tip: '「お好みでニンニクや生姜を加えると血行が良くなり、代謝が爆上がり！」',
+    titleKey: 'cook.steps.step5.title',
+    descriptionKey: 'cook.steps.step5.description',
+    tipKey: 'cook.tips.tip5',
     photo: require('./assets/cook_steps_optimized/step5.jpg'),
     icon: <Droplets size={40} color="#2563eb" />,
     bgColor: '#dbeafe',
   },
   {
-    title: 'タンパク質を鍋に詰める',
-    description: '野菜の上にタンパク質を敷き詰め、弱火で10分煮ます',
-    tip: '「お肉には火が通り過ぎないように、一煮立ちしたら火を止めて余熱で通してね」',
+    titleKey: 'cook.steps.step6.title',
+    descriptionKey: 'cook.steps.step6.description',
+    tipKey: 'cook.tips.tip6',
     photo: require('./assets/cook_steps_optimized/step6.jpg'),
     icon: <CheckCircle2 size={40} color="#10b981" />,
     bgColor: '#d1fae5',
   },
   {
-    title: '小分けして冷凍',
-    description: '冷めたら、1食分ずつ容器や袋に分けて冷凍します',
-    tip: '「袋なら平らにして空気を抜く→日付を書いて保存。乾燥を防げて、解凍も早いよ」',
+    titleKey: 'cook.steps.step7.title',
+    descriptionKey: 'cook.steps.step7.description',
+    tipKey: 'cook.tips.tip7',
     photo: require('./assets/cook_steps_optimized/step7.jpg'),
     icon: <Snowflake size={40} color="#4f46e5" />,
     bgColor: '#e0e7ff',
@@ -339,6 +343,7 @@ const COOK_STEPS = [
 
 export default function App() {
   const isWeb = Platform.OS === 'web';
+  const { t } = useTranslation();
   const [screen, setScreen] = useState<
     'splash' | 'onboarding' | 'dashboard' | 'builder' | 'shopping' | 'cook' | 'cards'
   >('splash');
@@ -390,7 +395,8 @@ export default function App() {
       const suffix = fractionMatch[2];
       return `${units}/${denominator}${suffix}`;
     }
-    return `${units}${unitName}`;
+    const needsSpace = /[A-Za-z]/.test(unitName);
+    return `${units}${needsSpace ? ' ' : ''}${unitName}`;
   };
 
   const buildShoppingEntries = (plan: Partial<Plan>): ShoppingEntry[] => {
@@ -444,7 +450,7 @@ export default function App() {
           category: proteinIds.includes(id) ? 'protein' : vegIds.includes(id) ? 'veg' : 'carb',
           roundedGrams,
           units,
-          unitName: ing.unitName,
+          unitName: ing.unitName ? t(ing.unitName) : undefined,
         };
       })
       .filter((entry): entry is ShoppingEntry => Boolean(entry));
@@ -455,9 +461,9 @@ export default function App() {
     const servings = (plan.servings === 2 ? 2 : 5) as ServingCount;
     return (POT_BASE_SEASONINGS[potBase] || []).map((seasoning) => ({
       id: seasoning.id,
-      name: seasoning.name,
+      name: t(seasoning.name),
       grams: seasoning.gramsByServings[servings],
-      note: seasoning.note,
+      note: seasoning.note ? t(seasoning.note) : undefined,
       nutrition: seasoning.nutrition,
     }));
   };
@@ -700,7 +706,7 @@ export default function App() {
     const nextRemaining = Math.max(currentRemaining - 1, 0);
 
     if (!session?.user) {
-      Alert.alert('ログインが必要です', 'Supabaseに反映するにはログインしてください。');
+      Alert.alert(t('alerts.login_required_title'), t('alerts.login_required_body'));
       return;
     }
 
@@ -711,7 +717,7 @@ export default function App() {
         .eq('id', planId)
         .eq('user_id', session.user.id);
       if (error) {
-        Alert.alert('更新に失敗しました', error.message);
+        Alert.alert(t('alerts.update_failed'), error.message);
         return;
       }
       setPlans((prev) => prev.filter((plan) => plan.id !== planId));
@@ -724,7 +730,7 @@ export default function App() {
         .select('id, remaining')
         .single();
       if (error) {
-        Alert.alert('更新に失敗しました', error.message);
+        Alert.alert(t('alerts.update_failed'), error.message);
         return;
       }
       setPlans((prev) =>
@@ -732,7 +738,7 @@ export default function App() {
       );
     }
 
-    Alert.alert('エネルギー補給完了！', '今日もナイス筋トレ！');
+    Alert.alert(t('alerts.energy_done_title'), t('alerts.energy_done_body'));
   };
 
   const handleDeletePlan = (planId: string) => {
@@ -744,14 +750,14 @@ export default function App() {
     };
 
     if (Platform.OS === 'web') {
-      const ok = window.confirm('鍋を削除しますか？\nこのストックは元に戻せません。');
+      const ok = window.confirm(t('alerts.delete_pot_confirm'));
       if (ok) void performDelete();
       return;
     }
 
-    Alert.alert('鍋を削除しますか？', 'このストックは元に戻せません。', [
-      { text: 'キャンセル', style: 'cancel' },
-      { text: '削除', style: 'destructive', onPress: performDelete },
+    Alert.alert(t('alerts.delete_pot_title'), t('alerts.delete_pot_body'), [
+      { text: t('alerts.cancel'), style: 'cancel' },
+      { text: t('alerts.delete'), style: 'destructive', onPress: performDelete },
     ]);
   };
 
@@ -810,7 +816,7 @@ export default function App() {
             <Text style={styles.splashTitle}>
               COMMIT <Text style={styles.splashAccent}>POT</Text>
             </Text>
-            <Text style={styles.splashSubtitle}>自炊でコミットくん</Text>
+            <Text style={styles.splashSubtitle}>{t('ui.subtitle')}</Text>
           </>
         )}
       </SafeAreaView>
@@ -826,7 +832,7 @@ export default function App() {
             behavior={Platform.OS === 'ios' ? 'padding' : undefined}
           >
             <Text style={styles.authTitle}>COMMIT POT</Text>
-            <Text style={styles.authSubtitle}>サインインしてコミットを保存</Text>
+            <Text style={styles.authSubtitle}>{t('ui.auth_subtitle')}</Text>
             <TextInput
               value={email}
               onChangeText={setEmail}
@@ -847,7 +853,7 @@ export default function App() {
             {authError ? <Text style={styles.authError}>{authError}</Text> : null}
             <Pressable onPress={handleAuth} style={styles.primaryButtonInline} disabled={authLoading}>
               <Text style={styles.primaryButtonText}>
-                {authMode === 'signIn' ? 'サインイン' : 'サインアップ'}
+                {authMode === 'signIn' ? t('ui.sign_in') : t('ui.sign_up')}
               </Text>
             </Pressable>
             <Pressable
@@ -855,7 +861,7 @@ export default function App() {
               style={styles.linkButton}
             >
               <Text style={styles.linkButtonText}>
-                {authMode === 'signIn' ? '初めての方はこちら' : 'すでにアカウントをお持ちですか？'}
+                {authMode === 'signIn' ? t('ui.first_time') : t('ui.already_have_account')}
               </Text>
             </Pressable>
           </KeyboardAvoidingView>
@@ -876,7 +882,7 @@ export default function App() {
             <Text style={styles.splashTitle}>COMMIT {''}
               <Text style={styles.splashAccent}>POT</Text>
             </Text>
-            <Text style={styles.splashSubtitle}>自炊でコミットくん</Text>
+            <Text style={styles.splashSubtitle}>{t('ui.subtitle')}</Text>
           </>
         )}
       </SafeAreaView>
@@ -898,19 +904,21 @@ export default function App() {
             <View style={styles.headerBlock}>
               <View style={styles.headerRow}>
                 <Pressable onPress={handleSignOut} style={styles.ghostButton}>
-                  <Text style={styles.ghostButtonText}>ログアウト</Text>
+                  <Text style={styles.ghostButtonText}>{t('ui.logout')}</Text>
                 </Pressable>
               </View>
               <Text style={styles.headerTitle}>
-              {onboardingStep === 1 ? 'まず体の情報を入力' : '活動量と目的を選択してください'}
+              {onboardingStep === 1 ? t('ui.onboarding_step1_title') : t('ui.onboarding_step2_title')}
             </Text>
             <Text style={styles.headerSubtitle}>
               {onboardingStep === 1
-                ? 'プロチームが、あなたに最適な計画を作成します。'
-                : '選択に合わせて計画を自動調整します。'}
+                ? t('ui.onboarding_step1_desc')
+                : t('ui.onboarding_step2_desc')}
             </Text>
             <View style={styles.stepRow}>
-              <Text style={styles.stepText}>Step {onboardingStep}/2</Text>
+              <Text style={styles.stepText}>
+                {t('ui.step_label', { current: onboardingStep, total: 2 })}
+              </Text>
               <View style={styles.stepDots}>
                 <View
                   style={[
@@ -932,7 +940,7 @@ export default function App() {
             <>
               <View style={styles.grid2}>
                 <Card style={styles.flexCard}>
-                  <Text style={styles.label}>身長 (cm)</Text>
+                  <Text style={styles.label}>{t('ui.label_height')}</Text>
                   <TextInput
                     value={String(profile.height)}
                     onChangeText={(text) => setProfile({ ...profile, height: Number(text || 0) })}
@@ -941,7 +949,7 @@ export default function App() {
                   />
                 </Card>
                 <Card style={styles.flexCard}>
-                  <Text style={styles.label}>体重 (kg)</Text>
+                  <Text style={styles.label}>{t('ui.label_weight')}</Text>
                   <TextInput
                     value={String(profile.weight)}
                     onChangeText={(text) => setProfile({ ...profile, weight: Number(text || 0) })}
@@ -953,7 +961,7 @@ export default function App() {
 
               <View style={styles.grid2}>
                 <Card style={styles.flexCard}>
-                  <Text style={styles.label}>年齢</Text>
+                  <Text style={styles.label}>{t('ui.label_age')}</Text>
                   <TextInput
                     value={String(profile.age)}
                     onChangeText={(text) => setProfile({ ...profile, age: Number(text || 0) })}
@@ -962,7 +970,7 @@ export default function App() {
                   />
                 </Card>
                 <Card style={styles.flexCard}>
-                  <Text style={styles.label}>性別</Text>
+                  <Text style={styles.label}>{t('ui.label_gender')}</Text>
                   <View style={styles.goalRow}>
                     {(['male', 'female'] as Gender[]).map((g) => (
                       <Pressable
@@ -979,7 +987,7 @@ export default function App() {
                             profile.gender === g && styles.goalButtonTextActive,
                           ]}
                         >
-                          {g === 'male' ? '男性' : '女性'}
+                          {g === 'male' ? t('ui.gender_male') : t('ui.gender_female')}
                         </Text>
                       </Pressable>
                     ))}
@@ -990,7 +998,7 @@ export default function App() {
           ) : (
             <>
               <Card>
-                <Text style={styles.label}>活動量</Text>
+                <Text style={styles.label}>{t('ui.label_activity')}</Text>
                 <View style={styles.goalRow}>
                   {(['low', 'normal', 'high'] as ActivityLevel[]).map((level) => (
                     <Pressable
@@ -1009,7 +1017,11 @@ export default function App() {
                           profile.activityLevel === level && styles.goalButtonTextActive,
                         ]}
                       >
-                        {level === 'low' ? '低い' : level === 'normal' ? '普通' : '高い'}
+                        {level === 'low'
+                          ? t('ui.activity_low')
+                          : level === 'normal'
+                            ? t('ui.activity_normal')
+                            : t('ui.activity_high')}
                       </Text>
                     </Pressable>
                   ))}
@@ -1017,7 +1029,7 @@ export default function App() {
               </Card>
 
               <Card>
-                <Text style={styles.label}>ボディメイクの目的</Text>
+                <Text style={styles.label}>{t('ui.label_goal')}</Text>
                 <View style={styles.goalRow}>
                   {(['bulk', 'recomp', 'cut'] as Goal[]).map((g) => (
                     <Pressable
@@ -1034,7 +1046,11 @@ export default function App() {
                           profile.goal === g && styles.goalButtonTextActive,
                         ]}
                       >
-                        {g === 'bulk' ? '増量' : g === 'recomp' ? '細マッチョ' : 'ダイエット'}
+                        {g === 'bulk'
+                          ? t('ui.goal_bulk')
+                          : g === 'recomp'
+                            ? t('ui.goal_recomp')
+                            : t('ui.goal_cut')}
                       </Text>
                     </Pressable>
                   ))}
@@ -1051,13 +1067,13 @@ export default function App() {
 
                 <View style={styles.darkPanelRow}>
                   <View>
-                    <Text style={styles.darkCaption}>あなたの目標摂取カロリー（1日）</Text>
+                    <Text style={styles.darkCaption}>{t('ui.target_calories')}</Text>
                     <Text style={styles.darkHero}>
                       {targetPFC.calories} <Text style={styles.darkHeroUnit}>kcal</Text>
                     </Text>
                   </View>
                   <View style={{ alignItems: 'flex-end' }}>
-                    <Text style={styles.darkCaption}>あなたの消費カロリー（1日）</Text>
+                    <Text style={styles.darkCaption}>{t('ui.tdee_calories')}</Text>
                     <Text style={styles.darkSmall}>
                       {tdee} <Text style={styles.darkSmallUnit}>kcal</Text>
                     </Text>
@@ -1066,15 +1082,15 @@ export default function App() {
 
                 <View style={styles.pfcRow}>
                   <View style={styles.pfcCell}>
-                    <Text style={styles.pfcLabelAccent}>タンパク質</Text>
+                    <Text style={styles.pfcLabelAccent}>{t('ui.pfc_protein')}</Text>
                     <Text style={styles.pfcValue}>{targetPFC.protein}g</Text>
                   </View>
                   <View style={styles.pfcCell}>
-                    <Text style={styles.pfcLabel}>脂質</Text>
+                    <Text style={styles.pfcLabel}>{t('ui.pfc_fat')}</Text>
                     <Text style={styles.pfcValue}>{targetPFC.fat}g</Text>
                   </View>
                   <View style={styles.pfcCell}>
-                    <Text style={styles.pfcLabel}>炭水化物</Text>
+                    <Text style={styles.pfcLabel}>{t('ui.pfc_carbs')}</Text>
                     <Text style={styles.pfcValue}>{targetPFC.carbs}g</Text>
                   </View>
                 </View>
@@ -1090,16 +1106,16 @@ export default function App() {
             onPress={() => setOnboardingStep(2)}
             disabled={!canProceedStep1}
           >
-            <Text style={styles.primaryButtonText}>次へ</Text>
+            <Text style={styles.primaryButtonText}>{t('ui.next')}</Text>
             <ChevronRight size={18} color="#ffffff" strokeWidth={3} />
           </Pressable>
         ) : (
           <View style={styles.stepButtonRow}>
             <Pressable style={styles.secondaryButton} onPress={() => setOnboardingStep(1)}>
-              <Text style={styles.secondaryButtonText}>戻る</Text>
+              <Text style={styles.secondaryButtonText}>{t('ui.back')}</Text>
             </Pressable>
             <Pressable style={styles.primaryButtonCompact} onPress={handleSaveProfile}>
-              <Text style={styles.primaryButtonText}>この体でコミットする</Text>
+              <Text style={styles.primaryButtonText}>{t('ui.commit_with_body')}</Text>
               <ChevronRight size={18} color="#ffffff" strokeWidth={3} />
             </Pressable>
           </View>
@@ -1118,7 +1134,7 @@ export default function App() {
                 <View style={styles.dashboardIcon}>
                   <Utensils size={20} color="#ffffff" strokeWidth={3} />
                 </View>
-                <Text style={styles.dashboardTitle}>ダッシュボード</Text>
+                <Text style={styles.dashboardTitle}>{t('ui.dashboard')}</Text>
               </View>
               <Pressable onPress={() => setScreen('onboarding')} style={styles.roundButton}>
                 <User size={20} color="#9ca3af" />
@@ -1130,24 +1146,24 @@ export default function App() {
               <View style={styles.actionIconWrap}>
                 <Plus size={30} color="#ffffff" strokeWidth={3} />
               </View>
-              <Text style={styles.actionText}>新しく鍋を作る</Text>
+              <Text style={styles.actionText}>{t('ui.make_new_pot')}</Text>
             </Pressable>
             <Pressable onPress={() => setScreen('cards')} style={[styles.actionCard, styles.actionSecondary]}>
               <View style={styles.actionIconWrapSecondary}>
                 <BookOpen size={30} color="#9ca3af" />
               </View>
-              <Text style={styles.actionTextDark}>食材図鑑</Text>
+              <Text style={styles.actionTextDark}>{t('ui.food_dictionary')}</Text>
             </Pressable>
           </View>
 
           <View>
             <View style={styles.dashboardSectionSpacer}>
-              <SectionTitle>鍋のストック状況</SectionTitle>
+              <SectionTitle>{t('ui.stock_status')}</SectionTitle>
             </View>
             {plans.length === 0 ? (
               <View style={styles.emptyCard}>
-                <Text style={styles.emptyTitle}>ストックが空っぽです</Text>
-                <Text style={styles.emptyText}>「新しく鍋を作る」から筋トレ飯を開始しましょう！</Text>
+                <Text style={styles.emptyTitle}>{t('ui.stock_empty_title')}</Text>
+                <Text style={styles.emptyText}>{t('ui.stock_empty_text')}</Text>
               </View>
             ) : (
               <View style={styles.cardStack}>
@@ -1157,22 +1173,25 @@ export default function App() {
                       <View style={{ flex: 1 }}>
                         <View style={styles.planTagRow}>
                           <Text style={styles.planTag}>
-                            {POT_BASES.find((b) => b.id === plan.potBase)?.name}
+                            {t(POT_BASES.find((b) => b.id === plan.potBase)?.name || '')}
                           </Text>
                           <Text style={styles.planDate}>
                             {new Date(plan.createdAt).toLocaleDateString()}
                           </Text>
                         </View>
-                        <Text style={styles.planTitle}>
-                          残り {Number.isFinite(plan.remaining) ? plan.remaining : plan.servings} / {plan.servings} 食
-                        </Text>
+                          <Text style={styles.planTitle}>
+                            {t('ui.remaining_meals', {
+                              remaining: Number.isFinite(plan.remaining) ? plan.remaining : plan.servings,
+                              total: plan.servings,
+                            })}
+                          </Text>
                       </View>
                       <View style={styles.planActions}>
                         <Pressable onPress={() => handleDeletePlan(plan.id)} style={styles.lightButton}>
                           <Trash2 size={16} color="#6b7280" />
                         </Pressable>
                         <Pressable onPress={() => consumeServing(plan.id)} style={styles.darkButton}>
-                          <Text style={styles.darkButtonText}>食べた！</Text>
+                          <Text style={styles.darkButtonText}>{t('ui.ate')}</Text>
                         </Pressable>
                       </View>
                     </View>
@@ -1187,15 +1206,15 @@ export default function App() {
           <View style={styles.bottomNav}>
             <Pressable style={styles.navItemActive}>
               <Home size={24} color="#f97316" strokeWidth={2.5} />
-              <Text style={styles.navLabelActive}>Home</Text>
+              <Text style={styles.navLabelActive}>{t('ui.nav_home')}</Text>
             </Pressable>
             <Pressable style={styles.navItem} onPress={() => setScreen('shopping')}>
               <ShoppingBag size={24} color="#d1d5db" />
-              <Text style={styles.navLabel}>Shop</Text>
+              <Text style={styles.navLabel}>{t('ui.nav_shop')}</Text>
             </Pressable>
             <Pressable style={styles.navItem} onPress={() => setScreen('onboarding')}>
               <User size={24} color="#d1d5db" />
-              <Text style={styles.navLabel}>Stats</Text>
+              <Text style={styles.navLabel}>{t('ui.nav_stats')}</Text>
             </Pressable>
           </View>
         )}
@@ -1216,8 +1235,8 @@ export default function App() {
                 <ChevronLeft size={24} color="#111827" strokeWidth={3} />
               </Pressable>
               <View style={{ alignItems: 'flex-end' }}>
-                <Text style={styles.stepLabel}>Step {step}/6</Text>
-                <Text style={styles.builderTitle}>プラン作成</Text>
+                <Text style={styles.stepLabel}>{t('ui.step_label', { current: step, total: 6 })}</Text>
+                <Text style={styles.builderTitle}>{t('ui.plan_builder')}</Text>
               </View>
             </View>
 
@@ -1225,7 +1244,7 @@ export default function App() {
 
           {step === 1 && (
             <View style={styles.sectionBlock}>
-              <SectionTitle>何食分作りますか？</SectionTitle>
+              <SectionTitle>{t('ui.servings_question')}</SectionTitle>
               <View style={styles.grid2}>
                 {[2, 5].map((s) => (
                   <Pressable
@@ -1248,7 +1267,7 @@ export default function App() {
                     ]}
                   >
                     <Text style={styles.choiceNumber}>{s}</Text>
-                    <Text style={styles.choiceUnit}>食分</Text>
+                    <Text style={styles.choiceUnit}>{t('ui.servings_unit')}</Text>
                   </Pressable>
                 ))}
               </View>
@@ -1257,7 +1276,7 @@ export default function App() {
 
           {step === 2 && (
             <View style={styles.sectionBlock}>
-              <SectionTitle>ベースを選択</SectionTitle>
+              <SectionTitle>{t('ui.base_select')}</SectionTitle>
               <View style={styles.cardStack}>
                 {POT_BASES.map((base) => (
                   <Pressable
@@ -1289,8 +1308,8 @@ export default function App() {
                       <Image source={POT_BASE_IMAGES[base.id]} style={styles.baseImage} />
                     </View>
                     <View>
-                      <Text style={styles.baseTitle}>{base.name}</Text>
-                      <Text style={styles.baseSubtitle}>{base.description}</Text>
+                      <Text style={styles.baseTitle}>{t(base.name)}</Text>
+                      <Text style={styles.baseSubtitle}>{t(base.description)}</Text>
                     </View>
                   </Pressable>
                 ))}
@@ -1301,7 +1320,7 @@ export default function App() {
           {step === 3 && (
             <View style={styles.sectionBlock}>
               <SectionTitle>
-                タンパク質 (2つ選択)
+                {t('ui.protein_select')}
               </SectionTitle>
               <View style={styles.cardStack}>
                 {getIngredientsForPotBase(currentPlan.potBase || 'yose', 'protein').map((ing) => (
@@ -1333,7 +1352,9 @@ export default function App() {
                     </View>
                     <View style={{ flex: 1 }}>
                       <Text style={styles.ingredientName}>{ing.name}</Text>
-                      <Text style={styles.ingredientMeta}>タンパク質: {ing.pPer100g}g/100g</Text>
+                      <Text style={styles.ingredientMeta}>
+                        {t('ui.protein_meta', { value: ing.pPer100g })}
+                      </Text>
                     </View>
                   </Pressable>
                 ))}
@@ -1346,7 +1367,9 @@ export default function App() {
                   currentPlan.proteins?.length !== 2 && styles.fullButtonDisabled,
                 ]}
               >
-                <Text style={styles.fullButtonText}>次へ ({currentPlan.proteins?.length}/2)</Text>
+                <Text style={styles.fullButtonText}>
+                  {t('ui.next_with_count', { current: currentPlan.proteins?.length || 0 })}
+                </Text>
               </Pressable>
             </View>
           )}
@@ -1354,7 +1377,7 @@ export default function App() {
           {step === 4 && (
             <View style={styles.sectionBlock}>
               <SectionTitle>
-                野菜 (2つ選択)・きのこ (1つ選択)
+                {t('ui.veg_select')}
               </SectionTitle>
               {(() => {
                 const allVeggies = getIngredientsForPotBase(currentPlan.potBase || 'yose', 'veg');
@@ -1370,7 +1393,7 @@ export default function App() {
 
                 return (
                   <>
-                    <Text style={styles.sectionLabel}>野菜を2つ選択</Text>
+                    <Text style={styles.sectionLabel}>{t('ui.veg_select_two')}</Text>
                     <View style={styles.cardStack}>
                       {veggieOptions.map((ing) => (
                         <Pressable
@@ -1409,7 +1432,7 @@ export default function App() {
                       ))}
                     </View>
 
-                    <Text style={styles.sectionLabel}>きのこ類を1つ選択</Text>
+                    <Text style={styles.sectionLabel}>{t('ui.mushroom_select_one')}</Text>
                     <View style={styles.cardStack}>
                       {mushroomOptions.map((ing) => (
                         <Pressable
@@ -1454,7 +1477,10 @@ export default function App() {
                       style={[styles.fullButton, !canProceed && styles.fullButtonDisabled]}
                     >
                       <Text style={styles.fullButtonText}>
-                        次へ (野菜 {selectedVeggies.length}/2・きのこ {selectedMushrooms.length}/1)
+                        {t('ui.next_veg_mushroom', {
+                          veg: selectedVeggies.length,
+                          mush: selectedMushrooms.length,
+                        })}
                       </Text>
                     </Pressable>
                   </>
@@ -1466,7 +1492,7 @@ export default function App() {
           {step === 5 && (
             <View style={styles.sectionBlock}>
               <SectionTitle>
-                炭水化物を1つ選択
+                {t('ui.carb_select')}
               </SectionTitle>
               <View style={styles.cardStack}>
                 {getIngredientsForPotBase(currentPlan.potBase || 'yose', 'carb').map((ing) => (
@@ -1484,7 +1510,7 @@ export default function App() {
                     <Image source={ing.photoSmall ?? ing.photo} style={styles.carbImage} />
                     <View style={{ flex: 1 }}>
                       <Text style={styles.baseTitle}>{ing.name}</Text>
-                      <Text style={styles.baseSubtitle}>{getEffectLead(ing.effect)}</Text>
+                      <Text style={styles.baseSubtitle}>{getEffectLead(t(ing.effect))}</Text>
                     </View>
                   </Pressable>
                 ))}
@@ -1494,12 +1520,12 @@ export default function App() {
 
           {step === 6 && (
             <View style={styles.sectionBlock}>
-              <Text style={styles.commitTitle}>今回のコミット鍋</Text>
+              <Text style={styles.commitTitle}>{t('ui.commit_pot_title')}</Text>
 
               <Card style={styles.darkCard}>
                 <View style={styles.labelRow}>
                   <ShoppingBag size={12} color="#f97316" />
-                  <Text style={styles.darkPanelLabelText}>食材と必要な量</Text>
+                  <Text style={styles.darkPanelLabelText}>{t('ui.ingredient_amounts')}</Text>
                 </View>
                 {buildShoppingEntries(currentPlan).map((entry) => (
                   <View key={entry.id} style={styles.listRow}>
@@ -1514,7 +1540,7 @@ export default function App() {
                     </Text>
                   </View>
                 ))}
-                <Text style={styles.listSectionLabel}>調味料</Text>
+                <Text style={styles.listSectionLabel}>{t('ui.seasonings')}</Text>
                 {getSeasoningEntries(currentPlan).map((seasoning) => (
                   <View key={seasoning.id} style={styles.listRow}>
                     <Text style={styles.listLabel}>{seasoning.name}</Text>
@@ -1528,23 +1554,23 @@ export default function App() {
 
               <View style={styles.cardStack}>
                 <Card style={styles.sideCard}>
-                  <Text style={styles.sideCardTitle}>1食あたりの理想バランス</Text>
-                  <Text style={styles.sideCardNote}>※ 1食=1日の10分の3で計算</Text>
+                  <Text style={styles.sideCardTitle}>{t('ui.ideal_balance_title')}</Text>
+                  <Text style={styles.sideCardNote}>{t('ui.ideal_balance_note')}</Text>
                   <View style={styles.pfcRow}>
                     <View style={styles.pfcCell}>
-                      <Text style={styles.pfcLabel}>タンパク質</Text>
+                      <Text style={styles.pfcLabel}>{t('ui.pfc_protein')}</Text>
                       <Text style={styles.pfcValueDark}>
                         {Math.round(targetPFC.protein * MEAL_SHARE)}g
                       </Text>
                     </View>
                     <View style={styles.pfcCell}>
-                      <Text style={styles.pfcLabel}>脂質</Text>
+                      <Text style={styles.pfcLabel}>{t('ui.pfc_fat')}</Text>
                       <Text style={styles.pfcValueDark}>
                         {Math.round(targetPFC.fat * MEAL_SHARE)}g
                       </Text>
                     </View>
                     <View style={styles.pfcCell}>
-                      <Text style={styles.pfcLabel}>炭水化物</Text>
+                      <Text style={styles.pfcLabel}>{t('ui.pfc_carbs')}</Text>
                       <Text style={styles.pfcValueDark}>
                         {Math.round(targetPFC.carbs * MEAL_SHARE)}g
                       </Text>
@@ -1553,7 +1579,7 @@ export default function App() {
                 </Card>
 
                 <Card style={styles.sideCardAccent}>
-                  <Text style={styles.sideCardTitleAccent}>今回の1食あたりの実績値</Text>
+                  <Text style={styles.sideCardTitleAccent}>{t('ui.actual_balance_title')}</Text>
                   {(() => {
                     const { servings, totalP, totalF, totalC, totalKcal } =
                       calculatePlanTotals(currentPlan);
@@ -1567,21 +1593,21 @@ export default function App() {
                       <>
                         <View style={styles.pfcRow}>
                           <View style={styles.pfcCell}>
-                            <Text style={styles.pfcLabel}>タンパク質</Text>
+                            <Text style={styles.pfcLabel}>{t('ui.pfc_protein')}</Text>
                             <Text style={styles.pfcValueAccent}>{perMealP}g</Text>
                           </View>
                           <View style={styles.pfcCell}>
-                            <Text style={styles.pfcLabel}>脂質</Text>
+                            <Text style={styles.pfcLabel}>{t('ui.pfc_fat')}</Text>
                             <Text style={styles.pfcValueAccent}>{perMealF}g</Text>
                           </View>
                           <View style={styles.pfcCell}>
-                            <Text style={styles.pfcLabel}>炭水化物</Text>
+                            <Text style={styles.pfcLabel}>{t('ui.pfc_carbs')}</Text>
                             <Text style={styles.pfcValueAccent}>{perMealC}g</Text>
                           </View>
                         </View>
                         <View style={styles.pfcRow}>
                           <View style={styles.pfcCell}>
-                            <Text style={styles.pfcLabel}>カロリー</Text>
+                            <Text style={styles.pfcLabel}>{t('ui.stat_calories')}</Text>
                             <Text style={styles.pfcValueAccent}>{perMealKcal}kcal</Text>
                           </View>
                         </View>
@@ -1602,10 +1628,10 @@ export default function App() {
                   }}
                   style={styles.primaryButtonInline}
                 >
-                  <Text style={styles.primaryButtonText}>このプランで確定</Text>
+                  <Text style={styles.primaryButtonText}>{t('ui.confirm_plan')}</Text>
                 </Pressable>
                 <Pressable onPress={() => setStep(1)} style={styles.linkButton}>
-                  <Text style={styles.linkButtonText}>最初からやり直す</Text>
+                  <Text style={styles.linkButtonText}>{t('ui.redo_plan')}</Text>
                 </Pressable>
               </View>
             </View>
@@ -1621,8 +1647,8 @@ export default function App() {
         >
           <View style={styles.modalBackdrop}>
             <View style={styles.modalCard}>
-              <Text style={styles.modalTitle}>注意</Text>
-              <Text style={styles.modalBody}>５食分を作るためには30cm以上の鍋が必要です</Text>
+              <Text style={styles.modalTitle}>{t('ui.modal_attention_title')}</Text>
+              <Text style={styles.modalBody}>{t('ui.modal_five_servings_body')}</Text>
               <Image source={FIVE_SERVINGS_POT_IMAGE} style={styles.modalImage} />
               <Pressable
                 style={styles.modalCheckRow}
@@ -1634,7 +1660,7 @@ export default function App() {
                     skipFiveServingsModal && styles.modalCheckBoxActive,
                   ]}
                 />
-                <Text style={styles.modalCheckLabel}>次回から表示しない</Text>
+                <Text style={styles.modalCheckLabel}>{t('ui.modal_hide_next_time')}</Text>
               </Pressable>
               <Pressable
                 style={styles.modalButton}
@@ -1651,7 +1677,7 @@ export default function App() {
                   setStep(2);
                 }}
               >
-                <Text style={styles.modalButtonText}>OK</Text>
+                <Text style={styles.modalButtonText}>{t('ui.ok')}</Text>
               </Pressable>
             </View>
           </View>
@@ -1665,9 +1691,9 @@ export default function App() {
         >
           <View style={styles.modalBackdrop}>
             <View style={styles.modalCard}>
-              <Text style={styles.modalTitle}>確認</Text>
+              <Text style={styles.modalTitle}>{t('ui.modal_confirm_title')}</Text>
               <Text style={styles.modalBody}>
-                この食材と調味料は、ダッシュボードのSHOPタグに保存されます。買い物の時に見てね！
+                {t('ui.modal_shopping_body')}
               </Text>
               <Pressable
                 style={styles.modalCheckRow}
@@ -1676,7 +1702,7 @@ export default function App() {
                 <View
                   style={[styles.modalCheckBox, skipPlanConfirm && styles.modalCheckBoxActive]}
                 />
-                <Text style={styles.modalCheckLabel}>次回から表示しない</Text>
+                <Text style={styles.modalCheckLabel}>{t('ui.modal_hide_next_time')}</Text>
               </Pressable>
               <Pressable
                 style={styles.modalButton}
@@ -1693,7 +1719,7 @@ export default function App() {
                   handleFinishPlan();
                 }}
               >
-                <Text style={styles.modalButtonText}>OK</Text>
+                <Text style={styles.modalButtonText}>{t('ui.ok')}</Text>
               </Pressable>
             </View>
           </View>
@@ -1712,7 +1738,10 @@ export default function App() {
               <Pressable onPress={() => setScreen('dashboard')} style={styles.squareButtonLight}>
                 <ChevronLeft size={24} color="#111827" strokeWidth={3} />
               </Pressable>
-              <Text style={styles.pageTitle}>筋肉食材の <Text style={styles.pageTitleAccent}>身体への効果</Text></Text>
+              <Text style={styles.pageTitle}>
+                {t('ui.effects_title')}
+                <Text style={styles.pageTitleAccent}>{t('ui.effects_title_accent')}</Text>
+              </Text>
             </View>
 
             <View style={styles.cardStack}>
@@ -1732,11 +1761,11 @@ export default function App() {
                               : styles.tagCarb,
                         ]}
                       >
-                        {ing.category}
+                        {t(`ui.category_${ing.category}`)}
                       </Text>
                     </View>
                     <View style={styles.effectSectionWrap}>
-                      {parseEffectSections(ing.effect).map((section, index) => (
+                      {parseEffectSections(t(ing.effect), t('ui.point')).map((section, index) => (
                         <View key={`${ing.id}-effect-${index}`} style={styles.effectRow}>
                           <Text style={styles.effectTitle}>{section.title}</Text>
                           <Text style={styles.effectBody}>{section.body}</Text>
@@ -1745,19 +1774,19 @@ export default function App() {
                     </View>
                     <View style={styles.statGrid}>
                       <View style={styles.statCell}>
-                        <Text style={styles.statLabel}>カロリー</Text>
+                        <Text style={styles.statLabel}>{t('ui.stat_calories')}</Text>
                         <Text style={styles.statValue}>{ing.kcalPer100g}</Text>
                       </View>
                       <View style={styles.statCell}>
-                        <Text style={styles.statLabel}>タンパク質</Text>
+                        <Text style={styles.statLabel}>{t('ui.pfc_protein')}</Text>
                         <Text style={styles.statValue}>{ing.pPer100g}g</Text>
                       </View>
                       <View style={styles.statCell}>
-                        <Text style={styles.statLabel}>脂質</Text>
+                        <Text style={styles.statLabel}>{t('ui.pfc_fat')}</Text>
                         <Text style={styles.statValue}>{ing.fPer100g}g</Text>
                       </View>
                       <View style={styles.statCell}>
-                        <Text style={styles.statLabel}>炭水化物</Text>
+                        <Text style={styles.statLabel}>{t('ui.pfc_carbs')}</Text>
                         <Text style={styles.statValue}>{ing.cPer100g}g</Text>
                       </View>
                     </View>
@@ -1787,18 +1816,18 @@ export default function App() {
               <Pressable onPress={() => setScreen('dashboard')} style={styles.squareButtonLight}>
                 <ChevronLeft size={24} color="#111827" strokeWidth={3} />
               </Pressable>
-              <Text style={styles.pageTitleSimple}>買い物リスト</Text>
+              <Text style={styles.pageTitleSimple}>{t('ui.shopping_list_title')}</Text>
             </View>
 
           {plans.length === 0 || (shoppingEntries.length === 0 && seasoningEntries.length === 0) ? (
             <View style={styles.emptyState}>
               <ShoppingBag size={80} color="#d1d5db" />
-              <Text style={styles.emptyTitleLarge}>まだ買うものがありません</Text>
+              <Text style={styles.emptyTitleLarge}>{t('ui.shopping_empty_title')}</Text>
             </View>
           ) : (
             <View style={styles.cardStack}>
               <View>
-                <SectionTitle>タンパク質</SectionTitle>
+                <SectionTitle>{t('ui.tab_protein')}</SectionTitle>
                 <View style={styles.cardStack}>
                   {proteinEntries.map((entry) => (
                     <View key={entry.id} style={styles.listCard}>
@@ -1813,7 +1842,7 @@ export default function App() {
               </View>
 
               <View>
-                <SectionTitle>野菜</SectionTitle>
+                <SectionTitle>{t('ui.tab_veg')}</SectionTitle>
                 <View style={styles.cardStack}>
                   {vegEntries.map((entry) => (
                     <View key={entry.id} style={styles.listCard}>
@@ -1828,7 +1857,7 @@ export default function App() {
               </View>
 
               <View>
-                <SectionTitle>炭水化物</SectionTitle>
+                <SectionTitle>{t('ui.tab_carb')}</SectionTitle>
                 <View style={styles.cardStack}>
                   {carbEntries.map((entry) => (
                     <View key={entry.id} style={styles.listCard}>
@@ -1843,7 +1872,7 @@ export default function App() {
               </View>
 
               <View>
-                <SectionTitle>調味料</SectionTitle>
+                <SectionTitle>{t('ui.tab_seasoning')}</SectionTitle>
                 <View style={styles.cardStack}>
                   {seasoningEntries.map((entry) => (
                     <View key={entry.id} style={styles.listCard}>
@@ -1864,7 +1893,7 @@ export default function App() {
                 }}
                 style={styles.primaryButtonInline}
               >
-                <Text style={styles.primaryButtonText}>仕込みモードを開始する</Text>
+                <Text style={styles.primaryButtonText}>{t('ui.start_prep_mode')}</Text>
                 <ChevronRight size={18} color="#ffffff" strokeWidth={3} />
               </Pressable>
             </View>
@@ -1880,9 +1909,9 @@ export default function App() {
         >
           <View style={styles.modalBackdrop}>
             <View style={styles.modalCard}>
-              <Text style={styles.modalTitle}>お知らせ</Text>
+              <Text style={styles.modalTitle}>{t('ui.modal_notice_title')}</Text>
               <Text style={styles.modalBody}>
-                買い物が終わったら下の仕込みモードから自炊をしてね
+                {t('ui.modal_shop_done_body')}
               </Text>
               <Pressable
                 style={styles.modalCheckRow}
@@ -1891,7 +1920,7 @@ export default function App() {
                 <View
                   style={[styles.modalCheckBox, skipShoppingIntro && styles.modalCheckBoxActive]}
                 />
-                <Text style={styles.modalCheckLabel}>次回から表示しない</Text>
+                <Text style={styles.modalCheckLabel}>{t('ui.modal_hide_next_time')}</Text>
               </Pressable>
               <Pressable
                 style={styles.modalButton}
@@ -1907,7 +1936,7 @@ export default function App() {
                   }
                 }}
               >
-                <Text style={styles.modalButtonText}>OK</Text>
+                <Text style={styles.modalButtonText}>{t('ui.ok')}</Text>
               </Pressable>
             </View>
           </View>
@@ -1931,8 +1960,10 @@ export default function App() {
                 <ChevronLeft size={24} color="#111827" strokeWidth={3} />
               </Pressable>
               <View style={{ alignItems: 'flex-end' }}>
-                <Text style={styles.builderTitle}>仕込みモード</Text>
-                <Text style={styles.stepLabel}>Step {cookStep + 1} of 7</Text>
+                <Text style={styles.builderTitle}>{t('ui.prep_mode_title')}</Text>
+                <Text style={styles.stepLabel}>
+                  {t('ui.step_of', { current: cookStep + 1, total: 7 })}
+                </Text>
               </View>
             </View>
 
@@ -1944,9 +1975,9 @@ export default function App() {
                 contentContainerStyle={styles.cookContent}
                 showsVerticalScrollIndicator={false}
               >
-                <Text style={styles.cookTitle}>{currentCookData.title}</Text>
+                <Text style={styles.cookTitle}>{t(currentCookData.titleKey)}</Text>
                 <Image source={currentCookData.photo} style={styles.cookPhoto} />
-                <Text style={styles.cookDesc}>{currentCookData.description}</Text>
+                <Text style={styles.cookDesc}>{t(currentCookData.descriptionKey)}</Text>
 
                 <Card style={styles.tipCard}>
                   <View style={styles.tipIcon}>
@@ -1954,9 +1985,9 @@ export default function App() {
                   </View>
                   <View style={styles.labelRow}>
                     <Target size={12} color="#f97316" />
-                    <Text style={styles.tipLabelText}>コミット・ポイント</Text>
+                    <Text style={styles.tipLabelText}>{t('ui.commit_point')}</Text>
                   </View>
-                  <Text style={styles.tipText}>{currentCookData.tip}</Text>
+                  <Text style={styles.tipText}>{t(currentCookData.tipKey)}</Text>
                 </Card>
               </ScrollView>
             </View>
@@ -1971,7 +2002,9 @@ export default function App() {
               }}
               style={styles.primaryButtonInline}
             >
-              <Text style={styles.primaryButtonText}>{cookStep < 6 ? '次の工程へ' : '仕込み完了！'}</Text>
+              <Text style={styles.primaryButtonText}>
+                {cookStep < 6 ? t('ui.next_step') : t('ui.finish_prep')}
+              </Text>
               <ChevronRight size={18} color="#ffffff" strokeWidth={3} />
             </Pressable>
           </View>
