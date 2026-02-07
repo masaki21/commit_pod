@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   Alert,
+  AppState,
   KeyboardAvoidingView,
   Modal,
   Platform,
@@ -38,6 +39,7 @@ import {
 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { INGREDIENTS, POT_BASES } from './constants';
+import { getDeviceLanguage } from './i18n';
 import { ActivityLevel, Gender, Goal, PFC, Plan, PotBase, UserProfile } from './types';
 import { supabase } from './supabase';
 
@@ -343,7 +345,25 @@ const COOK_STEPS = [
 
 export default function App() {
   const isWeb = Platform.OS === 'web';
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+
+  useEffect(() => {
+    const syncLanguage = () => {
+      const nextLanguage = getDeviceLanguage();
+      if (i18n.language !== nextLanguage) {
+        void i18n.changeLanguage(nextLanguage);
+      }
+    };
+
+    syncLanguage();
+    const subscription = AppState.addEventListener('change', (state) => {
+      if (state === 'active') {
+        syncLanguage();
+      }
+    });
+
+    return () => subscription.remove();
+  }, [i18n]);
   const [screen, setScreen] = useState<
     'splash' | 'onboarding' | 'dashboard' | 'builder' | 'shopping' | 'cook' | 'cards'
   >('splash');

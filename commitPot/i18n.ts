@@ -21,7 +21,17 @@ const normalizeLanguage = (language: string): SupportedLanguage => {
   return SUPPORTED_LANGUAGES.includes(base as SupportedLanguage) ? (base as SupportedLanguage) : 'ja';
 };
 
-const deviceLanguage = normalizeLanguage(Localization.locale || 'ja');
+const getDeviceLanguage = (): SupportedLanguage => {
+  const locales = typeof Localization.getLocales === 'function' ? Localization.getLocales() : [];
+  const candidate =
+    locales[0]?.languageCode ||
+    locales[0]?.languageTag ||
+    (typeof Localization.locale === 'string' ? Localization.locale : '') ||
+    'ja';
+  return normalizeLanguage(candidate);
+};
+
+const deviceLanguage = getDeviceLanguage();
 
 void i18n
   .use(initReactI18next)
@@ -48,3 +58,4 @@ void i18n
   });
 
 export default i18n;
+export { getDeviceLanguage };
