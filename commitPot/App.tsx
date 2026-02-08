@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Alert,
   AppState,
@@ -425,6 +425,7 @@ export default function App() {
     veggies: [],
     carb: '',
   });
+  const cookScrollRef = useRef<ScrollView | null>(null);
 
   const wrapContent = (children: React.ReactNode) =>
     isWeb ? <View style={styles.webContent}>{children}</View> : <>{children}</>;
@@ -504,6 +505,14 @@ export default function App() {
       </Pressable>
     </Modal>
   );
+
+  useEffect(() => {
+    if (screen !== 'cook') return;
+    const id = requestAnimationFrame(() => {
+      cookScrollRef.current?.scrollTo({ y: 0, animated: false });
+    });
+    return () => cancelAnimationFrame(id);
+  }, [cookStep, screen]);
 
   const buildShoppingEntries = (plan: Partial<Plan>): ShoppingEntry[] => {
     const servings = plan.servings || 5;
@@ -1806,9 +1815,15 @@ export default function App() {
           <View style={styles.modalBackdrop}>
             <View style={styles.modalCard}>
               <Text style={styles.modalTitle}>{t('ui.modal_confirm_title')}</Text>
-              <Text style={styles.modalBody}>
-                {t('ui.modal_shopping_body')}
-              </Text>
+              <Text style={styles.modalBody}>{t('ui.modal_plan_saved')}</Text>
+              <View style={styles.modalShopRow}>
+                <Text style={styles.modalBody}>{t('ui.modal_shop_prefix')}</Text>
+                <View style={styles.modalShopBadge}>
+                  <ShoppingBag size={14} color="#f97316" strokeWidth={2.5} />
+                  <Text style={styles.modalShopLabel}>{t('ui.shop_label')}</Text>
+                </View>
+                <Text style={styles.modalBody}>{t('ui.modal_shop_suffix')}</Text>
+              </View>
               <Pressable
                 style={styles.modalCheckRow}
                 onPress={() => setSkipPlanConfirm((prev) => !prev)}
@@ -1830,10 +1845,11 @@ export default function App() {
                   } catch {
                     // ignore storage errors
                   }
-                  handleFinishPlan();
+                  await handleFinishPlan();
+                  setScreen('shopping');
                 }}
               >
-                <Text style={styles.modalButtonText}>{t('ui.ok')}</Text>
+                <Text style={styles.modalButtonText}>{t('ui.modal_go_shop')}</Text>
               </Pressable>
             </View>
           </View>
@@ -1910,6 +1926,9 @@ export default function App() {
             </View>
           </ScrollView>
         )}
+        <Pressable style={styles.floatingBackButton} onPress={() => setScreen('dashboard')}>
+          <ChevronLeft size={22} color="#ffffff" strokeWidth={3} />
+        </Pressable>
       </SafeAreaView>
     );
   }
@@ -2023,7 +2042,10 @@ export default function App() {
         >
           <View style={styles.modalBackdrop}>
             <View style={styles.modalCard}>
-              <Text style={styles.modalTitle}>{t('ui.modal_notice_title')}</Text>
+              <View style={styles.modalTitleRow}>
+                <ChefHat size={16} color="#f97316" strokeWidth={2.5} />
+                <Text style={styles.modalTitle}>{t('ui.modal_notice_title')}</Text>
+              </View>
               <Text style={styles.modalBody}>
                 {t('ui.modal_shop_done_body')}
               </Text>
@@ -2085,6 +2107,7 @@ export default function App() {
 
             <View style={styles.cookCenter}>
               <ScrollView
+                ref={cookScrollRef}
                 style={styles.scrollFlex}
                 contentContainerStyle={styles.cookContent}
                 showsVerticalScrollIndicator={false}
@@ -2481,7 +2504,36 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 10 },
   },
   modalTitle: { fontSize: 18, fontWeight: '800', color: '#111827' },
+  modalTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   modalBody: { fontSize: 14, color: '#6b7280', fontWeight: '600', lineHeight: 20 },
+  modalShopRow: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 6 },
+  modalShopBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 999,
+    backgroundColor: '#fff7ed',
+    borderWidth: 1,
+    borderColor: '#fed7aa',
+  },
+  modalShopLabel: { fontSize: 13, fontWeight: '800', color: '#f97316' },
+  floatingBackButton: {
+    position: 'absolute',
+    right: 20,
+    bottom: 20,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: '#111827',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000000',
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 6 },
+  },
   modalImage: { width: '100%', height: 200, borderRadius: 16 },
   modalCheckRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 4 },
   modalCheckBox: {
