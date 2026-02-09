@@ -13,7 +13,11 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "bundleIdentifier": "com.masakiomae.commitpot",
+      "supportsTablet": true,
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "package": "com.masakiomae.commitpot",
@@ -34,6 +38,12 @@
       "display": "standalone",
       "orientation": "portrait",
       "startUrl": "."
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "6c4349ac-ac65-408e-906b-4bc6e1af83d8"
+      }
+    },
+    "owner": "masaki111"
   }
 }

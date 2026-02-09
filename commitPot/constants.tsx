@@ -54,8 +54,8 @@ export const INGREDIENTS: Ingredient[] = [
     cPer100g: 1,
     kcalPer100g: 111,
     effect: 'effects.p9',
-    photo: require('./assets/food_photos/鶏レバー.jpg'),
-    photoSmall: require('./assets/food_photos/鶏レバー_sm.jpg'),
+    photo: require('./assets/food_photos/chicken_liver.jpg'),
+    photoSmall: require('./assets/food_photos/chicken_liver_sm.jpg'),
     unitWeight: 200,
     unitName: 'units.pack'
   },
