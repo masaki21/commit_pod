@@ -4,7 +4,7 @@
     "slug": "commitPot",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/commit_icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
