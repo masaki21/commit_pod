@@ -13,10 +13,10 @@ const Root = () => {
     Platform.OS === 'web' ? require('@vercel/analytics/react').Analytics : null;
 
   return (
-    <>
+    <React.Fragment>
       <App />
       {Analytics ? <Analytics /> : null}
-    </>
+    </React.Fragment>
   );
 };
 
