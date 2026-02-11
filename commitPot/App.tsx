@@ -1564,7 +1564,13 @@ export default function App() {
               </View>
               <View style={styles.dashboardActions}>
                 {languageButton}
-                <Pressable onPress={() => setScreen('onboarding')} style={styles.roundButton}>
+                <Pressable
+                  onPress={() => {
+                    setOnboardingStep(1);
+                    setScreen('onboarding');
+                  }}
+                  style={styles.roundButton}
+                >
                   <User size={20} color="#9ca3af" />
                 </Pressable>
               </View>
@@ -1680,7 +1686,13 @@ export default function App() {
               <ShoppingBag size={24} color="#d1d5db" />
               <Text style={styles.navLabel}>{t('ui.nav_shop')}</Text>
             </Pressable>
-            <Pressable style={styles.navItem} onPress={() => setScreen('onboarding')}>
+            <Pressable
+              style={styles.navItem}
+              onPress={() => {
+                setOnboardingStep(1);
+                setScreen('onboarding');
+              }}
+            >
               <User size={24} color="#d1d5db" />
               <Text style={styles.navLabel}>{t('ui.nav_stats')}</Text>
             </Pressable>
@@ -2570,7 +2582,6 @@ export default function App() {
             </View>
           </View>
         </Modal>
-        )}
       </SafeAreaView>
     );
   }
@@ -2799,7 +2810,6 @@ export default function App() {
             </View>
           </View>
         </Modal>
-        )}
       </SafeAreaView>
     );
   }
