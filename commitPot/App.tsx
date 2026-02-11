@@ -38,6 +38,7 @@ import {
   User,
   Utensils,
   Zap,
+  X,
 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { INGREDIENTS, POT_BASES } from './constants';
@@ -59,6 +60,16 @@ type NutritionPer100g = {
   pPer100g: number;
   fPer100g: number;
   cPer100g: number;
+};
+
+type PotHistoryEntry = {
+  id: string;
+  createdAt: string;
+  createdAtKey: string;
+  servingsTotal: number;
+  servingsLeft: number;
+  potBase: PotBase;
+  completedAtKey?: string | null;
 };
 
 type SeasoningDefinition = {
@@ -442,12 +453,17 @@ export default function App() {
   const [showShoppingIntro, setShowShoppingIntro] = useState(false);
   const [showPlanShopping, setShowPlanShopping] = useState(false);
   const [showPlanBalance, setShowPlanBalance] = useState(false);
+  const [showStockCalendar, setShowStockCalendar] = useState(false);
   const [showFiveServingsModal, setShowFiveServingsModal] = useState(false);
   const [skipFiveServingsModal, setSkipFiveServingsModal] = useState(false);
   const [skipPlanConfirm, setSkipPlanConfirm] = useState(false);
   const [skipShoppingIntro, setSkipShoppingIntro] = useState(false);
   const [shoppingPlanId, setShoppingPlanId] = useState<string | null>(null);
   const [balancePlanId, setBalancePlanId] = useState<string | null>(null);
+  const [potHistories, setPotHistories] = useState<Record<string, PotHistoryEntry>>({});
+  const [calendarMonthOffset, setCalendarMonthOffset] = useState(0);
+  const [showCalendarDetail, setShowCalendarDetail] = useState(false);
+  const [calendarDetailDateKey, setCalendarDetailDateKey] = useState<string | null>(null);
   const [profile, setProfile] = useState<UserProfile>({
     height: 175,
     weight: 75,
@@ -466,6 +482,8 @@ export default function App() {
     carb: '',
   });
   const cookScrollRef = useRef<ScrollView | null>(null);
+
+  const POT_HISTORY_KEY = 'pot_histories_v1';
 
   const wrapContent = (children: React.ReactNode) =>
     isWeb ? <View style={styles.webContent}>{children}</View> : <>{children}</>;
@@ -513,6 +531,88 @@ export default function App() {
     const needsSpace = /[A-Za-z]/.test(unitName);
     return `${units}${needsSpace ? ' ' : ''}${unitName}`;
   };
+
+  const formatDateKey = (date: Date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const dateNumberFromKey = (key: string) => Number(key.replace(/-/g, ''));
+
+  const dateKeyFromIso = (iso: string) => formatDateKey(new Date(iso));
+
+  const dateFromKey = (key: string) => {
+    const [year, month, day] = key.split('-').map((value) => Number(value));
+    return new Date(year, month - 1, day);
+  };
+
+  const weekdayLabels = useMemo(() => {
+    const formatter = new Intl.DateTimeFormat(i18n.language, { weekday: 'short' });
+    return Array.from({ length: 7 }, (_, index) => formatter.format(new Date(2021, 7, 1 + index)));
+  }, [i18n.language]);
+
+  const calendarMonth = useMemo(() => {
+    const base = new Date();
+    return new Date(base.getFullYear(), base.getMonth() + calendarMonthOffset, 1);
+  }, [calendarMonthOffset]);
+
+  const calendarMonthLabel = useMemo(
+    () =>
+      calendarMonth.toLocaleDateString(i18n.language, {
+        year: 'numeric',
+        month: 'long',
+      }),
+    [calendarMonth, i18n.language]
+  );
+
+  const calendarStats = useMemo(() => {
+    const entries = Object.values(potHistories);
+    const year = calendarMonth.getFullYear();
+    const month = calendarMonth.getMonth();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const stats: Record<string, { totalServings: number; allCompleted: boolean; potCount: number }> = {};
+    for (let day = 1; day <= daysInMonth; day += 1) {
+      const date = new Date(year, month, day);
+      const key = formatDateKey(date);
+      const dayEntries = entries.filter((entry) => entry.createdAtKey === key);
+      const totalServings = dayEntries.reduce((sum, entry) => sum + entry.servingsTotal, 0);
+      const allCompleted =
+        dayEntries.length > 0 && dayEntries.every((entry) => Number(entry.servingsLeft) <= 0);
+      stats[key] = { totalServings, allCompleted, potCount: dayEntries.length };
+    }
+    return stats;
+  }, [calendarMonth, potHistories]);
+
+  const calendarCells = useMemo(() => {
+    const year = calendarMonth.getFullYear();
+    const month = calendarMonth.getMonth();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const firstWeekday = new Date(year, month, 1).getDay();
+    const cells: Array<Date | null> = [];
+    for (let i = 0; i < firstWeekday; i += 1) {
+      cells.push(null);
+    }
+    for (let day = 1; day <= daysInMonth; day += 1) {
+      cells.push(new Date(year, month, day));
+    }
+    return cells;
+  }, [calendarMonth]);
+
+  const getHeatColor = (count: number) => {
+    if (count <= 0) return '#f3f4f6';
+    if (count === 1) return '#bbf7d0';
+    if (count === 2) return '#4ade80';
+    return '#16a34a';
+  };
+
+  const calendarDetailEntries = useMemo(() => {
+    if (!calendarDetailDateKey) return [] as PotHistoryEntry[];
+    return Object.values(potHistories)
+      .filter((entry) => entry.createdAtKey === calendarDetailDateKey)
+      .sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+  }, [calendarDetailDateKey, potHistories]);
 
   const languageButton = (
     <Pressable style={styles.languageButton} onPress={() => setShowLanguageModal(true)}>
@@ -755,6 +855,29 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    let mounted = true;
+    AsyncStorage.getItem(POT_HISTORY_KEY)
+      .then((value) => {
+        if (!mounted) return;
+        if (!value) return;
+        const parsed = JSON.parse(value) as Record<string, PotHistoryEntry>;
+        setPotHistories(parsed);
+      })
+      .catch(() => {
+        // ignore storage errors
+      });
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    AsyncStorage.setItem(POT_HISTORY_KEY, JSON.stringify(potHistories)).catch(() => {
+      // ignore storage errors
+    });
+  }, [potHistories]);
+
+  useEffect(() => {
     if (screen !== 'splash') return;
     if (!authReady) return;
     const timer = setTimeout(() => {
@@ -814,6 +937,45 @@ export default function App() {
     loadPlans();
   }, [session?.user]);
 
+  useEffect(() => {
+    if (plans.length === 0) return;
+    setPotHistories((prev) => {
+      let changed = false;
+      const next = { ...prev };
+      plans.forEach((plan) => {
+        const existing = next[plan.id];
+        const nextLeft = Number.isFinite(plan.remaining) ? plan.remaining : plan.servings;
+        if (!existing) {
+          next[plan.id] = {
+            id: plan.id,
+            createdAt: plan.createdAt,
+            createdAtKey: dateKeyFromIso(plan.createdAt),
+            servingsTotal: plan.servings,
+            servingsLeft: nextLeft,
+            potBase: plan.potBase,
+            completedAtKey: null,
+          };
+          changed = true;
+          return;
+        }
+        if (
+          existing.servingsLeft !== nextLeft ||
+          existing.servingsTotal !== plan.servings ||
+          existing.potBase !== plan.potBase
+        ) {
+          next[plan.id] = {
+            ...existing,
+            servingsLeft: nextLeft,
+            servingsTotal: plan.servings,
+            potBase: plan.potBase,
+          };
+          changed = true;
+        }
+      });
+      return changed ? next : prev;
+    });
+  }, [plans]);
+
   const handleStartBuilder = () => {
     setStep(1);
     setCurrentPlan({ servings: 5, potBase: 'yose', proteins: [], veggies: [], carb: '' });
@@ -848,6 +1010,18 @@ export default function App() {
         .select()
         .single();
       if (!error && data) {
+        setPotHistories((prev) => ({
+          ...prev,
+          [data.id]: {
+            id: data.id,
+            createdAt: data.created_at,
+            createdAtKey: dateKeyFromIso(data.created_at),
+            servingsTotal: data.servings,
+            servingsLeft: data.remaining ?? data.servings,
+            potBase: data.pot_base,
+            completedAtKey: null,
+          },
+        }));
         setPlans([
           {
             id: data.id,
@@ -863,9 +1037,33 @@ export default function App() {
           ...plans,
         ]);
       } else {
+        setPotHistories((prev) => ({
+          ...prev,
+          [newPlan.id]: {
+            id: newPlan.id,
+            createdAt: newPlan.createdAt,
+            createdAtKey: dateKeyFromIso(newPlan.createdAt),
+            servingsTotal: newPlan.servings,
+            servingsLeft: newPlan.remaining,
+            potBase: newPlan.potBase,
+            completedAtKey: null,
+          },
+        }));
         setPlans([newPlan, ...plans]);
       }
     } else {
+      setPotHistories((prev) => ({
+        ...prev,
+        [newPlan.id]: {
+          id: newPlan.id,
+          createdAt: newPlan.createdAt,
+          createdAtKey: dateKeyFromIso(newPlan.createdAt),
+          servingsTotal: newPlan.servings,
+          servingsLeft: newPlan.remaining,
+          potBase: newPlan.potBase,
+          completedAtKey: null,
+        },
+      }));
       setPlans([newPlan, ...plans]);
     }
     setScreen('dashboard');
@@ -895,6 +1093,25 @@ export default function App() {
         Alert.alert(t('alerts.update_failed'), error.message);
         return;
       }
+      const completedAtKey = formatDateKey(new Date());
+      setPotHistories((prev) => {
+        const existing = prev[planId];
+        return {
+          ...prev,
+          [planId]: {
+            ...(existing ?? {
+              id: planId,
+              createdAt: new Date().toISOString(),
+              createdAtKey: completedAtKey,
+              servingsTotal: targetPlan.servings,
+              servingsLeft: 0,
+              potBase: targetPlan.potBase,
+            }),
+            servingsLeft: 0,
+            completedAtKey,
+          },
+        };
+      });
       setPlans((prev) => prev.filter((plan) => plan.id !== planId));
     } else {
       const { data, error } = await supabase
@@ -911,6 +1128,17 @@ export default function App() {
       setPlans((prev) =>
         prev.map((plan) => (plan.id === planId ? { ...plan, remaining: data.remaining } : plan))
       );
+      setPotHistories((prev) => {
+        const existing = prev[planId];
+        if (!existing) return prev;
+        return {
+          ...prev,
+          [planId]: {
+            ...existing,
+            servingsLeft: data.remaining,
+          },
+        };
+      });
     }
 
     Alert.alert(t('alerts.energy_done_title'), t('alerts.energy_done_body'));
@@ -921,6 +1149,25 @@ export default function App() {
       if (session?.user) {
         await supabase.from('plans').delete().eq('id', planId).eq('user_id', session.user.id);
       }
+      const completedAtKey = formatDateKey(new Date());
+      setPotHistories((prev) => {
+        const existing = prev[planId];
+        return {
+          ...prev,
+          [planId]: {
+            ...(existing ?? {
+              id: planId,
+              createdAt: new Date().toISOString(),
+              createdAtKey: completedAtKey,
+              servingsTotal: 0,
+              servingsLeft: 0,
+              potBase: 'yose',
+            }),
+            servingsLeft: 0,
+            completedAtKey,
+          },
+        };
+      });
       setPlans((prev) => prev.filter((plan) => plan.id !== planId));
     };
 
@@ -1417,6 +1664,9 @@ export default function App() {
                 ))}
               </View>
             )}
+            <Pressable style={styles.calendarButton} onPress={() => setShowStockCalendar(true)}>
+              <Text style={styles.calendarButtonText}>{t('ui.calendar_view')}</Text>
+            </Pressable>
           </View>
           </ScrollView>
         )}
@@ -1630,6 +1880,135 @@ export default function App() {
                 </Pressable>
               </View>
             </View>
+          </Modal>
+
+          <Modal
+            visible={showStockCalendar}
+            transparent
+            animationType="fade"
+            onRequestClose={() => setShowStockCalendar(false)}
+          >
+            <View style={styles.modalBackdrop}>
+              <View style={[styles.modalCard, styles.calendarModalCard]}>
+                <View style={styles.modalTitleRow}>
+                  <Text style={styles.modalTitle}>{t('ui.calendar_title')}</Text>
+                  <Pressable onPress={() => setShowStockCalendar(false)} style={styles.iconButton}>
+                    <X size={18} color="#6b7280" />
+                  </Pressable>
+                </View>
+                <View style={styles.calendarNav}>
+                  <Pressable
+                    onPress={() => setCalendarMonthOffset((prev) => prev - 1)}
+                    style={styles.calendarNavButton}
+                  >
+                    <ChevronLeft size={18} color="#6b7280" />
+                  </Pressable>
+                  <Text style={styles.calendarMonthText}>{calendarMonthLabel}</Text>
+                  <Pressable
+                    onPress={() => setCalendarMonthOffset((prev) => prev + 1)}
+                    style={styles.calendarNavButton}
+                  >
+                    <ChevronRight size={18} color="#6b7280" />
+                  </Pressable>
+                </View>
+                <View style={styles.calendarWeekRow}>
+                  {weekdayLabels.map((label) => (
+                    <Text key={label} style={styles.calendarWeekText}>
+                      {label}
+                    </Text>
+                  ))}
+                </View>
+                <View style={styles.calendarGrid}>
+                  {calendarCells.map((date, index) => {
+                    if (!date) {
+                      return <View key={`empty-${index}`} style={styles.calendarCellEmpty} />;
+                    }
+                    const key = formatDateKey(date);
+                    const stat = calendarStats[key];
+                    const totalServings = stat?.totalServings ?? 0;
+                    const allCompleted = stat?.allCompleted ?? false;
+                    const label =
+                      totalServings > 0
+                        ? allCompleted
+                          ? t('ui.calendar_muscle')
+                          : `${totalServings}`
+                        : '';
+                    return (
+                      <Pressable
+                        key={key}
+                        style={styles.calendarCell}
+                        onPress={() => {
+                          if (totalServings <= 0) return;
+                          setCalendarDetailDateKey(key);
+                          setShowCalendarDetail(true);
+                        }}
+                      >
+                        <View
+                          style={[
+                            styles.calendarBadge,
+                            { backgroundColor: getHeatColor(totalServings) },
+                          ]}
+                        >
+                          <Text style={styles.calendarBadgeText}>{label}</Text>
+                        </View>
+                        <Text style={styles.calendarDayText}>{date.getDate()}</Text>
+                      </Pressable>
+                    );
+                  })}
+                </View>
+              </View>
+            </View>
+          </Modal>
+
+          <Modal
+            visible={showCalendarDetail}
+            transparent
+            animationType="slide"
+            onRequestClose={() => setShowCalendarDetail(false)}
+          >
+            <Pressable
+              style={styles.drawerBackdrop}
+              onPress={() => setShowCalendarDetail(false)}
+            >
+              <Pressable style={styles.drawerCard} onPress={() => null}>
+                <View style={styles.modalTitleRow}>
+                  <Text style={styles.modalTitle}>
+                    {calendarDetailDateKey
+                      ? dateFromKey(calendarDetailDateKey).toLocaleDateString(i18n.language)
+                      : t('ui.calendar_title')}
+                  </Text>
+                  <Pressable onPress={() => setShowCalendarDetail(false)} style={styles.iconButton}>
+                    <X size={18} color="#6b7280" />
+                  </Pressable>
+                </View>
+                {calendarDetailEntries.length === 0 ? (
+                  <View style={styles.emptyState}>
+                    <Text style={styles.emptyTitleLarge}>{t('ui.calendar_empty')}</Text>
+                  </View>
+                ) : (
+                  <View style={styles.calendarDetailList}>
+                    {calendarDetailEntries.map((entry) => {
+                      const baseName = t(
+                        POT_BASES.find((b) => b.id === entry.potBase)?.name || ''
+                      );
+                      return (
+                        <View key={entry.id} style={styles.calendarDetailRow}>
+                          <View style={styles.calendarDetailInfo}>
+                            <Text style={styles.calendarDetailTitle}>{baseName}</Text>
+                            <Text style={styles.calendarDetailHint}>
+                              {t('ui.remaining_meals', {
+                                remaining: entry.servingsLeft,
+                                total: entry.servingsTotal,
+                              })}
+                            </Text>
+                          </View>
+                        </View>
+                      );
+                    })}
+                  </View>
+                )}
+              </Pressable>
+            </Pressable>
           </Modal>
         )}
         {languageModal}
@@ -2729,6 +3108,15 @@ const styles = StyleSheet.create({
   planTitle: { fontSize: 18, fontWeight: '800', color: '#111827' },
   darkButton: { backgroundColor: '#111827', paddingVertical: 10, paddingHorizontal: 16, borderRadius: 16 },
   darkButtonText: { color: '#ffffff', fontWeight: '800', fontSize: 12 },
+  calendarButton: {
+    marginTop: 12,
+    alignSelf: 'flex-start',
+    backgroundColor: '#111827',
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 16,
+  },
+  calendarButtonText: { color: '#ffffff', fontWeight: '800', fontSize: 12 },
   bottomNav: {
     position: 'absolute',
     left: 0,
@@ -2845,6 +3233,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 24,
   },
+  drawerBackdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(17,24,39,0.5)',
+    justifyContent: 'flex-end',
+  },
   modalCard: {
     width: '100%',
     maxWidth: 420,
@@ -2861,6 +3254,70 @@ const styles = StyleSheet.create({
     maxWidth: 520,
     maxHeight: '80%',
   },
+  calendarModalCard: {
+    maxWidth: 560,
+  },
+  iconButton: {
+    marginLeft: 'auto',
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#f3f4f6',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  calendarNav: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  calendarNavButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#f3f4f6',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  calendarMonthText: { fontSize: 14, fontWeight: '800', color: '#111827' },
+  calendarWeekRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 8,
+    marginBottom: 6,
+  },
+  calendarWeekText: { width: '14.2857%', textAlign: 'center', fontSize: 10, fontWeight: '700', color: '#9ca3af' },
+  calendarGrid: { flexDirection: 'row', flexWrap: 'wrap' },
+  calendarCell: { width: '14.2857%', alignItems: 'center', marginBottom: 10 },
+  calendarCellEmpty: { width: '14.2857%', height: 40 },
+  calendarBadge: {
+    width: 28,
+    height: 28,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  calendarBadgeText: { fontSize: 11, fontWeight: '800', color: '#0f172a' },
+  calendarDayText: { marginTop: 4, fontSize: 10, fontWeight: '700', color: '#9ca3af' },
+  drawerCard: {
+    backgroundColor: '#ffffff',
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    padding: 20,
+    gap: 12,
+    shadowColor: '#000000',
+    shadowOpacity: 0.2,
+    shadowRadius: 16,
+    shadowOffset: { width: 0, height: -6 },
+  },
+  calendarDetailList: { gap: 10, paddingBottom: 8 },
+  calendarDetailRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 16,
+    backgroundColor: '#f9fafb',
+  },
+  calendarDetailInfo: { flex: 1 },
+  calendarDetailTitle: { fontSize: 14, fontWeight: '800', color: '#111827' },
+  calendarDetailHint: { fontSize: 12, fontWeight: '700', color: '#6b7280', marginTop: 2 },
   modalTitle: { fontSize: 18, fontWeight: '800', color: '#111827' },
   modalTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   modalBody: { fontSize: 14, color: '#6b7280', fontWeight: '600', lineHeight: 20 },
