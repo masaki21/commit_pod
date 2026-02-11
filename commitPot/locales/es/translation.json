@@ -120,12 +120,12 @@
         "description": "Llena la olla a la mitad y hierve a fuego alto."
       },
       "step2": {
-        "title": "Lavar y cortar verduras",
-        "description": "Corta todas las verduras en trozos pequeños."
+        "title": "Lavar y cortar verduras y hongos",
+        "description": "Corta todas las verduras y los hongos en trozos pequeños."
       },
       "step3": {
-        "title": "Acomodar verduras y cocinar",
-        "description": "Empieza por las más duras, tapa y cocina 30 min a fuego medio."
+        "title": "Acomodar verduras y hongos y cocinar",
+        "description": "Empieza por las verduras más duras, tapa y cocina 30 min a fuego medio."
       },
       "step4": {
         "title": "Cortar la proteína",
@@ -137,7 +137,7 @@
       },
       "step6": {
         "title": "Agregar la proteína",
-        "description": "Coloca la proteína sobre las verduras y cocina 10 min a fuego bajo."
+        "description": "Coloca la proteína sobre las verduras y los hongos y cocina 10 min a fuego bajo."
       },
       "step7": {
         "title": "Porcionar y congelar",
@@ -213,10 +213,20 @@
     "miso_mix": "Miso dashi mezclado (Marukome)",
     "chicken_stock": "Caldo de pollo granulado",
     "ginger_tube": "Pasta de jengibre (también sirve fresco)",
-    "shimaya_kimchi": "Shimaya Kona-de-Nabe Dashi: Kimchi intenso",
-    "shimaya_yose": "Shimaya Kona-de-Nabe Dashi: Yose",
+    "shimaya_kimchi": "Caldo de olla comprado (kimchi) para 5 porciones",
+    "shimaya_yose": "Caldo de olla comprado (yose) para 5 porciones",
     "note_small": "una pizca",
-    "note_thin": "si queda soso"
+    "note_thin": "si queda soso",
+    "note_miso_2": "un poco menos de medio cucharón (aprox. 4 cucharadas)",
+    "note_miso_5": "1 cucharón colmado (algo más de la mitad de un paquete de 300 g)",
+    "note_chicken_2": "un pellizco con tres dedos (menos de 1/2 cdta.)",
+    "note_chicken_5": "dos pellizcos firmes con tres dedos (1 cdta. colmada)",
+    "note_ginger_2": "unos 2 cm del tubo",
+    "note_ginger_5": "unos 5 cm del tubo",
+    "note_nabe_2": "usar la cantidad indicada en el envase; Ajinomoto Nabe Cube: 2 cubos",
+    "note_nabe_5": "usar la cantidad indicada en el envase; Ajinomoto Nabe Cube: 5 cubos",
+    "amount_label_2": "2 porciones",
+    "amount_label_5": "5 porciones"
   },
   "ingredients": {
     "chicken_breast": "Pechuga de pollo",

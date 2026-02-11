@@ -120,11 +120,11 @@
         "description": "锅里加到一半水，用大火煮沸。"
       },
       "step2": {
-        "title": "清洗切菜",
-        "description": "把所有蔬菜切成一口大小。"
+        "title": "清洗切蔬菜和蘑菇",
+        "description": "把所有蔬菜和蘑菇切成一口大小。"
       },
       "step3": {
-        "title": "码放蔬菜并炖煮",
+        "title": "码放蔬菜和蘑菇并炖煮",
         "description": "先放不易熟的蔬菜，加盖中火炖30分钟。"
       },
       "step4": {
@@ -137,7 +137,7 @@
       },
       "step6": {
         "title": "放入蛋白质",
-        "description": "把蛋白质铺在蔬菜上，小火煮10分钟。"
+        "description": "把蛋白质铺在蔬菜和蘑菇上，小火煮10分钟。"
       },
       "step7": {
         "title": "分装冷冻",
@@ -199,7 +199,7 @@
   },
   "bases": {
     "names": {
-      "yose": "寄せ锅",
+      "yose": "什锦锅",
       "miso": "味噌锅",
       "kimchi": "泡菜锅"
     },
@@ -213,10 +213,20 @@
     "miso_mix": "混合出汁味噌（Marukome）",
     "chicken_stock": "鸡汤粉",
     "ginger_tube": "姜泥（也可用生姜）",
-    "shimaya_kimchi": "Shimaya 粉de锅底：浓郁泡菜",
-    "shimaya_yose": "Shimaya 粉de锅底：寄せ锅",
+    "shimaya_kimchi": "市售火锅汤底（泡菜锅）5人份",
+    "shimaya_yose": "市售火锅汤底（什锦锅）5人份",
     "note_small": "少许",
-    "note_thin": "味道偏淡时"
+    "note_thin": "味道偏淡时",
+    "note_miso_2": "略少于半勺（约4汤匙）",
+    "note_miso_5": "满满一勺（约300g装的半包多一点）",
+    "note_chicken_2": "三指一小撮（略少于1/2茶匙）",
+    "note_chicken_5": "三指两小撮（满满1茶匙）",
+    "note_ginger_2": "挤出约2厘米",
+    "note_ginger_5": "挤出约5厘米",
+    "note_nabe_2": "按包装说明用量；味之素锅魔方用2块",
+    "note_nabe_5": "按包装说明用量；味之素锅魔方用5块",
+    "amount_label_2": "2人份",
+    "amount_label_5": "5人份"
   },
   "ingredients": {
     "chicken_breast": "鸡胸肉",

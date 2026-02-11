@@ -120,12 +120,12 @@
         "description": "Riempi la pentola a metà e porta a bollore a fuoco alto."
       },
       "step2": {
-        "title": "Lava e taglia le verdure",
-        "description": "Taglia tutte le verdure a pezzetti."
+        "title": "Lava e taglia verdure e funghi",
+        "description": "Taglia tutte le verdure e i funghi a pezzetti."
       },
       "step3": {
-        "title": "Metti le verdure e fai sobbollire",
-        "description": "Inizia con quelle più dure, copri e cuoci 30 min a fuoco medio."
+        "title": "Metti verdure e funghi e fai sobbollire",
+        "description": "Inizia con le verdure più dure, copri e cuoci 30 min a fuoco medio."
       },
       "step4": {
         "title": "Taglia le proteine",
@@ -137,7 +137,7 @@
       },
       "step6": {
         "title": "Aggiungi le proteine",
-        "description": "Metti le proteine sopra le verdure e cuoci 10 min a fuoco basso."
+        "description": "Metti le proteine sopra le verdure e i funghi e cuoci 10 min a fuoco basso."
       },
       "step7": {
         "title": "Porziona e congela",
@@ -213,10 +213,20 @@
     "miso_mix": "Miso dashi misto (Marukome)",
     "chicken_stock": "Granulare di brodo di pollo",
     "ginger_tube": "Pasta di zenzero (va bene anche fresco)",
-    "shimaya_kimchi": "Shimaya Kona-de-Nabe Dashi: Kimchi intenso",
-    "shimaya_yose": "Shimaya Kona-de-Nabe Dashi: Yose",
+    "shimaya_kimchi": "Brodo per hot pot pronto (kimchi) per 5 porzioni",
+    "shimaya_yose": "Brodo per hot pot pronto (yose) per 5 porzioni",
     "note_small": "un pizzico",
-    "note_thin": "se il sapore è leggero"
+    "note_thin": "se il sapore è leggero",
+    "note_miso_2": "poco meno di mezzo mestolo (circa 4 cucchiai)",
+    "note_miso_5": "1 mestolo colmo (poco più della metà di una confezione da 300 g)",
+    "note_chicken_2": "un pizzico con tre dita (poco meno di 1/2 cucchiaino)",
+    "note_chicken_5": "due pizzichi decisi con tre dita (1 cucchiaino colmo)",
+    "note_ginger_2": "circa 2 cm dal tubetto",
+    "note_ginger_5": "circa 5 cm dal tubetto",
+    "note_nabe_2": "seguire la quantità indicata in confezione; Ajinomoto Nabe Cube: 2 cubetti",
+    "note_nabe_5": "seguire la quantità indicata in confezione; Ajinomoto Nabe Cube: 5 cubetti",
+    "amount_label_2": "2 porzioni",
+    "amount_label_5": "5 porzioni"
   },
   "ingredients": {
     "chicken_breast": "Petto di pollo",

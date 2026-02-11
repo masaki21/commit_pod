@@ -12,8 +12,8 @@ import {
   Text,
   TextInput,
   View,
-  Image,
 } from 'react-native';
+import { Image } from 'expo-image';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Session } from '@supabase/supabase-js';
 import {
@@ -67,6 +67,8 @@ type SeasoningDefinition = {
   gramsByServings: Record<ServingCount, number>;
   nutrition: NutritionPer100g;
   note?: string;
+  noteByServings?: Partial<Record<ServingCount, string>>;
+  amountLabelByServings?: Partial<Record<ServingCount, string>>;
 };
 
 const POT_BASE_INGREDIENT_IDS: Partial<Record<PotBase, Record<IngredientCategory, string[]>>> = {
@@ -108,19 +110,30 @@ const POT_BASE_SEASONINGS: Record<PotBase, SeasoningDefinition[]> = {
       name: 'seasonings.miso_mix',
       gramsByServings: { 2: 70, 5: 175 },
       nutrition: { kcalPer100g: 194, pPer100g: 10.8, fPer100g: 4.1, cPer100g: 27.1 },
+      noteByServings: {
+        2: 'seasonings.note_miso_2',
+        5: 'seasonings.note_miso_5',
+      },
     },
     {
       id: 's_chicken',
       name: 'seasonings.chicken_stock',
       gramsByServings: { 2: 2, 5: 5 },
       nutrition: { kcalPer100g: 0, pPer100g: 0, fPer100g: 0, cPer100g: 0 },
-      note: 'seasonings.note_small',
+      noteByServings: {
+        2: 'seasonings.note_chicken_2',
+        5: 'seasonings.note_chicken_5',
+      },
     },
     {
       id: 's_ginger',
       name: 'seasonings.ginger_tube',
       gramsByServings: { 2: 2, 5: 5 },
       nutrition: { kcalPer100g: 0, pPer100g: 0, fPer100g: 0, cPer100g: 0 },
+      noteByServings: {
+        2: 'seasonings.note_ginger_2',
+        5: 'seasonings.note_ginger_5',
+      },
     },
   ],
   kimchi: [
@@ -129,13 +142,24 @@ const POT_BASE_SEASONINGS: Record<PotBase, SeasoningDefinition[]> = {
       name: 'seasonings.shimaya_kimchi',
       gramsByServings: { 2: 20, 5: 50 },
       nutrition: SHIMAYA_POWDER_NUTRITION,
+      amountLabelByServings: {
+        2: 'seasonings.amount_label_2',
+        5: 'seasonings.amount_label_5',
+      },
+      noteByServings: {
+        2: 'seasonings.note_nabe_2',
+        5: 'seasonings.note_nabe_5',
+      },
     },
     {
       id: 's_chicken',
       name: 'seasonings.chicken_stock',
       gramsByServings: { 2: 2, 5: 5 },
       nutrition: { kcalPer100g: 0, pPer100g: 0, fPer100g: 0, cPer100g: 0 },
-      note: 'seasonings.note_thin',
+      noteByServings: {
+        2: 'seasonings.note_chicken_2',
+        5: 'seasonings.note_chicken_5',
+      },
     },
   ],
   yose: [
@@ -144,13 +168,24 @@ const POT_BASE_SEASONINGS: Record<PotBase, SeasoningDefinition[]> = {
       name: 'seasonings.shimaya_yose',
       gramsByServings: { 2: 20, 5: 50 },
       nutrition: SHIMAYA_POWDER_NUTRITION,
+      amountLabelByServings: {
+        2: 'seasonings.amount_label_2',
+        5: 'seasonings.amount_label_5',
+      },
+      noteByServings: {
+        2: 'seasonings.note_nabe_2',
+        5: 'seasonings.note_nabe_5',
+      },
     },
     {
       id: 's_chicken',
       name: 'seasonings.chicken_stock',
       gramsByServings: { 2: 2, 5: 5 },
       nutrition: { kcalPer100g: 0, pPer100g: 0, fPer100g: 0, cPer100g: 0 },
-      note: 'seasonings.note_thin',
+      noteByServings: {
+        2: 'seasonings.note_chicken_2',
+        5: 'seasonings.note_chicken_5',
+      },
     },
   ],
 };
@@ -217,6 +252,7 @@ type SeasoningEntry = {
   id: string;
   name: string;
   grams: number;
+  amountLabel?: string;
   note?: string;
   nutrition: NutritionPer100g;
 };
@@ -404,10 +440,14 @@ export default function App() {
   const [authError, setAuthError] = useState<string | null>(null);
   const [showPlanConfirm, setShowPlanConfirm] = useState(false);
   const [showShoppingIntro, setShowShoppingIntro] = useState(false);
+  const [showPlanShopping, setShowPlanShopping] = useState(false);
+  const [showPlanBalance, setShowPlanBalance] = useState(false);
   const [showFiveServingsModal, setShowFiveServingsModal] = useState(false);
   const [skipFiveServingsModal, setSkipFiveServingsModal] = useState(false);
   const [skipPlanConfirm, setSkipPlanConfirm] = useState(false);
   const [skipShoppingIntro, setSkipShoppingIntro] = useState(false);
+  const [shoppingPlanId, setShoppingPlanId] = useState<string | null>(null);
+  const [balancePlanId, setBalancePlanId] = useState<string | null>(null);
   const [profile, setProfile] = useState<UserProfile>({
     height: 175,
     weight: 75,
@@ -574,19 +614,30 @@ export default function App() {
   const getSeasoningEntries = (plan: Partial<Plan>): SeasoningEntry[] => {
     const potBase = (plan.potBase || 'yose') as PotBase;
     const servings = (plan.servings === 2 ? 2 : 5) as ServingCount;
-    return (POT_BASE_SEASONINGS[potBase] || []).map((seasoning) => ({
-      id: seasoning.id,
-      name: t(seasoning.name),
-      grams: seasoning.gramsByServings[servings],
-      note: seasoning.note ? t(seasoning.note) : undefined,
-      nutrition: seasoning.nutrition,
-    }));
+    return (POT_BASE_SEASONINGS[potBase] || []).map((seasoning) => {
+      const amountLabelKey = seasoning.amountLabelByServings?.[servings];
+      return {
+        id: seasoning.id,
+        name: t(seasoning.name),
+        grams: seasoning.gramsByServings[servings],
+        amountLabel: amountLabelKey ? t(amountLabelKey) : undefined,
+        note: seasoning.noteByServings?.[servings]
+          ? t(seasoning.noteByServings[servings] as string)
+          : seasoning.note
+            ? t(seasoning.note)
+            : undefined,
+        nutrition: seasoning.nutrition,
+      };
+    });
   };
 
-  const calculatePlanTotals = (plan: Partial<Plan>) => {
+  const calculatePlanTotals = (
+    plan: Partial<Plan>,
+    overrideTargetPFC: typeof targetPFC = targetPFC
+  ) => {
     const servings = plan.servings || 5;
-    const totalTargetP = targetPFC.protein * MEAL_SHARE * servings;
-    const totalTargetC = targetPFC.carbs * MEAL_SHARE * servings;
+    const totalTargetP = overrideTargetPFC.protein * MEAL_SHARE * servings;
+    const totalTargetC = overrideTargetPFC.carbs * MEAL_SHARE * servings;
     const vegPerMeal = profile.goal === 'bulk' ? 200 : profile.goal === 'recomp' ? 225 : 250;
     const totalVegG = vegPerMeal * servings;
 
@@ -643,6 +694,13 @@ export default function App() {
     return { servings, totalP, totalF, totalC, totalKcal };
   };
 
+  const selectedShoppingPlan = shoppingPlanId
+    ? plans.find((plan) => plan.id === shoppingPlanId)
+    : null;
+  const selectedBalancePlan = balancePlanId
+    ? plans.find((plan) => plan.id === balancePlanId)
+    : null;
+
   useEffect(() => {
     supabase.auth
       .getSession()
@@ -697,11 +755,13 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    if (screen === 'splash') {
-      const timer = setTimeout(() => setScreen('onboarding'), 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [screen]);
+    if (screen !== 'splash') return;
+    if (!authReady) return;
+    const timer = setTimeout(() => {
+      setScreen(session?.user ? 'dashboard' : 'onboarding');
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, [screen, authReady, session?.user]);
 
   useEffect(() => {
     if (screen === 'shopping' && !skipShoppingIntro) {
@@ -1290,9 +1350,22 @@ export default function App() {
             ) : (
               <View style={styles.cardStack}>
                 {plans.map((plan) => (
-                  <Card key={plan.id}>
-                    <View style={styles.planRow}>
-                      <View style={{ flex: 1 }}>
+                  <Pressable
+                    key={plan.id}
+                    onPress={() => {
+                      setBalancePlanId(plan.id);
+                      setShowPlanBalance(true);
+                    }}
+                  >
+                    <Card>
+                      <View style={styles.planRow}>
+                      <Image
+                        source={POT_BASE_IMAGES[(plan.potBase || 'yose') as PotBase]}
+                        style={styles.planBaseImage}
+                        contentFit="cover"
+                        transition={150}
+                      />
+                      <View style={styles.planInfo}>
                         <View style={styles.planTagRow}>
                           <Text style={styles.planTag}>
                             {t(POT_BASES.find((b) => b.id === plan.potBase)?.name || '')}
@@ -1309,15 +1382,38 @@ export default function App() {
                           </Text>
                       </View>
                       <View style={styles.planActions}>
-                        <Pressable onPress={() => handleDeletePlan(plan.id)} style={styles.lightButton}>
+                        <Pressable
+                          onPress={(event) => {
+                            event.stopPropagation();
+                            handleDeletePlan(plan.id);
+                          }}
+                          style={styles.lightButton}
+                        >
                           <Trash2 size={16} color="#6b7280" />
                         </Pressable>
-                        <Pressable onPress={() => consumeServing(plan.id)} style={styles.darkButton}>
+                        <Pressable
+                          onPress={(event) => {
+                            event.stopPropagation();
+                            setShoppingPlanId(plan.id);
+                            setShowPlanShopping(true);
+                          }}
+                          style={styles.shopButton}
+                        >
+                          <Text style={styles.shopButtonText}>{t('ui.shop_label')}</Text>
+                        </Pressable>
+                        <Pressable
+                          onPress={(event) => {
+                            event.stopPropagation();
+                            consumeServing(plan.id);
+                          }}
+                          style={styles.darkButton}
+                        >
                           <Text style={styles.darkButtonText}>{t('ui.ate')}</Text>
                         </Pressable>
                       </View>
-                    </View>
-                  </Card>
+                      </View>
+                    </Card>
+                  </Pressable>
                 ))}
               </View>
             )}
@@ -1339,6 +1435,202 @@ export default function App() {
               <Text style={styles.navLabel}>{t('ui.nav_stats')}</Text>
             </Pressable>
           </View>
+
+          <Modal
+            visible={showPlanShopping}
+            transparent
+            animationType="fade"
+            onRequestClose={() => setShowPlanShopping(false)}
+          >
+            <View style={styles.modalBackdrop}>
+              <View style={[styles.modalCard, styles.modalCardLarge]}>
+                <View style={styles.modalTitleRow}>
+                  <ShoppingBag size={16} color="#f97316" strokeWidth={2.5} />
+                  <Text style={styles.modalTitle}>{t('ui.shopping_list_title')}</Text>
+                </View>
+                <ScrollView showsVerticalScrollIndicator={false}>
+                  {(() => {
+                    const plan = selectedShoppingPlan;
+                    const shoppingEntries = plan ? buildShoppingEntries(plan) : [];
+                    const seasoningEntries = plan ? getSeasoningEntries(plan) : [];
+                    const proteinEntries = shoppingEntries.filter((entry) => entry.category === 'protein');
+                    const vegEntries = shoppingEntries.filter((entry) => entry.category === 'veg');
+                    const carbEntries = shoppingEntries.filter((entry) => entry.category === 'carb');
+
+                    if (!plan || (shoppingEntries.length === 0 && seasoningEntries.length === 0)) {
+                      return (
+                        <View style={styles.emptyState}>
+                          <ShoppingBag size={60} color="#d1d5db" />
+                          <Text style={styles.emptyTitleLarge}>{t('ui.shopping_empty_title')}</Text>
+                        </View>
+                      );
+                    }
+
+                    return (
+                      <View style={styles.cardStack}>
+                        <View>
+                          <SectionTitle>{t('ui.tab_protein')}</SectionTitle>
+                          <View style={styles.cardStack}>
+                            {proteinEntries.map((entry) => (
+                              <View key={entry.id} style={styles.listCard}>
+                                <Text style={styles.listCardTitle}>{entry.name}</Text>
+                                <Text style={styles.listCardHint}>
+                                  {entry.roundedGrams}g
+                                  {entry.units ? `（${formatUnits(entry.units, entry.unitName)}）` : ''}
+                                </Text>
+                              </View>
+                            ))}
+                          </View>
+                        </View>
+
+                        <View>
+                          <SectionTitle>{t('ui.tab_veg')}</SectionTitle>
+                          <View style={styles.cardStack}>
+                            {vegEntries.map((entry) => (
+                              <View key={entry.id} style={styles.listCard}>
+                                <Text style={styles.listCardTitle}>{entry.name}</Text>
+                                <Text style={styles.listCardHint}>
+                                  {entry.roundedGrams}g
+                                  {entry.units ? `（${formatUnits(entry.units, entry.unitName)}）` : ''}
+                                </Text>
+                              </View>
+                            ))}
+                          </View>
+                        </View>
+
+                        <View>
+                          <SectionTitle>{t('ui.tab_carb')}</SectionTitle>
+                          <View style={styles.cardStack}>
+                            {carbEntries.map((entry) => (
+                              <View key={entry.id} style={styles.listCard}>
+                                <Text style={styles.listCardTitle}>{entry.name}</Text>
+                                <Text style={styles.listCardHint}>
+                                  {entry.roundedGrams}g
+                                  {entry.units ? `（${formatUnits(entry.units, entry.unitName)}）` : ''}
+                                </Text>
+                              </View>
+                            ))}
+                          </View>
+                        </View>
+
+                        <View>
+                          <SectionTitle>{t('ui.tab_seasoning')}</SectionTitle>
+                          <View style={styles.cardStack}>
+                            {seasoningEntries.map((entry) => (
+                              <View key={entry.id} style={styles.listCard}>
+                                <Text style={styles.listCardTitle}>{entry.name}</Text>
+                                <Text style={styles.listCardHint}>
+                                  {entry.amountLabel ?? `${entry.grams}g`}
+                                  {entry.note ? `（${entry.note}）` : ''}
+                                </Text>
+                              </View>
+                            ))}
+                          </View>
+                        </View>
+                      </View>
+                    );
+                  })()}
+                </ScrollView>
+                <Pressable style={styles.modalButton} onPress={() => setShowPlanShopping(false)}>
+                  <Text style={styles.modalButtonText}>{t('ui.ok')}</Text>
+                </Pressable>
+              </View>
+            </View>
+          </Modal>
+
+          <Modal
+            visible={showPlanBalance}
+            transparent
+            animationType="fade"
+            onRequestClose={() => setShowPlanBalance(false)}
+          >
+            <View style={styles.modalBackdrop}>
+              <View style={[styles.modalCard, styles.modalCardLarge]}>
+                <View style={styles.modalTitleRow}>
+                  <ChefHat size={16} color="#f97316" strokeWidth={2.5} />
+                  <Text style={styles.modalTitle}>
+                    {selectedBalancePlan
+                      ? t(POT_BASES.find((b) => b.id === selectedBalancePlan.potBase)?.name || '')
+                      : t('ui.ideal_balance_title')}
+                  </Text>
+                </View>
+                {(() => {
+                  if (!selectedBalancePlan) {
+                    return (
+                      <View style={styles.emptyState}>
+                        <Text style={styles.emptyTitleLarge}>{t('ui.shopping_empty_title')}</Text>
+                      </View>
+                    );
+                  }
+
+                  const planTargetPFC = selectedBalancePlan.targetPFC ?? targetPFC;
+                  const { servings, totalP, totalF, totalC, totalKcal } =
+                    calculatePlanTotals(selectedBalancePlan, planTargetPFC);
+
+                  const perMealP = Math.round(totalP / servings);
+                  const perMealF = Math.round(totalF / servings);
+                  const perMealC = Math.round(totalC / servings);
+                  const perMealKcal = Math.round(totalKcal / servings);
+
+                  return (
+                    <View style={styles.cardStack}>
+                      <Card style={styles.sideCard}>
+                        <Text style={styles.sideCardTitle}>{t('ui.ideal_balance_title')}</Text>
+                        <Text style={styles.sideCardNote}>{t('ui.ideal_balance_note')}</Text>
+                        <View style={styles.pfcRow}>
+                          <View style={styles.pfcCell}>
+                            <Text style={styles.pfcLabel}>{t('ui.pfc_protein')}</Text>
+                            <Text style={styles.pfcValueDark}>
+                              {Math.round(planTargetPFC.protein * MEAL_SHARE)}g
+                            </Text>
+                          </View>
+                          <View style={styles.pfcCell}>
+                            <Text style={styles.pfcLabel}>{t('ui.pfc_fat')}</Text>
+                            <Text style={styles.pfcValueDark}>
+                              {Math.round(planTargetPFC.fat * MEAL_SHARE)}g
+                            </Text>
+                          </View>
+                          <View style={styles.pfcCell}>
+                            <Text style={styles.pfcLabel}>{t('ui.pfc_carbs')}</Text>
+                            <Text style={styles.pfcValueDark}>
+                              {Math.round(planTargetPFC.carbs * MEAL_SHARE)}g
+                            </Text>
+                          </View>
+                        </View>
+                      </Card>
+
+                      <Card style={styles.sideCardAccent}>
+                        <Text style={styles.sideCardTitleAccent}>{t('ui.actual_balance_title')}</Text>
+                        <View style={styles.pfcRow}>
+                          <View style={styles.pfcCell}>
+                            <Text style={styles.pfcLabel}>{t('ui.pfc_protein')}</Text>
+                            <Text style={styles.pfcValueAccent}>{perMealP}g</Text>
+                          </View>
+                          <View style={styles.pfcCell}>
+                            <Text style={styles.pfcLabel}>{t('ui.pfc_fat')}</Text>
+                            <Text style={styles.pfcValueAccent}>{perMealF}g</Text>
+                          </View>
+                          <View style={styles.pfcCell}>
+                            <Text style={styles.pfcLabel}>{t('ui.pfc_carbs')}</Text>
+                            <Text style={styles.pfcValueAccent}>{perMealC}g</Text>
+                          </View>
+                        </View>
+                        <View style={styles.pfcRow}>
+                          <View style={styles.pfcCell}>
+                            <Text style={styles.pfcLabel}>{t('ui.stat_calories')}</Text>
+                            <Text style={styles.pfcValueAccent}>{perMealKcal}kcal</Text>
+                          </View>
+                        </View>
+                      </Card>
+                    </View>
+                  );
+                })()}
+                <Pressable style={styles.modalButton} onPress={() => setShowPlanBalance(false)}>
+                  <Text style={styles.modalButtonText}>{t('ui.ok')}</Text>
+                </Pressable>
+              </View>
+            </View>
+          </Modal>
         )}
         {languageModal}
       </SafeAreaView>
@@ -1428,7 +1720,7 @@ export default function App() {
                     ]}
                   >
                     <View style={styles.baseIcon}>
-                      <Image source={POT_BASE_IMAGES[base.id]} style={styles.baseImage} />
+                      <Image source={POT_BASE_IMAGES[base.id]} style={styles.baseImage} contentFit="cover" transition={150} />
                     </View>
                     <View>
                       <Text style={styles.baseTitle}>{t(base.name)}</Text>
@@ -1456,17 +1748,27 @@ export default function App() {
                           ...currentPlan,
                           proteins: currentPlan.proteins?.filter((p) => p !== ing.id),
                         });
-                      } else if ((currentPlan.proteins?.length || 0) < 2) {
+                      } else {
+                        const nextProteins = [...(currentPlan.proteins || [])];
+                        if (nextProteins.length >= 2) {
+                          nextProteins.shift();
+                        }
+                        nextProteins.push(ing.id);
                         setCurrentPlan({
                           ...currentPlan,
-                          proteins: [...(currentPlan.proteins || []), ing.id],
+                          proteins: nextProteins,
                         });
                       }
                     }}
                     style={[styles.baseRow, currentPlan.proteins?.includes(ing.id) && styles.baseRowActive]}
                   >
                     <View>
-                      <Image source={ing.photoSmall ?? ing.photo} style={styles.ingredientRowImage} />
+                      <Image
+                        source={ing.photoSmall ?? ing.photo}
+                        style={styles.ingredientRowImage}
+                        contentFit="cover"
+                        transition={150}
+                      />
                       {currentPlan.proteins?.includes(ing.id) && (
                         <View style={styles.checkBadge}>
                           <CheckCircle2 size={16} color="#ffffff" strokeWidth={3} />
@@ -1528,10 +1830,20 @@ export default function App() {
                                 ...currentPlan,
                                 veggies: currentPlan.veggies?.filter((p) => p !== ing.id),
                               });
-                            } else if (selectedVeggies.length < 2) {
+                            } else {
+                              const nextVeggies = [...(currentPlan.veggies || [])];
+                              const veggieIds = nextVeggies.filter((id) => !MUSHROOM_IDS.has(id));
+                              if (veggieIds.length >= 2) {
+                                const toRemove = veggieIds[0];
+                                const removeIndex = nextVeggies.indexOf(toRemove);
+                                if (removeIndex >= 0) {
+                                  nextVeggies.splice(removeIndex, 1);
+                                }
+                              }
+                              nextVeggies.push(ing.id);
                               setCurrentPlan({
                                 ...currentPlan,
-                                veggies: [...(currentPlan.veggies || []), ing.id],
+                                veggies: nextVeggies,
                               });
                             }
                           }}
@@ -1541,7 +1853,12 @@ export default function App() {
                           ]}
                         >
                           <View>
-                            <Image source={ing.photoSmall ?? ing.photo} style={styles.ingredientRowImage} />
+                            <Image
+                              source={ing.photoSmall ?? ing.photo}
+                              style={styles.ingredientRowImage}
+                              contentFit="cover"
+                              transition={150}
+                            />
                             {currentPlan.veggies?.includes(ing.id) && (
                               <View style={styles.checkBadge}>
                                 <CheckCircle2 size={16} color="#ffffff" strokeWidth={3} />
@@ -1567,10 +1884,20 @@ export default function App() {
                                 ...currentPlan,
                                 veggies: currentPlan.veggies?.filter((p) => p !== ing.id),
                               });
-                            } else if (selectedMushrooms.length < 1) {
+                            } else {
+                              const nextVeggies = [...(currentPlan.veggies || [])];
+                              const mushroomIds = nextVeggies.filter((id) => MUSHROOM_IDS.has(id));
+                              if (mushroomIds.length >= 1) {
+                                const toRemove = mushroomIds[0];
+                                const removeIndex = nextVeggies.indexOf(toRemove);
+                                if (removeIndex >= 0) {
+                                  nextVeggies.splice(removeIndex, 1);
+                                }
+                              }
+                              nextVeggies.push(ing.id);
                               setCurrentPlan({
                                 ...currentPlan,
-                                veggies: [...(currentPlan.veggies || []), ing.id],
+                                veggies: nextVeggies,
                               });
                             }
                           }}
@@ -1580,7 +1907,12 @@ export default function App() {
                           ]}
                         >
                           <View>
-                            <Image source={ing.photoSmall ?? ing.photo} style={styles.ingredientRowImage} />
+                            <Image
+                              source={ing.photoSmall ?? ing.photo}
+                              style={styles.ingredientRowImage}
+                              contentFit="cover"
+                              transition={150}
+                            />
                             {currentPlan.veggies?.includes(ing.id) && (
                               <View style={styles.checkBadge}>
                                 <CheckCircle2 size={16} color="#ffffff" strokeWidth={3} />
@@ -1630,7 +1962,12 @@ export default function App() {
                       currentPlan.carb === ing.id && styles.baseRowActive,
                     ]}
                   >
-                    <Image source={ing.photoSmall ?? ing.photo} style={styles.carbImage} />
+                    <Image
+                      source={ing.photoSmall ?? ing.photo}
+                      style={styles.carbImage}
+                      contentFit="cover"
+                      transition={150}
+                    />
                     <View style={{ flex: 1 }}>
                       <Text style={styles.baseTitle}>{t(ing.name)}</Text>
                       <Text style={styles.baseSubtitle}>{getEffectLead(t(ing.effect))}</Text>
@@ -1668,7 +2005,7 @@ export default function App() {
                   <View key={seasoning.id} style={styles.listRow}>
                     <Text style={styles.listLabel}>{seasoning.name}</Text>
                     <Text style={styles.listValue}>
-                      {seasoning.grams}g
+                      {seasoning.amountLabel ?? `${seasoning.grams}g`}
                       {seasoning.note ? <Text style={styles.listUnit}>（{seasoning.note}）</Text> : null}
                     </Text>
                   </View>
@@ -1772,7 +2109,7 @@ export default function App() {
             <View style={styles.modalCard}>
               <Text style={styles.modalTitle}>{t('ui.modal_attention_title')}</Text>
               <Text style={styles.modalBody}>{t('ui.modal_five_servings_body')}</Text>
-              <Image source={FIVE_SERVINGS_POT_IMAGE} style={styles.modalImage} />
+              <Image source={FIVE_SERVINGS_POT_IMAGE} style={styles.modalImage} contentFit="cover" transition={150} />
               <Pressable
                 style={styles.modalCheckRow}
                 onPress={() => setSkipFiveServingsModal((prev) => !prev)}
@@ -1877,7 +2214,13 @@ export default function App() {
             <View style={styles.cardStack}>
               {INGREDIENTS.map((ing) => (
                 <Card key={ing.id} style={styles.bigCard}>
-                  <Image source={ing.photo} style={styles.bigImage} />
+                  <Image
+                    source={ing.photo}
+                    placeholder={ing.photoSmall ?? ing.photo}
+                    style={styles.bigImage}
+                    contentFit="cover"
+                    transition={200}
+                  />
                   <View style={styles.bigCardBody}>
                     <View style={styles.cardHeaderRow}>
                       <Text style={styles.cardTitle}>{t(ing.name)}</Text>
@@ -2011,7 +2354,7 @@ export default function App() {
                     <View key={entry.id} style={styles.listCard}>
                       <Text style={styles.listCardTitle}>{entry.name}</Text>
                       <Text style={styles.listCardHint}>
-                        {entry.grams}g
+                        {entry.amountLabel ?? `${entry.grams}g`}
                         {entry.note ? `（${entry.note}）` : ''}
                       </Text>
                     </View>
@@ -2113,7 +2456,7 @@ export default function App() {
                 showsVerticalScrollIndicator={false}
               >
                 <Text style={styles.cookTitle}>{t(currentCookData.titleKey)}</Text>
-                <Image source={currentCookData.photo} style={styles.cookPhoto} />
+                <Image source={currentCookData.photo} style={styles.cookPhoto} contentFit="cover" transition={200} />
                 <Text style={styles.cookDesc}>{t(currentCookData.descriptionKey)}</Text>
 
                 <Card style={styles.tipCard}>
@@ -2362,6 +2705,8 @@ const styles = StyleSheet.create({
   emptyText: { marginTop: 6, color: '#d1d5db', fontSize: 12, textAlign: 'center' },
   cardStack: { gap: 12 },
   planRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  planBaseImage: { width: 52, height: 52, borderRadius: 18, marginRight: 12 },
+  planInfo: { flex: 1 },
   planActions: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   lightButton: {
     backgroundColor: '#f3f4f6',
@@ -2369,6 +2714,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     borderRadius: 14,
   },
+  shopButton: {
+    backgroundColor: '#fff7ed',
+    borderWidth: 1,
+    borderColor: '#fed7aa',
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    borderRadius: 14,
+  },
+  shopButtonText: { color: '#f97316', fontWeight: '800', fontSize: 11 },
   planTagRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 6 },
   planTag: { backgroundColor: '#ffedd5', color: '#c2410c', fontSize: 10, fontWeight: '800', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 999 },
   planDate: { color: '#d1d5db', fontSize: 10, fontWeight: '700' },
@@ -2502,6 +2856,10 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.15,
     shadowRadius: 20,
     shadowOffset: { width: 0, height: 10 },
+  },
+  modalCardLarge: {
+    maxWidth: 520,
+    maxHeight: '80%',
   },
   modalTitle: { fontSize: 18, fontWeight: '800', color: '#111827' },
   modalTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },

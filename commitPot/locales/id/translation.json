@@ -120,11 +120,11 @@
         "description": "Isi pot sekitar setengah, didihkan dengan api besar."
       },
       "step2": {
-        "title": "Cuci dan potong sayur",
-        "description": "Potong semua sayur ukuran sekali makan."
+        "title": "Cuci dan potong sayur dan jamur",
+        "description": "Potong semua sayur dan jamur ukuran sekali makan."
       },
       "step3": {
-        "title": "Susun sayur dan rebus",
+        "title": "Susun sayur dan jamur lalu rebus",
         "description": "Mulai dari sayur yang keras, tutup dan rebus 30 menit api sedang."
       },
       "step4": {
@@ -137,7 +137,7 @@
       },
       "step6": {
         "title": "Masukkan protein",
-        "description": "Letakkan protein di atas sayur, rebus 10 menit api kecil."
+        "description": "Letakkan protein di atas sayur dan jamur, rebus 10 menit api kecil."
       },
       "step7": {
         "title": "Bagi porsi dan bekukan",
@@ -213,10 +213,20 @@
     "miso_mix": "Miso dashi campur (Marukome)",
     "chicken_stock": "Kaldu ayam granula",
     "ginger_tube": "Pasta jahe (jahe segar juga ok)",
-    "shimaya_kimchi": "Shimaya Kona-de-Nabe Dashi: Kimchi rich",
-    "shimaya_yose": "Shimaya Kona-de-Nabe Dashi: Yose",
+    "shimaya_kimchi": "Kaldu hot pot siap pakai (kimchi) untuk 5 porsi",
+    "shimaya_yose": "Kaldu hot pot siap pakai (yose) untuk 5 porsi",
     "note_small": "sejumput",
-    "note_thin": "kalau rasanya agak hambar"
+    "note_thin": "kalau rasanya agak hambar",
+    "note_miso_2": "sedikit kurang dari setengah sendok sayur (sekitar 4 sdm)",
+    "note_miso_5": "1 sendok sayur penuh (sedikit lebih dari setengah kemasan 300 g)",
+    "note_chicken_2": "sejumput tiga jari (sedikit kurang 1/2 sdt)",
+    "note_chicken_5": "dua sejumput mantap dengan tiga jari (1 sdt penuh)",
+    "note_ginger_2": "sekitar 2 cm dari tube",
+    "note_ginger_5": "sekitar 5 cm dari tube",
+    "note_nabe_2": "ikuti takaran pada kemasan; Ajinomoto Nabe Cube: 2 kubus",
+    "note_nabe_5": "ikuti takaran pada kemasan; Ajinomoto Nabe Cube: 5 kubus",
+    "amount_label_2": "2 porsi",
+    "amount_label_5": "5 porsi"
   },
   "ingredients": {
     "chicken_breast": "Dada ayam",

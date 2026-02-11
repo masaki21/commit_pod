@@ -120,12 +120,12 @@
         "description": "Encha a panela até a metade e ferva em fogo alto."
       },
       "step2": {
-        "title": "Lavar e cortar os legumes",
-        "description": "Corte todos os legumes em pedaços pequenos."
+        "title": "Lavar e cortar os legumes e cogumelos",
+        "description": "Corte todos os legumes e os cogumelos em pedaços pequenos."
       },
       "step3": {
-        "title": "Acomodar legumes e cozinhar",
-        "description": "Comece pelos mais duros, tampe e cozinhe 30 min em fogo médio."
+        "title": "Acomodar legumes e cogumelos e cozinhar",
+        "description": "Comece pelos legumes mais duros, tampe e cozinhe 30 min em fogo médio."
       },
       "step4": {
         "title": "Cortar a proteína",
@@ -137,7 +137,7 @@
       },
       "step6": {
         "title": "Adicionar a proteína",
-        "description": "Coloque a proteína sobre os legumes e cozinhe 10 min em fogo baixo."
+        "description": "Coloque a proteína sobre os legumes e os cogumelos e cozinhe 10 min em fogo baixo."
       },
       "step7": {
         "title": "Porcionar e congelar",
@@ -213,10 +213,20 @@
     "miso_mix": "Miso dashi misto (Marukome)",
     "chicken_stock": "Caldo de frango granulado",
     "ginger_tube": "Pasta de gengibre (fresco também serve)",
-    "shimaya_kimchi": "Shimaya Kona-de-Nabe Dashi: Kimchi intenso",
-    "shimaya_yose": "Shimaya Kona-de-Nabe Dashi: Yose",
+    "shimaya_kimchi": "Caldo pronto para hot pot (kimchi) para 5 porções",
+    "shimaya_yose": "Caldo pronto para hot pot (yose) para 5 porções",
     "note_small": "uma pitada",
-    "note_thin": "se o sabor estiver fraco"
+    "note_thin": "se o sabor estiver fraco",
+    "note_miso_2": "um pouco menos de meia concha (aprox. 4 colheres de sopa)",
+    "note_miso_5": "1 concha cheia (um pouco mais da metade de um pacote de 300 g)",
+    "note_chicken_2": "uma pitada com três dedos (pouco menos de 1/2 colh. chá)",
+    "note_chicken_5": "duas pitadas firmes com três dedos (1 colh. chá cheia)",
+    "note_ginger_2": "cerca de 2 cm do tubo",
+    "note_ginger_5": "cerca de 5 cm do tubo",
+    "note_nabe_2": "use a quantidade da embalagem; Ajinomoto Nabe Cube: 2 cubos",
+    "note_nabe_5": "use a quantidade da embalagem; Ajinomoto Nabe Cube: 5 cubos",
+    "amount_label_2": "2 porções",
+    "amount_label_5": "5 porções"
   },
   "ingredients": {
     "chicken_breast": "Peito de frango",

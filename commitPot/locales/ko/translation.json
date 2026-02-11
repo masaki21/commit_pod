@@ -120,12 +120,12 @@
         "description": "냄비에 물을 반 정도 넣고 센 불로 끓여요."
       },
       "step2": {
-        "title": "야채 씻고 자르기",
-        "description": "모든 야채를 한입 크기로 잘라요."
+        "title": "채소와 버섯 씻고 자르기",
+        "description": "모든 채소와 버섯을 한입 크기로 잘라요."
       },
       "step3": {
-        "title": "야채 넣고 끓이기",
-        "description": "익기 어려운 야채부터 넣고 뚜껑을 덮어 중불 30분."
+        "title": "채소와 버섯 넣고 끓이기",
+        "description": "익기 어려운 채소부터 넣고 뚜껑을 덮어 중불 30분."
       },
       "step4": {
         "title": "단백질 한입 크기로",
@@ -137,7 +137,7 @@
       },
       "step6": {
         "title": "단백질 올리기",
-        "description": "야채 위에 단백질을 올리고 약불로 10분 끓여요."
+        "description": "채소와 버섯 위에 단백질을 올리고 약불로 10분 끓여요."
       },
       "step7": {
         "title": "소분 후 냉동",
@@ -213,10 +213,20 @@
     "miso_mix": "다시 혼합 된장(마루코메)",
     "chicken_stock": "치킨스톡 가루",
     "ginger_tube": "생강 튜브(생강도 OK)",
-    "shimaya_kimchi": "시마야 분말 나베다시: 진한 김치",
-    "shimaya_yose": "시마야 분말 나베다시: 요세",
+    "shimaya_kimchi": "시판 나베 육수(김치나베) 5인분",
+    "shimaya_yose": "시판 나베 육수(요세나베) 5인분",
     "note_small": "조금",
-    "note_thin": "간이 약할 때"
+    "note_thin": "간이 약할 때",
+    "note_miso_2": "국자 반보다 조금 적게(약 4큰술)",
+    "note_miso_5": "국자 수북이 1국자(300g 팩의 절반 조금 넘게)",
+    "note_chicken_2": "세 손가락으로 한 꼬집(약 1/2작은술 조금 적게)",
+    "note_chicken_5": "세 손가락으로 두 번 꽉 집기(수북한 1작은술)",
+    "note_ginger_2": "튜브에서 2cm",
+    "note_ginger_5": "튜브에서 5cm",
+    "note_nabe_2": "포장지 기준량, 아지노모토 나베 큐브면 2개",
+    "note_nabe_5": "포장지 기준량, 아지노모토 나베 큐브면 5개",
+    "amount_label_2": "2인분",
+    "amount_label_5": "5인분"
   },
   "ingredients": {
     "chicken_breast": "닭가슴살",

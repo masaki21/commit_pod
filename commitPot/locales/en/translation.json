@@ -120,11 +120,11 @@
         "description": "Fill the pot about halfway and bring it to a boil on high heat."
       },
       "step2": {
-        "title": "Wash and cut veggies",
-        "description": "Cut all veggies into bite-size pieces."
+        "title": "Wash and cut veggies and mushrooms",
+        "description": "Cut all veggies and mushrooms into bite-size pieces."
       },
       "step3": {
-        "title": "Pack veggies and simmer",
+        "title": "Pack veggies and mushrooms and simmer",
         "description": "Start with tougher veggies, cover, and simmer for 30 minutes on medium heat."
       },
       "step4": {
@@ -137,7 +137,7 @@
       },
       "step6": {
         "title": "Layer in protein",
-        "description": "Place protein on top of veggies and simmer on low for 10 minutes."
+        "description": "Place protein on top of veggies and mushrooms and simmer on low for 10 minutes."
       },
       "step7": {
         "title": "Portion and freeze",
@@ -213,10 +213,20 @@
     "miso_mix": "Mixed dashi miso (Marukome)",
     "chicken_stock": "Chicken stock granules",
     "ginger_tube": "Ginger paste (fresh ok)",
-    "shimaya_kimchi": "Shimaya Kona-de-Nabe Dashi: Rich Kimchi",
-    "shimaya_yose": "Shimaya Kona-de-Nabe Dashi: Yose",
+    "shimaya_kimchi": "Store-bought hot pot broth (Kimchi) for 5 servings",
+    "shimaya_yose": "Store-bought hot pot broth (Yose) for 5 servings",
     "note_small": "a pinch",
-    "note_thin": "if the flavor is too light"
+    "note_thin": "if the flavor is too light",
+    "note_miso_2": "slightly under half a ladle (about 4 tbsp)",
+    "note_miso_5": "heaping 1 ladle (a bit over half of a 300g pack)",
+    "note_chicken_2": "a pinch with three fingers (just under 1/2 tsp)",
+    "note_chicken_5": "two firm three-finger pinches (heaping 1 tsp)",
+    "note_ginger_2": "about 2 cm from the tube",
+    "note_ginger_5": "about 5 cm from the tube",
+    "note_nabe_2": "use the package amount; for Ajinomoto Nabe Cube, 2 cubes",
+    "note_nabe_5": "use the package amount; for Ajinomoto Nabe Cube, 5 cubes",
+    "amount_label_2": "2 servings",
+    "amount_label_5": "5 servings"
   },
   "ingredients": {
     "chicken_breast": "Chicken breast",

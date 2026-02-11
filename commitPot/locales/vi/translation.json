@@ -120,11 +120,11 @@
         "description": "Đổ nước khoảng nửa nồi và đun sôi lửa lớn."
       },
       "step2": {
-        "title": "Rửa và cắt rau",
-        "description": "Cắt tất cả rau thành miếng vừa ăn."
+        "title": "Rửa và cắt rau và nấm",
+        "description": "Cắt tất cả rau và nấm thành miếng vừa ăn."
       },
       "step3": {
-        "title": "Xếp rau và hầm",
+        "title": "Xếp rau và nấm rồi hầm",
         "description": "Cho rau lâu chín vào trước, đậy nắp và hầm 30 phút lửa vừa."
       },
       "step4": {
@@ -137,7 +137,7 @@
       },
       "step6": {
         "title": "Xếp đạm vào nồi",
-        "description": "Đặt đạm lên trên rau và đun lửa nhỏ 10 phút."
+        "description": "Đặt đạm lên trên rau và nấm, đun lửa nhỏ 10 phút."
       },
       "step7": {
         "title": "Chia phần và đông lạnh",
@@ -213,10 +213,20 @@
     "miso_mix": "Miso dashi trộn (Marukome)",
     "chicken_stock": "Hạt nêm gà",
     "ginger_tube": "Gừng tuýp (gừng tươi cũng được)",
-    "shimaya_kimchi": "Shimaya Kona-de-Nabe Dashi: Kimchi đậm vị",
-    "shimaya_yose": "Shimaya Kona-de-Nabe Dashi: Yose",
+    "shimaya_kimchi": "Nước lẩu mua sẵn (kimchi) cho 5 khẩu phần",
+    "shimaya_yose": "Nước lẩu mua sẵn (yose) cho 5 khẩu phần",
     "note_small": "một chút",
-    "note_thin": "nếu vị hơi nhạt"
+    "note_thin": "nếu vị hơi nhạt",
+    "note_miso_2": "hơi ít hơn nửa muôi (khoảng 4 thìa canh)",
+    "note_miso_5": "1 muôi đầy (hơn nửa gói 300 g một chút)",
+    "note_chicken_2": "một nhúm bằng ba ngón tay (hơi ít hơn 1/2 thìa cà phê)",
+    "note_chicken_5": "hai nhúm chắc bằng ba ngón tay (1 thìa cà phê đầy)",
+    "note_ginger_2": "khoảng 2 cm từ tuýp",
+    "note_ginger_5": "khoảng 5 cm từ tuýp",
+    "note_nabe_2": "theo lượng trên bao bì; Ajinomoto Nabe Cube: 2 viên",
+    "note_nabe_5": "theo lượng trên bao bì; Ajinomoto Nabe Cube: 5 viên",
+    "amount_label_2": "2 khẩu phần",
+    "amount_label_5": "5 khẩu phần"
   },
   "ingredients": {
     "chicken_breast": "Ức gà",
