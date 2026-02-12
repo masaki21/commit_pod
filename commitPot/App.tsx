@@ -464,6 +464,7 @@ export default function App() {
   const [calendarMonthOffset, setCalendarMonthOffset] = useState(0);
   const [showCalendarDetail, setShowCalendarDetail] = useState(false);
   const [calendarDetailDateKey, setCalendarDetailDateKey] = useState<string | null>(null);
+  const [showValidationErrors, setShowValidationErrors] = useState(false);
   const [profile, setProfile] = useState<UserProfile>({
     height: 175,
     weight: 75,
@@ -484,6 +485,21 @@ export default function App() {
   const cookScrollRef = useRef<ScrollView | null>(null);
 
   const POT_HISTORY_KEY = 'pot_histories_v1';
+  const PROFILE_LIMITS = {
+    height: { min: 120, max: 250 },
+    weight: { min: 30, max: 230 },
+    age: { min: 12, max: 100 },
+  };
+  const parseNumericInput = (text: string) => {
+    const digits = text.replace(/[^0-9]/g, '');
+    return digits ? Number(digits) : 0;
+  };
+
+  useEffect(() => {
+    if (screen === 'onboarding') {
+      setShowValidationErrors(false);
+    }
+  }, [screen, onboardingStep]);
 
   const wrapContent = (children: React.ReactNode) =>
     isWeb ? <View style={styles.webContent}>{children}</View> : <>{children}</>;
@@ -1314,8 +1330,12 @@ export default function App() {
   }
 
   if (screen === 'onboarding') {
-    const canProceedStep1 =
-      profile.height > 0 && profile.weight > 0 && profile.age > 0 && profile.gender;
+    const isHeightValid =
+      profile.height >= PROFILE_LIMITS.height.min && profile.height <= PROFILE_LIMITS.height.max;
+    const isWeightValid =
+      profile.weight >= PROFILE_LIMITS.weight.min && profile.weight <= PROFILE_LIMITS.weight.max;
+    const isAgeValid = profile.age >= PROFILE_LIMITS.age.min && profile.age <= PROFILE_LIMITS.age.max;
+    const canProceedStep1 = isHeightValid && isWeightValid && isAgeValid && profile.gender;
 
     return (
       <SafeAreaView style={[styles.safeArea, isWeb && styles.webRoot]}>
@@ -1367,20 +1387,40 @@ export default function App() {
                 <Card style={styles.flexCard}>
                   <Text style={styles.label}>{t('ui.label_height')}</Text>
                   <TextInput
-                    value={String(profile.height)}
-                    onChangeText={(text) => setProfile({ ...profile, height: Number(text || 0) })}
+                    value={Number.isFinite(profile.height) && profile.height > 0 ? String(profile.height) : ''}
+                    onChangeText={(text) =>
+                      setProfile({ ...profile, height: parseNumericInput(text) })
+                    }
                     keyboardType="number-pad"
                     style={styles.input}
                   />
+                  {showValidationErrors && !isHeightValid && (
+                    <Text style={styles.validationText}>
+                      {t('ui.validation_height_range', {
+                        min: PROFILE_LIMITS.height.min,
+                        max: PROFILE_LIMITS.height.max,
+                      })}
+                    </Text>
+                  )}
                 </Card>
                 <Card style={styles.flexCard}>
                   <Text style={styles.label}>{t('ui.label_weight')}</Text>
                   <TextInput
-                    value={String(profile.weight)}
-                    onChangeText={(text) => setProfile({ ...profile, weight: Number(text || 0) })}
+                    value={Number.isFinite(profile.weight) && profile.weight > 0 ? String(profile.weight) : ''}
+                    onChangeText={(text) =>
+                      setProfile({ ...profile, weight: parseNumericInput(text) })
+                    }
                     keyboardType="number-pad"
                     style={styles.input}
                   />
+                  {showValidationErrors && !isWeightValid && (
+                    <Text style={styles.validationText}>
+                      {t('ui.validation_weight_range', {
+                        min: PROFILE_LIMITS.weight.min,
+                        max: PROFILE_LIMITS.weight.max,
+                      })}
+                    </Text>
+                  )}
                 </Card>
               </View>
 
@@ -1388,11 +1428,21 @@ export default function App() {
                 <Card style={styles.flexCard}>
                   <Text style={styles.label}>{t('ui.label_age')}</Text>
                   <TextInput
-                    value={String(profile.age)}
-                    onChangeText={(text) => setProfile({ ...profile, age: Number(text || 0) })}
+                    value={Number.isFinite(profile.age) && profile.age > 0 ? String(profile.age) : ''}
+                    onChangeText={(text) =>
+                      setProfile({ ...profile, age: parseNumericInput(text) })
+                    }
                     keyboardType="number-pad"
                     style={styles.input}
                   />
+                  {showValidationErrors && !isAgeValid && (
+                    <Text style={styles.validationText}>
+                      {t('ui.validation_age_range', {
+                        min: PROFILE_LIMITS.age.min,
+                        max: PROFILE_LIMITS.age.max,
+                      })}
+                    </Text>
+                  )}
                 </Card>
                 <Card style={styles.flexCard}>
                   <Text style={styles.label}>{t('ui.label_gender')}</Text>
@@ -1527,9 +1577,18 @@ export default function App() {
 
         {onboardingStep === 1 ? (
           <Pressable
-            style={[styles.primaryButton, !canProceedStep1 && styles.primaryButtonDisabled]}
-            onPress={() => setOnboardingStep(2)}
-            disabled={!canProceedStep1}
+            style={[
+              styles.primaryButton,
+              showValidationErrors && !canProceedStep1 && styles.primaryButtonDisabled,
+            ]}
+            onPress={() => {
+              if (canProceedStep1) {
+                setShowValidationErrors(false);
+                setOnboardingStep(2);
+              } else {
+                setShowValidationErrors(true);
+              }
+            }}
           >
             <Text style={styles.primaryButtonText}>{t('ui.next')}</Text>
             <ChevronRight size={18} color="#ffffff" strokeWidth={3} />
@@ -2965,6 +3024,7 @@ const styles = StyleSheet.create({
   flexCard: { flex: 1 },
   label: { fontSize: 14, fontWeight: '700', color: '#6b7280' },
   input: { fontSize: 28, fontWeight: '800', color: '#111827', marginTop: 8 },
+  validationText: { marginTop: 6, fontSize: 12, color: '#dc2626', fontWeight: '600' },
   goalRow: { flexDirection: 'row', marginTop: 12, gap: 10 },
   goalButton: { flex: 1, paddingVertical: 10, borderRadius: 16, borderWidth: 2 },
   goalButtonActive: { backgroundColor: '#f97316', borderColor: '#f97316' },
