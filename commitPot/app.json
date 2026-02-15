@@ -14,7 +14,7 @@
     },
     "ios": {
       "bundleIdentifier": "com.masakiomae.commitpot",
-      "buildNumber": "5",
+      "buildNumber": "6",
       "supportsTablet": false,
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
