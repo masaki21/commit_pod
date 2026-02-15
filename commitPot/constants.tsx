@@ -298,6 +298,62 @@ export const INGREDIENTS: Ingredient[] = [
     unitWeight: 150,
     unitName: 'units.piece'
   },
+  {
+    id: 'v14',
+    name: 'ingredients.nira',
+    category: 'veg',
+    pPer100g: 1.7,
+    fPer100g: 0.3,
+    cPer100g: 4,
+    kcalPer100g: 21,
+    effect: 'effects.v14',
+    photo: require('./assets/food_photos/food_028.jpg'),
+    photoSmall: require('./assets/food_photos/food_028_sm.jpg'),
+    unitWeight: 100,
+    unitName: 'units.bunch'
+  },
+  {
+    id: 'v15',
+    name: 'ingredients.burdock',
+    category: 'veg',
+    pPer100g: 1.8,
+    fPer100g: 0.1,
+    cPer100g: 15.4,
+    kcalPer100g: 65,
+    effect: 'effects.v15',
+    photo: require('./assets/food_photos/food_029.jpg'),
+    photoSmall: require('./assets/food_photos/food_029_sm.jpg'),
+    unitWeight: 150,
+    unitName: 'units.stick'
+  },
+  {
+    id: 'v16',
+    name: 'ingredients.shiitake',
+    category: 'veg',
+    pPer100g: 2.2,
+    fPer100g: 0.5,
+    cPer100g: 4.9,
+    kcalPer100g: 25,
+    effect: 'effects.v16',
+    photo: require('./assets/food_photos/food_030.jpg'),
+    photoSmall: require('./assets/food_photos/food_030_sm.jpg'),
+    unitWeight: 100,
+    unitName: 'units.pack'
+  },
+  {
+    id: 'v17',
+    name: 'ingredients.eringi',
+    category: 'veg',
+    pPer100g: 2.8,
+    fPer100g: 0.4,
+    cPer100g: 6,
+    kcalPer100g: 24,
+    effect: 'effects.v17',
+    photo: require('./assets/food_photos/food_031.jpg'),
+    photoSmall: require('./assets/food_photos/food_031_sm.jpg'),
+    unitWeight: 100,
+    unitName: 'units.pack'
+  },
   // Carbs
   {
     id: 'c2',
