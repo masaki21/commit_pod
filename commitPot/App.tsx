@@ -1,6 +1,7 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Alert,
+  Animated,
   AppState,
   KeyboardAvoidingView,
   Modal,
@@ -51,6 +52,9 @@ import {
 } from './i18n';
 import { ActivityLevel, Gender, Goal, PFC, Plan, PotBase, UserProfile } from './types';
 import { supabase } from './supabase';
+import { useAutoVegSelector } from './src/hooks/useAutoVegSelector';
+import { createRecommendationDependencies } from './src/services/recommendation/createRecommendationDependencies';
+import { getAlternativeIngredientSuggestion } from './src/services/recommendation/getAlternativeIngredientSuggestion';
 
 type IngredientCategory = 'protein' | 'veg' | 'carb';
 type ServingCount = 2 | 5;
@@ -85,17 +89,17 @@ type SeasoningDefinition = {
 const POT_BASE_INGREDIENT_IDS: Partial<Record<PotBase, Record<IngredientCategory, string[]>>> = {
   miso: {
     protein: ['p1', 'p2', 'p6', 'p4', 'p7'],
-    veg: ['v4', 'v5', 'v6', 'v7', 'v8', 'v9', 'v10'],
+    veg: ['v4', 'v5', 'v6', 'v7', 'v8', 'v9', 'v10', 'v14', 'v15', 'v16', 'v17'],
     carb: ['c3', 'c4', 'c5'],
   },
   kimchi: {
     protein: ['p1', 'p8', 'p9', 'p4', 'p7'],
-    veg: ['v1', 'v5', 'v11', 'v7', 'v8', 'v3', 'v10'],
+    veg: ['v1', 'v5', 'v11', 'v7', 'v8', 'v3', 'v10', 'v14', 'v15', 'v16', 'v17'],
     carb: ['c3', 'c6', 'c7'],
   },
   yose: {
     protein: ['p1', 'p10', 'p3', 'p2', 'p4'],
-    veg: ['v1', 'v12', 'v11', 'v13', 'v8', 'v3', 'v9'],
+    veg: ['v1', 'v12', 'v11', 'v13', 'v8', 'v3', 'v9', 'v14', 'v15', 'v16', 'v17'],
     carb: ['c3', 'c2', 'c5'],
   },
 };
@@ -248,7 +252,7 @@ const getEffectLead = (effect: string): string => {
   return firstSentence?.trim() || effect;
 };
 
-const MUSHROOM_IDS = new Set(['v3', 'v9', 'v10']);
+const MUSHROOM_IDS = new Set(['v3', 'v9', 'v10', 'v16', 'v17']);
 
 type ShoppingEntry = {
   id: string;
@@ -257,6 +261,14 @@ type ShoppingEntry = {
   roundedGrams: number;
   units: number | null;
   unitName: string | undefined;
+};
+
+type SynergySummaryMode = 'ai' | 'custom';
+
+type SynergySummaryState = {
+  reason: string;
+  mode: SynergySummaryMode;
+  recommendedVeggies: string[];
 };
 
 type SeasoningEntry = {
@@ -483,6 +495,19 @@ export default function App() {
     carb: '',
   });
   const cookScrollRef = useRef<ScrollView | null>(null);
+  const recommendationRequestRef = useRef(0);
+  const [autoRecommendedVeggies, setAutoRecommendedVeggies] = useState<string[]>([]);
+  const [showAutoVegToast, setShowAutoVegToast] = useState(false);
+  const autoVegToastOpacity = useRef(new Animated.Value(0)).current;
+  const autoVegToastTranslateY = useRef(new Animated.Value(-12)).current;
+  const autoVegToastScale = useRef(new Animated.Value(0.97)).current;
+  const autoVegToastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [replacingIngredientId, setReplacingIngredientId] = useState<string | null>(null);
+  const [synergySummary, setSynergySummary] = useState<SynergySummaryState | null>(null);
+  const synergyCardOpacity = useRef(new Animated.Value(0)).current;
+  const synergyCardScale = useRef(new Animated.Value(0.98)).current;
+  const recommendationDependencies = useMemo(() => createRecommendationDependencies(), []);
+  const { recommend } = useAutoVegSelector(recommendationDependencies);
 
   const POT_HISTORY_KEY = 'pot_histories_v1';
   const PROFILE_LIMITS = {
@@ -669,6 +694,195 @@ export default function App() {
     });
     return () => cancelAnimationFrame(id);
   }, [cookStep, screen]);
+
+  useEffect(() => {
+    return () => {
+      if (autoVegToastTimerRef.current) {
+        clearTimeout(autoVegToastTimerRef.current);
+      }
+    };
+  }, []);
+
+  const animateSynergySummaryCard = useCallback(() => {
+    synergyCardOpacity.stopAnimation();
+    synergyCardScale.stopAnimation();
+    synergyCardOpacity.setValue(0);
+    synergyCardScale.setValue(0.98);
+    Animated.parallel([
+      Animated.timing(synergyCardOpacity, {
+        toValue: 1,
+        duration: 220,
+        useNativeDriver: true,
+      }),
+      Animated.spring(synergyCardScale, {
+        toValue: 1,
+        damping: 14,
+        stiffness: 220,
+        mass: 0.8,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, [synergyCardOpacity, synergyCardScale]);
+
+  const markSynergySummaryAsCustom = useCallback(() => {
+    setSynergySummary((prev) => {
+      if (!prev || prev.mode === 'custom') return prev;
+      return { ...prev, mode: 'custom' };
+    });
+  }, []);
+
+  const triggerAutoVegFeedback = useCallback((recommendedIds: string[]) => {
+    setAutoRecommendedVeggies(recommendedIds);
+    setShowAutoVegToast(true);
+    if (autoVegToastTimerRef.current) {
+      clearTimeout(autoVegToastTimerRef.current);
+    }
+    autoVegToastOpacity.stopAnimation();
+    autoVegToastTranslateY.stopAnimation();
+    autoVegToastScale.stopAnimation();
+    autoVegToastOpacity.setValue(0);
+    autoVegToastTranslateY.setValue(-12);
+    autoVegToastScale.setValue(0.97);
+
+    Animated.parallel([
+      Animated.timing(autoVegToastOpacity, {
+        toValue: 1,
+        duration: 220,
+        useNativeDriver: true,
+      }),
+      Animated.timing(autoVegToastTranslateY, {
+        toValue: 0,
+        duration: 220,
+        useNativeDriver: true,
+      }),
+      Animated.spring(autoVegToastScale, {
+        toValue: 1,
+        damping: 12,
+        stiffness: 220,
+        mass: 0.8,
+        useNativeDriver: true,
+      }),
+    ]).start();
+
+    autoVegToastTimerRef.current = setTimeout(() => {
+      Animated.parallel([
+        Animated.timing(autoVegToastOpacity, {
+          toValue: 0,
+          duration: 180,
+          useNativeDriver: true,
+        }),
+        Animated.timing(autoVegToastTranslateY, {
+          toValue: -8,
+          duration: 180,
+          useNativeDriver: true,
+        }),
+      ]).start(() => {
+        setShowAutoVegToast(false);
+      });
+    }, 1700);
+  }, [autoVegToastOpacity, autoVegToastScale, autoVegToastTranslateY]);
+
+  const applyAutoVegRecommendation = useCallback(
+    async (proteinId: string, potBase: PotBase, shouldShowFeedback = true) => {
+      const allVeggies = getIngredientsForPotBase(potBase, 'veg');
+      const candidateVeggieIds = allVeggies.map((ing) => ing.id);
+      const candidateMushroomIds = candidateVeggieIds.filter((id) => MUSHROOM_IDS.has(id));
+      if (candidateVeggieIds.length < 3 || candidateMushroomIds.length < 1) return;
+
+      const requestId = recommendationRequestRef.current + 1;
+      recommendationRequestRef.current = requestId;
+
+      try {
+        const result = await recommend({
+          soupBase: potBase,
+          proteinId,
+          goal: profile.goal,
+          locale: i18n.language,
+          candidateVeggieIds,
+          candidateMushroomIds,
+        });
+
+        if (recommendationRequestRef.current !== requestId) return;
+        const nextVeggies = [result.veggieIds[0], result.veggieIds[1], result.mushroomId];
+        if (shouldShowFeedback) {
+          triggerAutoVegFeedback(nextVeggies);
+        }
+        setSynergySummary({
+          reason: result.reason,
+          mode: 'ai',
+          recommendedVeggies: nextVeggies,
+        });
+        animateSynergySummaryCard();
+
+        setCurrentPlan((prev) => {
+          const currentPotBase = (prev.potBase || 'yose') as PotBase;
+          if (currentPotBase !== potBase) return prev;
+          return {
+            ...prev,
+            veggies: nextVeggies,
+          };
+        });
+      } catch {
+        // keep current manual selection if recommendation fails
+      }
+    },
+    [animateSynergySummaryCard, i18n.language, profile.goal, recommend, triggerAutoVegFeedback]
+  );
+
+  const replaceIngredientWithAlternative = useCallback(
+    async (ingredientId: string, candidateVeggieIds: string[]) => {
+      const selectedProteinId =
+        currentPlan.proteins && currentPlan.proteins.length > 0
+          ? currentPlan.proteins[currentPlan.proteins.length - 1]
+          : null;
+      const potBase = (currentPlan.potBase || 'yose') as PotBase;
+      const selectedVeggieIds = currentPlan.veggies || [];
+
+      if (!selectedProteinId || !selectedVeggieIds.includes(ingredientId)) {
+        return;
+      }
+
+      setReplacingIngredientId(ingredientId);
+
+      try {
+        const suggestion = await getAlternativeIngredientSuggestion({
+          potBase,
+          proteinId: selectedProteinId,
+          ingredientId,
+          candidateVeggieIds,
+          selectedVeggieIds,
+        });
+
+        if (!suggestion) {
+          Alert.alert('入れ替え候補なし', '同じ栄養カテゴリの代替候補が見つかりませんでした。');
+          return;
+        }
+
+        setCurrentPlan((prev) => {
+          const nextVeggies = [...(prev.veggies || [])];
+          const replaceIndex = nextVeggies.indexOf(ingredientId);
+          if (replaceIndex < 0) return prev;
+          // Avoid no-op replacement or duplicate veggie states.
+          if (nextVeggies[replaceIndex] === suggestion.alternativeId) return prev;
+          nextVeggies[replaceIndex] = suggestion.alternativeId;
+          const uniqueVeggies: string[] = [];
+          for (const id of nextVeggies) {
+            if (!uniqueVeggies.includes(id)) uniqueVeggies.push(id);
+          }
+          return {
+            ...prev,
+            veggies: uniqueVeggies,
+          };
+        });
+
+        setAutoRecommendedVeggies([]);
+        markSynergySummaryAsCustom();
+      } finally {
+        setReplacingIngredientId((prev) => (prev === ingredientId ? null : prev));
+      }
+    },
+    [currentPlan.potBase, currentPlan.proteins, currentPlan.veggies, markSynergySummaryAsCustom]
+  );
 
   const buildShoppingEntries = (plan: Partial<Plan>): ShoppingEntry[] => {
     const servings = plan.servings || 5;
@@ -2081,7 +2295,6 @@ export default function App() {
               </Pressable>
             </Pressable>
           </Modal>
-        )}
         {languageModal}
       </SafeAreaView>
     );
@@ -2090,6 +2303,20 @@ export default function App() {
   if (screen === 'builder') {
     return (
       <SafeAreaView style={[styles.safeArea, isWeb && styles.webRoot]}>
+        {showAutoVegToast ? (
+          <Animated.View
+            pointerEvents="none"
+            style={[
+              styles.autoVegToast,
+              {
+                opacity: autoVegToastOpacity,
+                transform: [{ translateY: autoVegToastTranslateY }, { scale: autoVegToastScale }],
+              },
+            ]}
+          >
+            <Text style={styles.autoVegToastText}>{t('ui.auto_veg_toast')}</Text>
+          </Animated.View>
+        ) : null}
         {wrapContent(
           <ScrollView contentContainerStyle={styles.screenPad} showsVerticalScrollIndicator={false}>
             <View style={styles.builderHeader}>
@@ -2199,15 +2426,18 @@ export default function App() {
                           proteins: currentPlan.proteins?.filter((p) => p !== ing.id),
                         });
                       } else {
+                        const potBase = (currentPlan.potBase || 'yose') as PotBase;
                         const nextProteins = [...(currentPlan.proteins || [])];
                         if (nextProteins.length >= 2) {
                           nextProteins.shift();
                         }
                         nextProteins.push(ing.id);
+                        const shouldShowFeedback = (currentPlan.proteins?.length || 0) >= 1;
                         setCurrentPlan({
                           ...currentPlan,
                           proteins: nextProteins,
                         });
+                        void applyAutoVegRecommendation(ing.id, potBase, shouldShowFeedback);
                       }
                     }}
                     style={[styles.baseRow, currentPlan.proteins?.includes(ing.id) && styles.baseRowActive]}
@@ -2269,57 +2499,112 @@ export default function App() {
                 return (
                   <>
                     <Text style={styles.sectionLabel}>{t('ui.veg_select_two')}</Text>
-                    <View style={styles.cardStack}>
-                      {veggieOptions.map((ing) => (
-                        <Pressable
-                          key={ing.id}
-                          onPress={() => {
-                            const exists = currentPlan.veggies?.includes(ing.id);
-                            if (exists) {
-                              setCurrentPlan({
-                                ...currentPlan,
-                                veggies: currentPlan.veggies?.filter((p) => p !== ing.id),
-                              });
-                            } else {
-                              const nextVeggies = [...(currentPlan.veggies || [])];
-                              const veggieIds = nextVeggies.filter((id) => !MUSHROOM_IDS.has(id));
-                              if (veggieIds.length >= 2) {
-                                const toRemove = veggieIds[0];
-                                const removeIndex = nextVeggies.indexOf(toRemove);
-                                if (removeIndex >= 0) {
-                                  nextVeggies.splice(removeIndex, 1);
-                                }
-                              }
-                              nextVeggies.push(ing.id);
-                              setCurrentPlan({
-                                ...currentPlan,
-                                veggies: nextVeggies,
-                              });
-                            }
-                          }}
+                    {synergySummary?.reason ? (
+                      <Animated.View
+                        style={[
+                          styles.synergyCard,
+                          synergySummary.mode === 'custom'
+                            ? styles.synergyCardCustom
+                            : styles.synergyCardRecommended,
+                          {
+                            opacity: synergyCardOpacity,
+                            transform: [{ scale: synergyCardScale }],
+                          },
+                        ]}
+                      >
+                        <Text
                           style={[
-                            styles.baseRow,
-                            currentPlan.veggies?.includes(ing.id) && styles.baseRowActive,
+                            styles.synergyCardLabel,
+                            synergySummary.mode === 'custom'
+                              ? styles.synergyCardLabelCustom
+                              : styles.synergyCardLabelRecommended,
                           ]}
                         >
-                          <View>
-                            <Image
-                              source={ing.photoSmall ?? ing.photo}
-                              style={styles.ingredientRowImage}
-                              contentFit="cover"
-                              transition={150}
-                            />
-                            {currentPlan.veggies?.includes(ing.id) && (
-                              <View style={styles.checkBadge}>
-                                <CheckCircle2 size={16} color="#ffffff" strokeWidth={3} />
-                              </View>
-                            )}
-                          </View>
-                          <View style={{ flex: 1 }}>
-                            <Text style={styles.ingredientName}>{t(ing.name)}</Text>
-                          </View>
-                        </Pressable>
-                      ))}
+                          {synergySummary.mode === 'custom'
+                            ? t('ui.custom_mode_label')
+                            : t('ui.ai_recommended_label')}
+                        </Text>
+                        <Text style={styles.synergyCardMessage}>
+                          {synergySummary.mode === 'custom'
+                            ? t('ui.custom_mode_message')
+                            : synergySummary.reason}
+                        </Text>
+                        {synergySummary.mode === 'custom' ? (
+                          <>
+                            <Text style={styles.synergyCardSubMessage}>
+                              {t('ui.custom_mode_support')}
+                            </Text>
+                            <Pressable
+                              onPress={() => {
+                                setCurrentPlan((prev) => ({
+                                  ...prev,
+                                  veggies: [...synergySummary.recommendedVeggies],
+                                }));
+                                setAutoRecommendedVeggies([...synergySummary.recommendedVeggies]);
+                                setSynergySummary((prev) =>
+                                  prev ? { ...prev, mode: 'ai' } : prev
+                                );
+                                animateSynergySummaryCard();
+                              }}
+                              style={styles.synergyResetButton}
+                            >
+                              <Text style={styles.synergyResetButtonText}>{t('ui.back_to_ai')}</Text>
+                            </Pressable>
+                          </>
+                        ) : null}
+                      </Animated.View>
+                    ) : null}
+                    <View style={styles.cardStack}>
+                      {veggieOptions.map((ing) => {
+                        const isSelected = selectedVeggies.includes(ing.id);
+                        return (
+                          <Pressable
+                            key={ing.id}
+                            onPress={() => {
+                              setAutoRecommendedVeggies([]);
+                              markSynergySummaryAsCustom();
+                              setCurrentPlan((prev) => {
+                                const currentVeggies = (prev.veggies || []).filter(
+                                  (id) => !MUSHROOM_IDS.has(id)
+                                );
+                                const currentMushrooms = (prev.veggies || []).filter((id) =>
+                                  MUSHROOM_IDS.has(id)
+                                );
+                                const exists = currentVeggies.includes(ing.id);
+                                const nextVeggies = exists
+                                  ? currentVeggies.filter((id) => id !== ing.id)
+                                  : [...currentVeggies, ing.id].slice(-2);
+                                return {
+                                  ...prev,
+                                  veggies: [...nextVeggies, ...currentMushrooms],
+                                };
+                              });
+                            }}
+                            style={[
+                              styles.baseRow,
+                              isSelected && styles.baseRowActive,
+                              autoRecommendedVeggies.includes(ing.id) && styles.autoRecommendedRow,
+                            ]}
+                          >
+                            <View>
+                              <Image
+                                source={ing.photoSmall ?? ing.photo}
+                                style={styles.ingredientRowImage}
+                                contentFit="cover"
+                                transition={150}
+                              />
+                              {isSelected && (
+                                <View style={styles.checkBadge}>
+                                  <CheckCircle2 size={16} color="#ffffff" strokeWidth={3} />
+                                </View>
+                              )}
+                            </View>
+                            <View style={{ flex: 1 }}>
+                              <Text style={styles.ingredientName}>{t(ing.name)}</Text>
+                            </View>
+                          </Pressable>
+                        );
+                      })}
                     </View>
 
                     <Text style={styles.sectionLabel}>{t('ui.mushroom_select_one')}</Text>
@@ -2328,14 +2613,18 @@ export default function App() {
                         <Pressable
                           key={ing.id}
                           onPress={() => {
-                            const exists = currentPlan.veggies?.includes(ing.id);
-                            if (exists) {
-                              setCurrentPlan({
-                                ...currentPlan,
-                                veggies: currentPlan.veggies?.filter((p) => p !== ing.id),
-                              });
-                            } else {
-                              const nextVeggies = [...(currentPlan.veggies || [])];
+                            setAutoRecommendedVeggies([]);
+                            markSynergySummaryAsCustom();
+                            setCurrentPlan((prev) => {
+                              const exists = prev.veggies?.includes(ing.id);
+                              if (exists) {
+                                return {
+                                  ...prev,
+                                  veggies: prev.veggies?.filter((p) => p !== ing.id),
+                                };
+                              }
+
+                              const nextVeggies = [...(prev.veggies || [])];
                               const mushroomIds = nextVeggies.filter((id) => MUSHROOM_IDS.has(id));
                               if (mushroomIds.length >= 1) {
                                 const toRemove = mushroomIds[0];
@@ -2345,15 +2634,16 @@ export default function App() {
                                 }
                               }
                               nextVeggies.push(ing.id);
-                              setCurrentPlan({
-                                ...currentPlan,
+                              return {
+                                ...prev,
                                 veggies: nextVeggies,
-                              });
-                            }
+                              };
+                            });
                           }}
                           style={[
                             styles.baseRow,
                             currentPlan.veggies?.includes(ing.id) && styles.baseRowActive,
+                            autoRecommendedVeggies.includes(ing.id) && styles.autoRecommendedRow,
                           ]}
                         >
                           <View>
@@ -2946,6 +3236,77 @@ export default function App() {
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#ffffff' },
+  autoVegToast: {
+    position: 'absolute',
+    top: 12,
+    alignSelf: 'center',
+    zIndex: 40,
+    backgroundColor: '#111827',
+    borderRadius: 999,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    shadowColor: '#000000',
+    shadowOpacity: 0.2,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 7,
+  },
+  autoVegToastText: { color: '#ffffff', fontSize: 12, fontWeight: '800' },
+  synergyCard: {
+    borderRadius: 16,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    marginBottom: 12,
+    borderWidth: 1,
+  },
+  synergyCardRecommended: {
+    backgroundColor: '#1A1A1A',
+    borderColor: '#f59e0b',
+  },
+  synergyCardCustom: {
+    backgroundColor: '#374151',
+    borderColor: '#9ca3af',
+  },
+  synergyCardLabel: {
+    fontSize: 11,
+    fontWeight: '900',
+    letterSpacing: 0.4,
+    marginBottom: 6,
+  },
+  synergyCardLabelRecommended: {
+    color: '#fbbf24',
+  },
+  synergyCardLabelCustom: {
+    color: '#ffffff',
+  },
+  synergyCardMessage: {
+    color: '#ffffff',
+    fontSize: 14,
+    lineHeight: 20,
+    fontWeight: '700',
+  },
+  synergyCardSubMessage: {
+    marginTop: 6,
+    color: '#d1d5db',
+    fontSize: 12,
+    lineHeight: 18,
+    fontWeight: '600',
+  },
+  synergyResetButton: {
+    marginTop: 10,
+    alignSelf: 'flex-start',
+    backgroundColor: '#111827',
+    borderColor: '#9ca3af',
+    borderWidth: 1,
+    borderRadius: 999,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  synergyResetButtonText: {
+    color: '#ffffff',
+    fontSize: 12,
+    fontWeight: '800',
+  },
   webRoot: { backgroundColor: '#f3f4f6' },
   webContent: { maxWidth: 1100, width: '100%', alignSelf: 'center', flex: 1 },
   scrollFlex: { flex: 1 },
@@ -3218,6 +3579,15 @@ const styles = StyleSheet.create({
   choiceUnit: { fontSize: 12, fontWeight: '800', color: '#9ca3af' },
   baseRow: { flexDirection: 'row', gap: 12, padding: 16, borderRadius: 24, borderWidth: 2, borderColor: '#f3f4f6', alignItems: 'center' },
   baseRowActive: { borderColor: '#f97316', backgroundColor: '#fff7ed' },
+  autoRecommendedRow: { borderColor: '#fdba74', backgroundColor: '#fffaf0' },
+  swapButton: {
+    backgroundColor: '#111827',
+    borderRadius: 999,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+  },
+  swapButtonDisabled: { opacity: 0.5 },
+  swapButtonText: { color: '#ffffff', fontSize: 11, fontWeight: '800' },
   baseIcon: { width: 56, height: 56, borderRadius: 20, alignItems: 'center', justifyContent: 'center', backgroundColor: '#f3f4f6', overflow: 'hidden' },
   baseImage: { width: 56, height: 56 },
   baseTitle: { fontSize: 16, fontWeight: '800', color: '#111827' },
