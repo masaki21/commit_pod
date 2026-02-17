@@ -20,7 +20,7 @@ type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
 const LANGUAGE_STORAGE_KEY = 'commitpot_language';
 
 const normalizeLanguage = (language: string): SupportedLanguage => {
-  const base = language.toLowerCase().split('-')[0];
+  const base = language.toLowerCase().split(/[-_]/)[0];
   return SUPPORTED_LANGUAGES.includes(base as SupportedLanguage) ? (base as SupportedLanguage) : 'ja';
 };
 

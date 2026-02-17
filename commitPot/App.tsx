@@ -48,6 +48,7 @@ import {
   clearStoredLanguage,
   getDeviceLanguage,
   loadStoredLanguage,
+  normalizeLanguage,
   saveStoredLanguage,
 } from './i18n';
 import { ActivityLevel, Gender, Goal, PFC, Plan, PotBase, UserProfile } from './types';
@@ -253,6 +254,172 @@ const getEffectLead = (effect: string): string => {
 };
 
 const MUSHROOM_IDS = new Set(['v3', 'v9', 'v10', 'v16', 'v17']);
+
+const SYNERGY_REASON_I18N: Record<
+  string,
+  { en: string; vi: string; es: string; it: string; pt: string; ko: string; zh: string; id: string }
+> = {
+  アリシンと食物繊維で疲労対策と巡りを支援: {
+    en: 'Allicin and dietary fiber support fatigue recovery and circulation',
+    vi: 'Allicin và chất xơ hỗ trợ giảm mệt mỏi và lưu thông',
+    es: 'La alicina y la fibra ayudan a combatir la fatiga y mejorar la circulación',
+    it: "Alicina e fibre supportano il recupero dalla fatica e la circolazione",
+    pt: 'A alicina e as fibras ajudam na recuperação da fadiga e na circulação',
+    ko: '알리신과 식이섬유가 피로 회복과 순환을 지원합니다',
+    zh: '蒜素与膳食纤维有助于缓解疲劳并促进循环',
+    id: 'Allicin dan serat membantu pemulihan lelah serta sirkulasi',
+  },
+  低脂質タンパクと食物繊維で満足感を維持: {
+    en: 'Lean protein and dietary fiber help maintain satiety',
+    vi: 'Protein nạc và chất xơ giúp duy trì cảm giác no',
+    es: 'La proteína magra y la fibra ayudan a mantener la saciedad',
+    it: 'Proteine magre e fibre aiutano a mantenere il senso di sazietà',
+    pt: 'Proteína magra e fibras ajudam a manter a saciedade',
+    ko: '저지방 단백질과 식이섬유가 포만감 유지에 도움됩니다',
+    zh: '低脂蛋白与膳食纤维有助于维持饱腹感',
+    id: 'Protein rendah lemak dan serat membantu menjaga rasa kenyang',
+  },
+  ビタミンCと含硫化合物でタンパク活用を補助: {
+    en: 'Vitamin C and sulfur compounds support protein utilization',
+    vi: 'Vitamin C và hợp chất chứa lưu huỳnh hỗ trợ sử dụng protein',
+    es: 'La vitamina C y compuestos sulfurados apoyan el aprovechamiento de proteína',
+    it: "Vitamina C e composti solforati supportano l'utilizzo delle proteine",
+    pt: 'Vitamina C e compostos sulfurados ajudam no aproveitamento da proteína',
+    ko: '비타민 C와 황 함유 화합물이 단백질 활용을 돕습니다',
+    zh: '维生素C与含硫化合物有助于蛋白利用',
+    id: 'Vitamin C dan senyawa sulfur membantu pemanfaatan protein',
+  },
+  'ビタミンA/B群に抗酸化を重ね回復を支援': {
+    en: 'Vitamins A/B plus antioxidants support recovery',
+    vi: 'Vitamin A/B kết hợp chất chống oxy hóa giúp phục hồi',
+    es: 'Vitaminas A/B con antioxidantes apoyan la recuperación',
+    it: 'Vitamine A/B con antiossidanti supportano il recupero',
+    pt: 'Vitaminas A/B com antioxidantes ajudam na recuperação',
+    ko: '비타민 A/B군과 항산화 조합이 회복을 지원합니다',
+    zh: '维生素A/B与抗氧化组合有助于恢复',
+    id: 'Vitamin A/B dan antioksidan mendukung pemulihan',
+  },
+  低脂質タンパクと食物繊維で調整しやすい構成: {
+    en: 'Lean protein and dietary fiber make intake easier to control',
+    vi: 'Protein nạc và chất xơ giúp điều chỉnh khẩu phần dễ hơn',
+    es: 'Proteína magra y fibra facilitan el ajuste de la ingesta',
+    it: "Proteine magre e fibre rendono più facile regolare l'apporto",
+    pt: 'Proteína magra e fibras facilitam o ajuste da ingestão',
+    ko: '저지방 단백질과 식이섬유로 조절하기 쉬운 구성입니다',
+    zh: '低脂蛋白与膳食纤维让饮食更易调节',
+    id: 'Protein rendah lemak dan serat memudahkan pengaturan asupan',
+  },
+  良質脂質に抗酸化食材を重ね炎症ケアを補助: {
+    en: 'Healthy fats plus antioxidant foods support inflammation care',
+    vi: 'Chất béo tốt và thực phẩm chống oxy hóa hỗ trợ kiểm soát viêm',
+    es: 'Grasas de calidad con antioxidantes apoyan el cuidado antiinflamatorio',
+    it: 'Grassi buoni e alimenti antiossidanti supportano la gestione dell’infiammazione',
+    pt: 'Gorduras boas com antioxidantes ajudam no cuidado anti-inflamatório',
+    ko: '좋은 지방과 항산화 식재료 조합이 염증 케어를 돕습니다',
+    zh: '优质脂肪配合抗氧化食材有助于炎症管理',
+    id: 'Lemak baik dan bahan antioksidan membantu perawatan inflamasi',
+  },
+  B1代謝と抗酸化を同時に狙う: {
+    en: 'Targets B1 metabolism and antioxidant support at the same time',
+    vi: 'Nhắm đồng thời chuyển hóa B1 và chống oxy hóa',
+    es: 'Apunta al metabolismo de B1 y al soporte antioxidante al mismo tiempo',
+    it: 'Punta insieme a metabolismo B1 e supporto antiossidante',
+    pt: 'Foca ao mesmo tempo no metabolismo de B1 e no suporte antioxidante',
+    ko: 'B1 대사와 항산화 효과를 동시에 노립니다',
+    zh: '同时兼顾B1代谢与抗氧化支持',
+    id: 'Menargetkan metabolisme B1 dan dukungan antioksidan sekaligus',
+  },
+  脂質の質を保ちながら抗酸化を補強: {
+    en: 'Reinforces antioxidants while keeping fat quality high',
+    vi: 'Tăng cường chống oxy hóa trong khi vẫn giữ chất lượng chất béo',
+    es: 'Refuerza antioxidantes manteniendo la calidad de las grasas',
+    it: 'Rafforza gli antiossidanti mantenendo alta la qualità dei grassi',
+    pt: 'Reforça antioxidantes mantendo a qualidade das gorduras',
+    ko: '지방의 질을 유지하면서 항산화를 강화합니다',
+    zh: '在保持脂肪质量的同时强化抗氧化',
+    id: 'Memperkuat antioksidan sambil menjaga kualitas lemak',
+  },
+  高タンパクとビタミンCで筋合成を支援: {
+    en: 'High protein and vitamin C support muscle synthesis',
+    vi: 'Protein cao và vitamin C hỗ trợ tổng hợp cơ bắp',
+    es: 'Proteína alta y vitamina C apoyan la síntesis muscular',
+    it: 'Alto apporto proteico e vitamina C supportano la sintesi muscolare',
+    pt: 'Alta proteína e vitamina C apoiam a síntese muscular',
+    ko: '고단백과 비타민 C가 근합성을 지원합니다',
+    zh: '高蛋白与维生素C有助于肌肉合成',
+    id: 'Protein tinggi dan vitamin C mendukung sintesis otot',
+  },
+  ビタミンDとミネラルを組み合わせ骨サポート: {
+    en: 'Vitamin D and minerals combine to support bone health',
+    vi: 'Vitamin D và khoáng chất kết hợp hỗ trợ xương',
+    es: 'La vitamina D y minerales se combinan para apoyar la salud ósea',
+    it: 'Vitamina D e minerali insieme supportano la salute delle ossa',
+    pt: 'Vitamina D e minerais juntos apoiam a saúde óssea',
+    ko: '비타민 D와 미네랄 조합이 뼈 건강을 지원합니다',
+    zh: '维生素D与矿物质组合支持骨骼健康',
+    id: 'Vitamin D dan mineral membantu kesehatan tulang',
+  },
+  ビタミンCと葉酸で代謝と回復をサポート: {
+    en: 'Vitamin C and folate support metabolism and recovery',
+    vi: 'Vitamin C và folate hỗ trợ trao đổi chất và phục hồi',
+    es: 'La vitamina C y el folato apoyan el metabolismo y la recuperación',
+    it: 'Vitamina C e folati supportano metabolismo e recupero',
+    pt: 'Vitamina C e folato apoiam metabolismo e recuperação',
+    ko: '비타민 C와 엽산이 대사와 회복을 지원합니다',
+    zh: '维生素C与叶酸支持代谢与恢复',
+    id: 'Vitamin C dan folat mendukung metabolisme serta pemulihan',
+  },
+  アリシンによるビタミンB1活用を狙った組み合わせ: {
+    en: 'A combo targeting vitamin B1 utilization through allicin',
+    vi: 'Tổ hợp nhắm đến tăng sử dụng vitamin B1 nhờ allicin',
+    es: 'Combinación orientada a aprovechar la vitamina B1 mediante alicina',
+    it: "Combinazione pensata per favorire l'uso della vitamina B1 tramite allicina",
+    pt: 'Combinação focada no aproveitamento da vitamina B1 via alicina',
+    ko: '알리신으로 비타민 B1 활용을 노린 조합입니다',
+    zh: '通过蒜素促进维生素B1利用的组合',
+    id: 'Kombinasi yang menargetkan pemanfaatan vitamin B1 lewat allicin',
+  },
+  ビタミンCと発酵系スープで代謝効率を後押し: {
+    en: 'Vitamin C and fermented soup base boost metabolic efficiency',
+    vi: 'Vitamin C và nền súp lên men giúp tăng hiệu quả trao đổi chất',
+    es: 'La vitamina C y la base fermentada impulsan la eficiencia metabólica',
+    it: 'Vitamina C e base di zuppa fermentata aumentano l’efficienza metabolica',
+    pt: 'Vitamina C e base fermentada aumentam a eficiência metabólica',
+    ko: '비타민 C와 발효 수프 베이스가 대사 효율을 높입니다',
+    zh: '维生素C与发酵汤底有助于提升代谢效率',
+    id: 'Vitamin C dan kuah fermentasi membantu meningkatkan efisiensi metabolisme',
+  },
+  'ビタミンA/B群を活かし回復を支援': {
+    en: 'Leverages vitamins A/B to support recovery',
+    vi: 'Tận dụng vitamin A/B để hỗ trợ phục hồi',
+    es: 'Aprovecha vitaminas A/B para apoyar la recuperación',
+    it: 'Sfrutta le vitamine A/B per supportare il recupero',
+    pt: 'Aproveita vitaminas A/B para apoiar a recuperação',
+    ko: '비타민 A/B군을 활용해 회복을 지원합니다',
+    zh: '发挥维生素A/B群作用以支持恢复',
+    id: 'Memanfaatkan vitamin A/B untuk mendukung pemulihan',
+  },
+  ビタミンDとカルシウム利用を意識した構成: {
+    en: 'A composition focused on vitamin D and calcium utilization',
+    vi: 'Cấu hình tập trung vào sử dụng vitamin D và canxi',
+    es: 'Composición enfocada en el uso de vitamina D y calcio',
+    it: "Composizione orientata all'utilizzo di vitamina D e calcio",
+    pt: 'Composição focada no uso de vitamina D e cálcio',
+    ko: '비타민 D와 칼슘 활용을 고려한 구성입니다',
+    zh: '注重维生素D与钙利用的搭配',
+    id: 'Susunan yang berfokus pada pemanfaatan vitamin D dan kalsium',
+  },
+  ビタミンCと香味成分で筋合成と代謝を後押し: {
+    en: 'Vitamin C and aromatic compounds support muscle synthesis and metabolism',
+    vi: 'Vitamin C và hợp chất tạo hương hỗ trợ tổng hợp cơ và trao đổi chất',
+    es: 'La vitamina C y compuestos aromáticos apoyan síntesis muscular y metabolismo',
+    it: 'Vitamina C e composti aromatici supportano sintesi muscolare e metabolismo',
+    pt: 'Vitamina C e compostos aromáticos apoiam síntese muscular e metabolismo',
+    ko: '비타민 C와 향미 성분이 근합성과 대사를 지원합니다',
+    zh: '维生素C与香味成分有助于肌肉合成与代谢',
+    id: 'Vitamin C dan senyawa aromatik mendukung sintesis otot dan metabolisme',
+  },
+};
 
 type ShoppingEntry = {
   id: string;
@@ -497,11 +664,22 @@ export default function App() {
   const cookScrollRef = useRef<ScrollView | null>(null);
   const recommendationRequestRef = useRef(0);
   const [autoRecommendedVeggies, setAutoRecommendedVeggies] = useState<string[]>([]);
-  const [showAutoVegToast, setShowAutoVegToast] = useState(false);
-  const autoVegToastOpacity = useRef(new Animated.Value(0)).current;
-  const autoVegToastTranslateY = useRef(new Animated.Value(-12)).current;
-  const autoVegToastScale = useRef(new Animated.Value(0.97)).current;
+  const hasShownAutoVegHudRef = useRef(false);
+  const [showAutoVegMiniToast, setShowAutoVegMiniToast] = useState(false);
+  const [showAutoVegHud, setShowAutoVegHud] = useState(false);
+  const autoVegMiniToastOpacity = useRef(new Animated.Value(0)).current;
+  const autoVegMiniToastTranslateY = useRef(new Animated.Value(-12)).current;
+  const autoVegMiniToastScale = useRef(new Animated.Value(0.97)).current;
+  const autoVegHudOpacity = useRef(new Animated.Value(0)).current;
+  const autoVegHudTranslateY = useRef(new Animated.Value(20)).current;
+  const autoVegHudScale = useRef(new Animated.Value(0.96)).current;
+  const hasShownSynergyIntroHudRef = useRef(false);
+  const [showSynergyIntroHud, setShowSynergyIntroHud] = useState(false);
+  const synergyIntroHudOpacity = useRef(new Animated.Value(0)).current;
+  const synergyIntroHudTranslateY = useRef(new Animated.Value(20)).current;
+  const synergyIntroHudScale = useRef(new Animated.Value(0.96)).current;
   const autoVegToastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const synergyIntroHudTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [replacingIngredientId, setReplacingIngredientId] = useState<string | null>(null);
   const [synergySummary, setSynergySummary] = useState<SynergySummaryState | null>(null);
   const synergyCardOpacity = useRef(new Animated.Value(0)).current;
@@ -700,8 +878,112 @@ export default function App() {
       if (autoVegToastTimerRef.current) {
         clearTimeout(autoVegToastTimerRef.current);
       }
+      if (synergyIntroHudTimerRef.current) {
+        clearTimeout(synergyIntroHudTimerRef.current);
+      }
     };
   }, []);
+
+  useEffect(() => {
+    if (screen === 'builder') return;
+    hasShownAutoVegHudRef.current = false;
+    hasShownSynergyIntroHudRef.current = false;
+    setShowAutoVegMiniToast(false);
+    setShowAutoVegHud(false);
+    setShowSynergyIntroHud(false);
+  }, [screen]);
+
+  useEffect(() => {
+    if (screen === 'builder' && step === 4) return;
+    hasShownSynergyIntroHudRef.current = false;
+    setShowSynergyIntroHud(false);
+    if (synergyIntroHudTimerRef.current) {
+      clearTimeout(synergyIntroHudTimerRef.current);
+      synergyIntroHudTimerRef.current = null;
+    }
+  }, [screen, step]);
+
+  const triggerSynergyIntroHud = useCallback(() => {
+    if (synergyIntroHudTimerRef.current) {
+      clearTimeout(synergyIntroHudTimerRef.current);
+      synergyIntroHudTimerRef.current = null;
+    }
+
+    setShowSynergyIntroHud(true);
+    synergyIntroHudOpacity.stopAnimation();
+    synergyIntroHudTranslateY.stopAnimation();
+    synergyIntroHudScale.stopAnimation();
+    synergyIntroHudOpacity.setValue(0);
+    synergyIntroHudTranslateY.setValue(20);
+    synergyIntroHudScale.setValue(0.96);
+
+    Animated.parallel([
+      Animated.timing(synergyIntroHudOpacity, {
+        toValue: 1,
+        duration: 220,
+        useNativeDriver: true,
+      }),
+      Animated.timing(synergyIntroHudTranslateY, {
+        toValue: 0,
+        duration: 220,
+        useNativeDriver: true,
+      }),
+      Animated.spring(synergyIntroHudScale, {
+        toValue: 1,
+        damping: 12,
+        stiffness: 220,
+        mass: 0.8,
+        useNativeDriver: true,
+      }),
+    ]).start();
+
+    synergyIntroHudTimerRef.current = setTimeout(() => {
+      Animated.parallel([
+        Animated.timing(synergyIntroHudOpacity, {
+          toValue: 0,
+          duration: 220,
+          useNativeDriver: true,
+        }),
+        Animated.spring(synergyIntroHudScale, {
+          toValue: 0.95,
+          damping: 16,
+          stiffness: 220,
+          mass: 0.9,
+          useNativeDriver: true,
+        }),
+      ]).start(() => {
+        setShowSynergyIntroHud(false);
+      });
+    }, 2000);
+  }, [synergyIntroHudOpacity, synergyIntroHudScale, synergyIntroHudTranslateY]);
+
+  useEffect(() => {
+    const shouldShow =
+      screen === 'builder' &&
+      step === 4 &&
+      synergySummary?.mode === 'ai' &&
+      Boolean(synergySummary.reason);
+    if (!shouldShow || hasShownSynergyIntroHudRef.current) return;
+    hasShownSynergyIntroHudRef.current = true;
+    triggerSynergyIntroHud();
+  }, [screen, step, synergySummary?.mode, synergySummary?.reason, triggerSynergyIntroHud]);
+
+  const localizedSynergyReason = useMemo(() => {
+    const reason = synergySummary?.reason;
+    if (!reason) return '';
+
+    const lang = normalizeLanguage(i18n.resolvedLanguage || i18n.language || 'ja');
+    if (lang === 'ja') return reason;
+
+    const mapped = SYNERGY_REASON_I18N[reason];
+    if (mapped) return mapped[lang] ?? mapped.en;
+
+    if (reason.startsWith('fallback:')) {
+      return t('ui.synergy_reason_fallback');
+    }
+
+    return t('ui.synergy_reason_generic');
+  }, [i18n.language, synergySummary?.reason, t]);
 
   const animateSynergySummaryCard = useCallback(() => {
     synergyCardOpacity.stopAnimation();
@@ -733,29 +1015,91 @@ export default function App() {
 
   const triggerAutoVegFeedback = useCallback((recommendedIds: string[]) => {
     setAutoRecommendedVeggies(recommendedIds);
-    setShowAutoVegToast(true);
+
     if (autoVegToastTimerRef.current) {
       clearTimeout(autoVegToastTimerRef.current);
     }
-    autoVegToastOpacity.stopAnimation();
-    autoVegToastTranslateY.stopAnimation();
-    autoVegToastScale.stopAnimation();
-    autoVegToastOpacity.setValue(0);
-    autoVegToastTranslateY.setValue(-12);
-    autoVegToastScale.setValue(0.97);
+
+    const shouldShowHud = !hasShownAutoVegHudRef.current;
+    if (shouldShowHud) {
+      hasShownAutoVegHudRef.current = true;
+      setShowAutoVegMiniToast(false);
+      setShowAutoVegHud(true);
+      autoVegMiniToastOpacity.stopAnimation();
+      autoVegMiniToastTranslateY.stopAnimation();
+      autoVegMiniToastScale.stopAnimation();
+      autoVegHudOpacity.stopAnimation();
+      autoVegHudTranslateY.stopAnimation();
+      autoVegHudScale.stopAnimation();
+      autoVegHudOpacity.setValue(0);
+      autoVegHudTranslateY.setValue(20);
+      autoVegHudScale.setValue(0.96);
+
+      Animated.parallel([
+        Animated.timing(autoVegHudOpacity, {
+          toValue: 1,
+          duration: 220,
+          useNativeDriver: true,
+        }),
+        Animated.timing(autoVegHudTranslateY, {
+          toValue: 0,
+          duration: 220,
+          useNativeDriver: true,
+        }),
+        Animated.spring(autoVegHudScale, {
+          toValue: 1,
+          damping: 12,
+          stiffness: 220,
+          mass: 0.8,
+          useNativeDriver: true,
+        }),
+      ]).start();
+
+      autoVegToastTimerRef.current = setTimeout(() => {
+        Animated.parallel([
+          Animated.timing(autoVegHudOpacity, {
+            toValue: 0,
+            duration: 220,
+            useNativeDriver: true,
+          }),
+          Animated.spring(autoVegHudScale, {
+            toValue: 0.95,
+            damping: 16,
+            stiffness: 220,
+            mass: 0.9,
+            useNativeDriver: true,
+          }),
+        ]).start(() => {
+          setShowAutoVegHud(false);
+        });
+      }, 1500);
+      return;
+    }
+
+    setShowAutoVegHud(false);
+    setShowAutoVegMiniToast(true);
+    autoVegHudOpacity.stopAnimation();
+    autoVegHudTranslateY.stopAnimation();
+    autoVegHudScale.stopAnimation();
+    autoVegMiniToastOpacity.stopAnimation();
+    autoVegMiniToastTranslateY.stopAnimation();
+    autoVegMiniToastScale.stopAnimation();
+    autoVegMiniToastOpacity.setValue(0);
+    autoVegMiniToastTranslateY.setValue(-12);
+    autoVegMiniToastScale.setValue(0.97);
 
     Animated.parallel([
-      Animated.timing(autoVegToastOpacity, {
+      Animated.timing(autoVegMiniToastOpacity, {
         toValue: 1,
-        duration: 220,
+        duration: 200,
         useNativeDriver: true,
       }),
-      Animated.timing(autoVegToastTranslateY, {
+      Animated.timing(autoVegMiniToastTranslateY, {
         toValue: 0,
-        duration: 220,
+        duration: 200,
         useNativeDriver: true,
       }),
-      Animated.spring(autoVegToastScale, {
+      Animated.spring(autoVegMiniToastScale, {
         toValue: 1,
         damping: 12,
         stiffness: 220,
@@ -766,21 +1110,28 @@ export default function App() {
 
     autoVegToastTimerRef.current = setTimeout(() => {
       Animated.parallel([
-        Animated.timing(autoVegToastOpacity, {
+        Animated.timing(autoVegMiniToastOpacity, {
           toValue: 0,
           duration: 180,
           useNativeDriver: true,
         }),
-        Animated.timing(autoVegToastTranslateY, {
+        Animated.timing(autoVegMiniToastTranslateY, {
           toValue: -8,
           duration: 180,
           useNativeDriver: true,
         }),
       ]).start(() => {
-        setShowAutoVegToast(false);
+        setShowAutoVegMiniToast(false);
       });
-    }, 1700);
-  }, [autoVegToastOpacity, autoVegToastScale, autoVegToastTranslateY]);
+    }, 1500);
+  }, [
+    autoVegHudOpacity,
+    autoVegHudScale,
+    autoVegHudTranslateY,
+    autoVegMiniToastOpacity,
+    autoVegMiniToastScale,
+    autoVegMiniToastTranslateY,
+  ]);
 
   const applyAutoVegRecommendation = useCallback(
     async (proteinId: string, potBase: PotBase, shouldShowFeedback = true) => {
@@ -2303,18 +2654,58 @@ export default function App() {
   if (screen === 'builder') {
     return (
       <SafeAreaView style={[styles.safeArea, isWeb && styles.webRoot]}>
-        {showAutoVegToast ? (
+        {showAutoVegMiniToast ? (
           <Animated.View
             pointerEvents="none"
             style={[
-              styles.autoVegToast,
+              styles.autoVegMiniToast,
               {
-                opacity: autoVegToastOpacity,
-                transform: [{ translateY: autoVegToastTranslateY }, { scale: autoVegToastScale }],
+                opacity: autoVegMiniToastOpacity,
+                transform: [{ translateY: autoVegMiniToastTranslateY }, { scale: autoVegMiniToastScale }],
               },
             ]}
           >
-            <Text style={styles.autoVegToastText}>{t('ui.auto_veg_toast')}</Text>
+            <Text style={styles.autoVegMiniToastText}>{t('ui.ai_hud_title')}</Text>
+          </Animated.View>
+        ) : null}
+        {showAutoVegHud ? (
+          <Animated.View
+            pointerEvents="none"
+            style={[
+              styles.autoVegHudWrap,
+              {
+                opacity: autoVegHudOpacity,
+                transform: [{ translateY: autoVegHudTranslateY }, { scale: autoVegHudScale }],
+              },
+            ]}
+          >
+            <View style={styles.autoVegHudCard}>
+              <Text style={styles.autoVegHudText}>{t('ui.ai_hud_title')}</Text>
+            </View>
+          </Animated.View>
+        ) : null}
+        {showSynergyIntroHud && synergySummary?.reason ? (
+          <Animated.View
+            pointerEvents="none"
+            style={[
+              styles.synergyIntroHudWrap,
+              {
+                opacity: synergyIntroHudOpacity,
+              },
+            ]}
+          >
+            <Animated.View
+              style={[
+                styles.synergyIntroHudCard,
+                {
+                  transform: [{ translateY: synergyIntroHudTranslateY }, { scale: synergyIntroHudScale }],
+                },
+              ]}
+            >
+              <Text style={styles.synergyIntroHudTitle}>{t('ui.ai_hud_title')}</Text>
+              <Text style={styles.synergyIntroHudSubtitle}>{t('ui.ai_hud_subtitle')}</Text>
+              <Text style={styles.synergyIntroHudReason}>{localizedSynergyReason}</Text>
+            </Animated.View>
           </Animated.View>
         ) : null}
         {wrapContent(
@@ -2522,13 +2913,23 @@ export default function App() {
                         >
                           {synergySummary.mode === 'custom'
                             ? t('ui.custom_mode_label')
-                            : t('ui.ai_recommended_label')}
+                            : t('ui.ai_hud_title')}
                         </Text>
-                        <Text style={styles.synergyCardMessage}>
-                          {synergySummary.mode === 'custom'
-                            ? t('ui.custom_mode_message')
-                            : synergySummary.reason}
-                        </Text>
+                        {synergySummary.mode === 'custom' ? (
+                          <Text style={styles.synergyCardMessage}>{t('ui.custom_mode_message')}</Text>
+                        ) : (
+                          <>
+                            <Text
+                              style={[
+                                styles.synergyCardSubMessage,
+                                styles.synergyCardSubMessageRecommended,
+                              ]}
+                            >
+                              {t('ui.ai_hud_subtitle')}
+                            </Text>
+                            <Text style={styles.synergyCardMessage}>{localizedSynergyReason}</Text>
+                          </>
+                        )}
                         {synergySummary.mode === 'custom' ? (
                           <>
                             <Text style={styles.synergyCardSubMessage}>
@@ -3236,7 +3637,7 @@ export default function App() {
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#ffffff' },
-  autoVegToast: {
+  autoVegMiniToast: {
     position: 'absolute',
     top: 12,
     alignSelf: 'center',
@@ -3251,7 +3652,88 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 8 },
     elevation: 7,
   },
-  autoVegToastText: { color: '#ffffff', fontSize: 12, fontWeight: '800' },
+  autoVegMiniToastText: { color: '#ffffff', fontSize: 12, fontWeight: '800' },
+  autoVegHudWrap: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+    zIndex: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+  },
+  autoVegHudCard: {
+    maxWidth: 440,
+    width: '100%',
+    borderRadius: 16,
+    backgroundColor: 'rgba(17, 24, 39, 0.95)',
+    borderWidth: 1,
+    borderColor: '#f59e0b',
+    paddingHorizontal: 18,
+    paddingVertical: 16,
+    shadowColor: '#000000',
+    shadowOpacity: 0.24,
+    shadowRadius: 14,
+    shadowOffset: { width: 0, height: 10 },
+    elevation: 10,
+  },
+  autoVegHudText: {
+    color: '#ffffff',
+    fontSize: 15,
+    lineHeight: 22,
+    fontWeight: '900',
+    textAlign: 'center',
+  },
+  synergyIntroHudWrap: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+    zIndex: 55,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+    backgroundColor: 'rgba(0, 0, 0, 0.28)',
+  },
+  synergyIntroHudCard: {
+    maxWidth: 460,
+    width: '100%',
+    borderRadius: 18,
+    backgroundColor: 'rgba(17, 24, 39, 0.96)',
+    borderWidth: 1,
+    borderColor: '#f59e0b',
+    paddingHorizontal: 18,
+    paddingVertical: 16,
+    shadowColor: '#000000',
+    shadowOpacity: 0.25,
+    shadowRadius: 14,
+    shadowOffset: { width: 0, height: 10 },
+    elevation: 12,
+  },
+  synergyIntroHudTitle: {
+    color: '#facc15',
+    fontSize: 13,
+    fontWeight: '800',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  synergyIntroHudSubtitle: {
+    color: '#fde68a',
+    fontSize: 16,
+    fontWeight: '900',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  synergyIntroHudReason: {
+    color: '#f8fafc',
+    fontSize: 17,
+    lineHeight: 24,
+    fontWeight: '900',
+    textAlign: 'center',
+  },
   synergyCard: {
     borderRadius: 16,
     paddingHorizontal: 14,
@@ -3291,6 +3773,14 @@ const styles = StyleSheet.create({
     fontSize: 12,
     lineHeight: 18,
     fontWeight: '600',
+  },
+  synergyCardSubMessageRecommended: {
+    marginTop: 0,
+    marginBottom: 6,
+    color: '#fde68a',
+    fontSize: 12,
+    lineHeight: 18,
+    fontWeight: '700',
   },
   synergyResetButton: {
     marginTop: 10,
