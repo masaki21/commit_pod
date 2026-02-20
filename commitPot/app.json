@@ -14,7 +14,7 @@
     },
     "ios": {
       "bundleIdentifier": "com.masakiomae.commitpot",
-      "buildNumber": "6",
+      "buildNumber": "9",
       "supportsTablet": false,
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
@@ -22,6 +22,7 @@
     },
     "android": {
       "package": "com.masakiomae.commitpot",
+      "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
