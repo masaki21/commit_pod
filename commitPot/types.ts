@@ -7,7 +7,7 @@ export interface UserProfile {
   height: number;
   weight: number;
   age: number;
-  gender: Gender;
+  gender: Gender | null;
   activityLevel: ActivityLevel;
   goal: Goal;
 }

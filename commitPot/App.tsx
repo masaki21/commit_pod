@@ -450,7 +450,14 @@ type SeasoningEntry = {
 const calculateBMR = (profile: UserProfile): number => {
   const { weight, height, age, gender } = profile;
   let bmr = 10 * weight + 6.25 * height - 5 * age;
-  bmr = gender === 'male' ? bmr + 5 : bmr - 161;
+  if (gender === 'male') {
+    bmr += 5;
+  } else if (gender === 'female') {
+    bmr -= 161;
+  } else {
+    // Sex-neutral fallback when gender is not provided.
+    bmr -= 78;
+  }
   return Math.round(bmr);
 };
 
@@ -627,6 +634,7 @@ export default function App() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [authLoading, setAuthLoading] = useState(false);
+  const [accountDeleting, setAccountDeleting] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
   const [showPlanConfirm, setShowPlanConfirm] = useState(false);
   const [showShoppingIntro, setShowShoppingIntro] = useState(false);
@@ -648,7 +656,7 @@ export default function App() {
     height: 175,
     weight: 75,
     age: 28,
-    gender: 'male',
+    gender: null,
     activityLevel: 'normal',
     goal: 'recomp',
   });
@@ -1486,7 +1494,7 @@ export default function App() {
           height: data.height,
           weight: data.weight,
           age: data.age,
-          gender: data.gender,
+          gender: data.gender === 'male' || data.gender === 'female' ? data.gender : null,
           activityLevel: data.activity_level,
           goal: data.goal,
         });
@@ -1807,6 +1815,73 @@ export default function App() {
     setScreen('splash');
   };
 
+  const handleDeleteAccount = () => {
+    const performDeleteAccount = async () => {
+      if (!session?.user) return;
+      setAccountDeleting(true);
+      try {
+        const { error } = await supabase.rpc('delete_account');
+        if (error) throw error;
+        await supabase.auth.signOut();
+        setPlans([]);
+        setPotHistories({});
+        setCurrentPlan({ servings: 5, potBase: 'yose', proteins: [], veggies: [], carb: '' });
+        setProfile({
+          height: 175,
+          weight: 75,
+          age: 28,
+          gender: null,
+          activityLevel: 'normal',
+          goal: 'recomp',
+        });
+        setOnboardingStep(1);
+        setScreen('splash');
+        Alert.alert(
+          t('alerts.delete_account_success_title', { defaultValue: '削除完了' }),
+          t('alerts.delete_account_success_body', {
+            defaultValue: 'アカウントを削除しました。',
+          })
+        );
+      } catch (error) {
+        const message = error instanceof Error ? error.message : t('alerts.update_failed');
+        Alert.alert(
+          t('alerts.delete_account_failed_title', { defaultValue: '削除に失敗しました' }),
+          message
+        );
+      } finally {
+        setAccountDeleting(false);
+      }
+    };
+
+    if (Platform.OS === 'web') {
+      const ok = window.confirm(
+        t('alerts.delete_account_confirm', {
+          defaultValue:
+            'アカウントを完全に削除しますか？\nこの操作は取り消せず、保存データも削除されます。',
+        })
+      );
+      if (ok) void performDeleteAccount();
+      return;
+    }
+
+    Alert.alert(
+      t('alerts.delete_account_title', { defaultValue: 'アカウントを削除しますか？' }),
+      t('alerts.delete_account_body', {
+        defaultValue: 'この操作は取り消せず、保存データも削除されます。',
+      }),
+      [
+        { text: t('alerts.cancel'), style: 'cancel' },
+        {
+          text: t('alerts.delete'),
+          style: 'destructive',
+          onPress: () => {
+            void performDeleteAccount();
+          },
+        },
+      ]
+    );
+  };
+
   if (!authReady) {
     return (
       <SafeAreaView style={[styles.safeArea, styles.splash, isWeb && styles.webRoot]}>
@@ -1900,7 +1975,7 @@ export default function App() {
     const isWeightValid =
       profile.weight >= PROFILE_LIMITS.weight.min && profile.weight <= PROFILE_LIMITS.weight.max;
     const isAgeValid = profile.age >= PROFILE_LIMITS.age.min && profile.age <= PROFILE_LIMITS.age.max;
-    const canProceedStep1 = isHeightValid && isWeightValid && isAgeValid && profile.gender;
+    const canProceedStep1 = isHeightValid && isWeightValid && isAgeValid;
 
     return (
       <SafeAreaView style={[styles.safeArea, isWeb && styles.webRoot]}>
@@ -2010,11 +2085,11 @@ export default function App() {
                   )}
                 </Card>
                 <Card style={styles.flexCard}>
-                  <Text style={styles.label}>{t('ui.label_gender')}</Text>
+                  <Text style={styles.label}>{t('ui.label_gender_optional')}</Text>
                   <View style={styles.goalRow}>
-                    {(['male', 'female'] as Gender[]).map((g) => (
+                    {(['male', 'female', null] as Array<Gender | null>).map((g) => (
                       <Pressable
-                        key={g}
+                        key={g ?? 'prefer_not_to_say'}
                         onPress={() => setProfile({ ...profile, gender: g })}
                         style={[
                           styles.goalButton,
@@ -2027,7 +2102,11 @@ export default function App() {
                             profile.gender === g && styles.goalButtonTextActive,
                           ]}
                         >
-                          {g === 'male' ? t('ui.gender_male') : t('ui.gender_female')}
+                          {g === 'male'
+                            ? t('ui.gender_male')
+                            : g === 'female'
+                              ? t('ui.gender_female')
+                              : t('ui.gender_prefer_not_to_say')}
                         </Text>
                       </Pressable>
                     ))}
@@ -2137,6 +2216,26 @@ export default function App() {
               </View>
             </>
           )}
+
+          <View style={styles.accountDangerZone}>
+            <Text style={styles.accountDangerTitle}>
+              {t('ui.delete_account_section_title', { defaultValue: 'アカウント管理' })}
+            </Text>
+            <Pressable
+              onPress={handleDeleteAccount}
+              disabled={accountDeleting}
+              style={[
+                styles.accountDeleteButton,
+                accountDeleting && styles.accountDeleteButtonDisabled,
+              ]}
+            >
+              <Text style={styles.accountDeleteButtonText}>
+                {accountDeleting
+                  ? t('ui.deleting_account', { defaultValue: '削除中...' })
+                  : t('ui.delete_account', { defaultValue: 'アカウントを削除' })}
+              </Text>
+            </Pressable>
+          </View>
         </ScrollView>
         )}
 
@@ -3904,6 +4003,23 @@ const styles = StyleSheet.create({
   darkHeroUnit: { fontSize: 12, fontWeight: '600', color: 'rgba(255,255,255,0.6)' },
   darkSmall: { fontSize: 18, fontWeight: '700', color: 'rgba(255,255,255,0.6)' },
   darkSmallUnit: { fontSize: 12, fontWeight: '600' },
+  accountDangerZone: {
+    marginTop: 20,
+    borderTopWidth: 1,
+    borderTopColor: '#e5e7eb',
+    paddingTop: 16,
+  },
+  accountDangerTitle: { fontSize: 13, fontWeight: '700', color: '#6b7280', marginBottom: 10 },
+  accountDeleteButton: {
+    borderWidth: 1,
+    borderColor: '#fca5a5',
+    backgroundColor: '#fef2f2',
+    borderRadius: 14,
+    paddingVertical: 12,
+    alignItems: 'center',
+  },
+  accountDeleteButtonDisabled: { opacity: 0.6 },
+  accountDeleteButtonText: { color: '#dc2626', fontWeight: '800', fontSize: 13 },
   pfcRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 16 },
   pfcCell: { flex: 1, alignItems: 'center' },
   pfcLabelAccent: { color: '#f97316', fontSize: 10, fontWeight: '700' },
