@@ -2274,10 +2274,15 @@ export default function App() {
   }
 
   if (screen === 'dashboard') {
+    const androidBottomInset = Platform.OS === 'android' ? 24 : 0;
+    const dashboardBottomPadding = 120 + androidBottomInset + 24;
     return (
       <SafeAreaView style={[styles.safeArea, styles.screenLight, isWeb && styles.webRoot]}>
         {wrapContent(
-          <ScrollView contentContainerStyle={styles.dashboardPad} showsVerticalScrollIndicator={false}>
+          <ScrollView
+            contentContainerStyle={[styles.dashboardPad, { paddingBottom: dashboardBottomPadding }]}
+            showsVerticalScrollIndicator={false}
+          >
             <View style={styles.dashboardHeader}>
               <View style={styles.dashboardTitleRow}>
                 <View style={styles.dashboardIcon}>
@@ -2400,7 +2405,7 @@ export default function App() {
           </ScrollView>
         )}
 
-          <View style={styles.bottomNav}>
+          <View style={[styles.bottomNav, { bottom: androidBottomInset }]}>
             <Pressable style={styles.navItemActive}>
               <Home size={24} color="#f97316" strokeWidth={2.5} />
               <Text style={styles.navLabelActive}>{t('ui.nav_home')}</Text>
