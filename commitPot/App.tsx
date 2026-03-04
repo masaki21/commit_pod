@@ -12,6 +12,7 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  useWindowDimensions,
   View,
 } from 'react-native';
 import { Image } from 'expo-image';
@@ -111,6 +112,9 @@ const POT_BASE_IMAGES: Record<PotBase, import('react-native').ImageSourcePropTyp
   yose: require('./assets/nabe_base/yose.jpg'),
 };
 const FIVE_SERVINGS_POT_IMAGE = require('./assets/nabe_base/five_servings_pot.jpg');
+const SMALL_BUTTON_HIT_SLOP = { top: 12, right: 12, bottom: 12, left: 12 } as const;
+const CARD_BUTTON_HIT_SLOP = { top: 10, right: 10, bottom: 10, left: 10 } as const;
+const CARD_PRESS_RETENTION = { top: 16, right: 16, bottom: 16, left: 16 } as const;
 
 const SHIMAYA_POWDER_NUTRITION: NutritionPer100g = {
   kcalPer100g: 205,
@@ -586,6 +590,8 @@ const COOK_STEPS = [
 
 export default function App() {
   const isWeb = Platform.OS === 'web';
+  const { width: windowWidth } = useWindowDimensions();
+  const isCompactScreen = windowWidth < 390;
   const { t, i18n } = useTranslation();
   const [languageMode, setLanguageMode] = useState<'auto' | SupportedLanguage>('auto');
   const [showLanguageModal, setShowLanguageModal] = useState(false);
@@ -758,6 +764,50 @@ export default function App() {
     const needsSpace = /[A-Za-z]/.test(unitName);
     return `${units}${needsSpace ? ' ' : ''}${unitName}`;
   };
+
+  const renderShoppingCard = (
+    key: string,
+    title: string,
+    amount: string,
+    detail?: string
+  ) => (
+    <View key={key} style={[styles.listCard, isCompactScreen && styles.listCardCompact]}>
+      <View style={styles.listCardContent}>
+        <Text style={styles.listCardTitle} numberOfLines={detail ? 3 : 2}>
+          {title}
+        </Text>
+        {detail ? (
+          <Text style={styles.listCardSubtext} numberOfLines={2}>
+            {detail}
+          </Text>
+        ) : null}
+      </View>
+      <Text style={[styles.listCardHint, isCompactScreen && styles.listCardHintCompact]}>
+        {amount}
+      </Text>
+    </View>
+  );
+
+  const renderCommitListRow = (
+    key: string,
+    title: string,
+    amount: string,
+    detail?: string
+  ) => (
+    <View key={key} style={[styles.listRow, isCompactScreen && styles.listRowCompact]}>
+      <View style={styles.listRowContent}>
+        <Text style={styles.listLabel} numberOfLines={detail ? 3 : 2}>
+          {title}
+        </Text>
+        {detail ? (
+          <Text style={styles.listSecondaryMeta} numberOfLines={2}>
+            {detail}
+          </Text>
+        ) : null}
+      </View>
+      <Text style={[styles.listValue, isCompactScreen && styles.listValueCompact]}>{amount}</Text>
+    </View>
+  );
 
   const formatDateKey = (date: Date) => {
     const year = date.getFullYear();
@@ -1984,6 +2034,8 @@ export default function App() {
             style={styles.scrollFlex}
             contentContainerStyle={styles.screenPad}
             showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+            keyboardDismissMode="on-drag"
           >
             <View style={styles.headerBlock}>
               <View style={styles.headerRow}>
@@ -2282,6 +2334,8 @@ export default function App() {
           <ScrollView
             contentContainerStyle={[styles.dashboardPad, { paddingBottom: dashboardBottomPadding }]}
             showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+            keyboardDismissMode="on-drag"
           >
             <View style={styles.dashboardHeader}>
               <View style={styles.dashboardTitleRow}>
@@ -2298,6 +2352,7 @@ export default function App() {
                     setScreen('onboarding');
                   }}
                   style={styles.roundButton}
+                  hitSlop={SMALL_BUTTON_HIT_SLOP}
                 >
                   <User size={20} color="#9ca3af" />
                 </Pressable>
@@ -2305,13 +2360,23 @@ export default function App() {
             </View>
 
           <View style={styles.grid2}>
-            <Pressable onPress={handleStartBuilder} style={[styles.actionCard, styles.actionPrimary]}>
+            <Pressable
+              onPress={handleStartBuilder}
+              style={[styles.actionCard, styles.actionPrimary]}
+              hitSlop={CARD_BUTTON_HIT_SLOP}
+              pressRetentionOffset={CARD_PRESS_RETENTION}
+            >
               <View style={styles.actionIconWrap}>
                 <Plus size={30} color="#ffffff" strokeWidth={3} />
               </View>
               <Text style={styles.actionText}>{t('ui.make_new_pot')}</Text>
             </Pressable>
-            <Pressable onPress={() => setScreen('cards')} style={[styles.actionCard, styles.actionSecondary]}>
+            <Pressable
+              onPress={() => setScreen('cards')}
+              style={[styles.actionCard, styles.actionSecondary]}
+              hitSlop={CARD_BUTTON_HIT_SLOP}
+              pressRetentionOffset={CARD_PRESS_RETENTION}
+            >
               <View style={styles.actionIconWrapSecondary}>
                 <BookOpen size={30} color="#9ca3af" />
               </View>
@@ -2331,15 +2396,17 @@ export default function App() {
             ) : (
               <View style={styles.cardStack}>
                 {plans.map((plan) => (
-                  <Pressable
-                    key={plan.id}
-                    onPress={() => {
-                      setBalancePlanId(plan.id);
-                      setShowPlanBalance(true);
-                    }}
-                  >
-                    <Card>
-                      <View style={styles.planRow}>
+                  <Card key={plan.id}>
+                    <View style={styles.planRow}>
+                      <Pressable
+                        onPress={() => {
+                          setBalancePlanId(plan.id);
+                          setShowPlanBalance(true);
+                        }}
+                        style={styles.planSummaryButton}
+                        hitSlop={CARD_BUTTON_HIT_SLOP}
+                        pressRetentionOffset={CARD_PRESS_RETENTION}
+                      >
                       <Image
                         source={POT_BASE_IMAGES[(plan.potBase || 'yose') as PotBase]}
                         style={styles.planBaseImage}
@@ -2348,57 +2415,65 @@ export default function App() {
                       />
                       <View style={styles.planInfo}>
                         <View style={styles.planTagRow}>
-                          <Text style={styles.planTag}>
+                          <Text style={styles.planTag} numberOfLines={1}>
                             {t(POT_BASES.find((b) => b.id === plan.potBase)?.name || '')}
                           </Text>
-                          <Text style={styles.planDate}>
+                          <Text style={styles.planDate} numberOfLines={1}>
                             {new Date(plan.createdAt).toLocaleDateString()}
                           </Text>
                         </View>
-                          <Text style={styles.planTitle}>
+                          <Text style={styles.planTitle} numberOfLines={2}>
                             {t('ui.remaining_meals', {
                               remaining: Number.isFinite(plan.remaining) ? plan.remaining : plan.servings,
                               total: plan.servings,
                             })}
                           </Text>
                       </View>
+                      </Pressable>
                       <View style={styles.planActions}>
                         <Pressable
-                          onPress={(event) => {
-                            event.stopPropagation();
+                          onPress={() => {
                             handleDeletePlan(plan.id);
                           }}
                           style={styles.lightButton}
+                          hitSlop={SMALL_BUTTON_HIT_SLOP}
+                          pressRetentionOffset={CARD_PRESS_RETENTION}
                         >
                           <Trash2 size={16} color="#6b7280" />
                         </Pressable>
                         <Pressable
-                          onPress={(event) => {
-                            event.stopPropagation();
+                          onPress={() => {
                             setShoppingPlanId(plan.id);
                             setShowPlanShopping(true);
                           }}
                           style={styles.shopButton}
+                          hitSlop={SMALL_BUTTON_HIT_SLOP}
+                          pressRetentionOffset={CARD_PRESS_RETENTION}
                         >
                           <Text style={styles.shopButtonText}>{t('ui.shop_label')}</Text>
                         </Pressable>
                         <Pressable
-                          onPress={(event) => {
-                            event.stopPropagation();
+                          onPress={() => {
                             consumeServing(plan.id);
                           }}
                           style={styles.darkButton}
+                          hitSlop={SMALL_BUTTON_HIT_SLOP}
+                          pressRetentionOffset={CARD_PRESS_RETENTION}
                         >
                           <Text style={styles.darkButtonText}>{t('ui.ate')}</Text>
                         </Pressable>
                       </View>
-                      </View>
-                    </Card>
-                  </Pressable>
+                    </View>
+                  </Card>
                 ))}
               </View>
             )}
-            <Pressable style={styles.calendarButton} onPress={() => setShowStockCalendar(true)}>
+            <Pressable
+              style={styles.calendarButton}
+              onPress={() => setShowStockCalendar(true)}
+              hitSlop={CARD_BUTTON_HIT_SLOP}
+              pressRetentionOffset={CARD_PRESS_RETENTION}
+            >
               <Text style={styles.calendarButtonText}>{t('ui.calendar_view')}</Text>
             </Pressable>
           </View>
@@ -2461,60 +2536,56 @@ export default function App() {
                         <View>
                           <SectionTitle>{t('ui.tab_protein')}</SectionTitle>
                           <View style={styles.cardStack}>
-                            {proteinEntries.map((entry) => (
-                              <View key={entry.id} style={styles.listCard}>
-                                <Text style={styles.listCardTitle}>{entry.name}</Text>
-                                <Text style={styles.listCardHint}>
-                                  {entry.roundedGrams}g
-                                  {entry.units ? `（${formatUnits(entry.units, entry.unitName)}）` : ''}
-                                </Text>
-                              </View>
-                            ))}
+                            {proteinEntries.map((entry) =>
+                              renderShoppingCard(
+                                entry.id,
+                                entry.name,
+                                `${entry.roundedGrams}g`,
+                                entry.units ? formatUnits(entry.units, entry.unitName) : undefined
+                              )
+                            )}
                           </View>
                         </View>
 
                         <View>
                           <SectionTitle>{t('ui.tab_veg')}</SectionTitle>
                           <View style={styles.cardStack}>
-                            {vegEntries.map((entry) => (
-                              <View key={entry.id} style={styles.listCard}>
-                                <Text style={styles.listCardTitle}>{entry.name}</Text>
-                                <Text style={styles.listCardHint}>
-                                  {entry.roundedGrams}g
-                                  {entry.units ? `（${formatUnits(entry.units, entry.unitName)}）` : ''}
-                                </Text>
-                              </View>
-                            ))}
+                            {vegEntries.map((entry) =>
+                              renderShoppingCard(
+                                entry.id,
+                                entry.name,
+                                `${entry.roundedGrams}g`,
+                                entry.units ? formatUnits(entry.units, entry.unitName) : undefined
+                              )
+                            )}
                           </View>
                         </View>
 
                         <View>
                           <SectionTitle>{t('ui.tab_carb')}</SectionTitle>
                           <View style={styles.cardStack}>
-                            {carbEntries.map((entry) => (
-                              <View key={entry.id} style={styles.listCard}>
-                                <Text style={styles.listCardTitle}>{entry.name}</Text>
-                                <Text style={styles.listCardHint}>
-                                  {entry.roundedGrams}g
-                                  {entry.units ? `（${formatUnits(entry.units, entry.unitName)}）` : ''}
-                                </Text>
-                              </View>
-                            ))}
+                            {carbEntries.map((entry) =>
+                              renderShoppingCard(
+                                entry.id,
+                                entry.name,
+                                `${entry.roundedGrams}g`,
+                                entry.units ? formatUnits(entry.units, entry.unitName) : undefined
+                              )
+                            )}
                           </View>
                         </View>
 
                         <View>
                           <SectionTitle>{t('ui.tab_seasoning')}</SectionTitle>
                           <View style={styles.cardStack}>
-                            {seasoningEntries.map((entry) => (
-                              <View key={entry.id} style={styles.listCard}>
-                                <Text style={styles.listCardTitle}>{entry.name}</Text>
-                                <Text style={styles.listCardHint}>
-                                  {entry.amountLabel ?? `${entry.grams}g`}
-                                  {entry.note ? `（${entry.note}）` : ''}
-                                </Text>
-                              </View>
-                            ))}
+                            {seasoningEntries.map((entry) =>
+                              renderShoppingCard(
+                                entry.id,
+                                entry.name,
+                                entry.amountLabel ?? `${entry.grams}g`,
+                                entry.note
+                              )
+                            )}
                           </View>
                         </View>
                       </View>
@@ -2813,11 +2884,17 @@ export default function App() {
           </Animated.View>
         ) : null}
         {wrapContent(
-          <ScrollView contentContainerStyle={styles.screenPad} showsVerticalScrollIndicator={false}>
+          <ScrollView
+            contentContainerStyle={styles.screenPad}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+            keyboardDismissMode="on-drag"
+          >
             <View style={styles.builderHeader}>
               <Pressable
                 onPress={() => (step > 1 ? setStep(step - 1) : setScreen('dashboard'))}
                 style={styles.squareButton}
+                hitSlop={SMALL_BUTTON_HIT_SLOP}
               >
                 <ChevronLeft size={24} color="#111827" strokeWidth={3} />
               </Pressable>
@@ -3232,29 +3309,23 @@ export default function App() {
                   <ShoppingBag size={12} color="#f97316" />
                   <Text style={styles.darkPanelLabelText}>{t('ui.ingredient_amounts')}</Text>
                 </View>
-                {buildShoppingEntries(currentPlan).map((entry) => (
-                  <View key={entry.id} style={styles.listRow}>
-                    <Text style={styles.listLabel}>{entry.name}</Text>
-                    <Text style={styles.listValue}>
-                      {entry.roundedGrams}g
-                      {entry.units ? (
-                        <Text style={styles.listUnit}>
-                          {' '}（{formatUnits(entry.units, entry.unitName)}）
-                        </Text>
-                      ) : null}
-                    </Text>
-                  </View>
-                ))}
+                {buildShoppingEntries(currentPlan).map((entry) =>
+                  renderCommitListRow(
+                    entry.id,
+                    entry.name,
+                    `${entry.roundedGrams}g`,
+                    entry.units ? formatUnits(entry.units, entry.unitName) : undefined
+                  )
+                )}
                 <Text style={styles.listSectionLabel}>{t('ui.seasonings')}</Text>
-                {getSeasoningEntries(currentPlan).map((seasoning) => (
-                  <View key={seasoning.id} style={styles.listRow}>
-                    <Text style={styles.listLabel}>{seasoning.name}</Text>
-                    <Text style={styles.listValue}>
-                      {seasoning.amountLabel ?? `${seasoning.grams}g`}
-                      {seasoning.note ? <Text style={styles.listUnit}>（{seasoning.note}）</Text> : null}
-                    </Text>
-                  </View>
-                ))}
+                {getSeasoningEntries(currentPlan).map((seasoning) =>
+                  renderCommitListRow(
+                    seasoning.id,
+                    seasoning.name,
+                    seasoning.amountLabel ?? `${seasoning.grams}g`,
+                    seasoning.note
+                  )
+                )}
               </Card>
 
               <View style={styles.cardStack}>
@@ -3444,9 +3515,18 @@ export default function App() {
     return (
       <SafeAreaView style={[styles.safeArea, styles.screenLight, isWeb && styles.webRoot]}>
         {wrapContent(
-          <ScrollView contentContainerStyle={styles.screenPad} showsVerticalScrollIndicator={false}>
+          <ScrollView
+            contentContainerStyle={styles.screenPad}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+            keyboardDismissMode="on-drag"
+          >
             <View style={styles.pageTitleRow}>
-              <Pressable onPress={() => setScreen('dashboard')} style={styles.squareButtonLight}>
+              <Pressable
+                onPress={() => setScreen('dashboard')}
+                style={styles.squareButtonLight}
+                hitSlop={SMALL_BUTTON_HIT_SLOP}
+              >
                 <ChevronLeft size={24} color="#111827" strokeWidth={3} />
               </Pressable>
               <Text style={styles.pageTitle}>
@@ -3513,7 +3593,11 @@ export default function App() {
             </View>
           </ScrollView>
         )}
-        <Pressable style={styles.floatingBackButton} onPress={() => setScreen('dashboard')}>
+        <Pressable
+          style={styles.floatingBackButton}
+          onPress={() => setScreen('dashboard')}
+          hitSlop={SMALL_BUTTON_HIT_SLOP}
+        >
           <ChevronLeft size={22} color="#ffffff" strokeWidth={3} />
         </Pressable>
       </SafeAreaView>
@@ -3531,9 +3615,18 @@ export default function App() {
     return (
       <SafeAreaView style={[styles.safeArea, styles.screenLight, isWeb && styles.webRoot]}>
         {wrapContent(
-          <ScrollView contentContainerStyle={styles.screenPad} showsVerticalScrollIndicator={false}>
+          <ScrollView
+            contentContainerStyle={styles.screenPad}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+            keyboardDismissMode="on-drag"
+          >
             <View style={styles.pageTitleRow}>
-              <Pressable onPress={() => setScreen('dashboard')} style={styles.squareButtonLight}>
+              <Pressable
+                onPress={() => setScreen('dashboard')}
+                style={styles.squareButtonLight}
+                hitSlop={SMALL_BUTTON_HIT_SLOP}
+              >
                 <ChevronLeft size={24} color="#111827" strokeWidth={3} />
               </Pressable>
               <Text style={styles.pageTitleSimple}>{t('ui.shopping_list_title')}</Text>
@@ -3549,60 +3642,56 @@ export default function App() {
               <View>
                 <SectionTitle>{t('ui.tab_protein')}</SectionTitle>
                 <View style={styles.cardStack}>
-                  {proteinEntries.map((entry) => (
-                    <View key={entry.id} style={styles.listCard}>
-                      <Text style={styles.listCardTitle}>{entry.name}</Text>
-                      <Text style={styles.listCardHint}>
-                        {entry.roundedGrams}g
-                        {entry.units ? `（${formatUnits(entry.units, entry.unitName)}）` : ''}
-                      </Text>
-                    </View>
-                  ))}
+                  {proteinEntries.map((entry) =>
+                    renderShoppingCard(
+                      entry.id,
+                      entry.name,
+                      `${entry.roundedGrams}g`,
+                      entry.units ? formatUnits(entry.units, entry.unitName) : undefined
+                    )
+                  )}
                 </View>
               </View>
 
               <View>
                 <SectionTitle>{t('ui.tab_veg')}</SectionTitle>
                 <View style={styles.cardStack}>
-                  {vegEntries.map((entry) => (
-                    <View key={entry.id} style={styles.listCard}>
-                      <Text style={styles.listCardTitle}>{entry.name}</Text>
-                      <Text style={styles.listCardHint}>
-                        {entry.roundedGrams}g
-                        {entry.units ? `（${formatUnits(entry.units, entry.unitName)}）` : ''}
-                      </Text>
-                    </View>
-                  ))}
+                  {vegEntries.map((entry) =>
+                    renderShoppingCard(
+                      entry.id,
+                      entry.name,
+                      `${entry.roundedGrams}g`,
+                      entry.units ? formatUnits(entry.units, entry.unitName) : undefined
+                    )
+                  )}
                 </View>
               </View>
 
               <View>
                 <SectionTitle>{t('ui.tab_carb')}</SectionTitle>
                 <View style={styles.cardStack}>
-                  {carbEntries.map((entry) => (
-                    <View key={entry.id} style={styles.listCard}>
-                      <Text style={styles.listCardTitle}>{entry.name}</Text>
-                      <Text style={styles.listCardHint}>
-                        {entry.roundedGrams}g
-                        {entry.units ? `（${formatUnits(entry.units, entry.unitName)}）` : ''}
-                      </Text>
-                    </View>
-                  ))}
+                  {carbEntries.map((entry) =>
+                    renderShoppingCard(
+                      entry.id,
+                      entry.name,
+                      `${entry.roundedGrams}g`,
+                      entry.units ? formatUnits(entry.units, entry.unitName) : undefined
+                    )
+                  )}
                 </View>
               </View>
 
               <View>
                 <SectionTitle>{t('ui.tab_seasoning')}</SectionTitle>
                 <View style={styles.cardStack}>
-                  {seasoningEntries.map((entry) => (
-                    <View key={entry.id} style={styles.listCard}>
-                      <Text style={styles.listCardTitle}>{entry.name}</Text>
-                      <Text style={styles.listCardHint}>
-                        {entry.amountLabel ?? `${entry.grams}g`}
-                        {entry.note ? `（${entry.note}）` : ''}
-                      </Text>
-                    </View>
-                  ))}
+                  {seasoningEntries.map((entry) =>
+                    renderShoppingCard(
+                      entry.id,
+                      entry.name,
+                      entry.amountLabel ?? `${entry.grams}g`,
+                      entry.note
+                    )
+                  )}
                 </View>
               </View>
 
@@ -3678,6 +3767,7 @@ export default function App() {
               <Pressable
                 onPress={() => (cookStep > 0 ? setCookStep(cookStep - 1) : setScreen('dashboard'))}
                 style={styles.squareButton}
+                hitSlop={SMALL_BUTTON_HIT_SLOP}
               >
                 <ChevronLeft size={24} color="#111827" strokeWidth={3} />
               </Pressable>
@@ -3697,6 +3787,8 @@ export default function App() {
                 style={styles.scrollFlex}
                 contentContainerStyle={styles.cookContent}
                 showsVerticalScrollIndicator={false}
+                keyboardShouldPersistTaps="handled"
+                keyboardDismissMode="on-drag"
               >
                 <Text style={styles.cookTitle}>{t(currentCookData.titleKey)}</Text>
                 <Image source={currentCookData.photo} style={styles.cookPhoto} contentFit="cover" transition={200} />
@@ -4126,9 +4218,10 @@ const styles = StyleSheet.create({
   emptyText: { marginTop: 6, color: '#d1d5db', fontSize: 12, textAlign: 'center' },
   cardStack: { gap: 12 },
   planRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  planSummaryButton: { flex: 1, flexDirection: 'row', alignItems: 'center', marginRight: 12, minWidth: 0 },
   planBaseImage: { width: 52, height: 52, borderRadius: 18, marginRight: 12 },
-  planInfo: { flex: 1 },
-  planActions: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  planInfo: { flex: 1, minWidth: 0 },
+  planActions: { flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: 8, flexWrap: 'wrap', flexShrink: 1 },
   lightButton: {
     backgroundColor: '#f3f4f6',
     paddingVertical: 8,
@@ -4144,9 +4237,9 @@ const styles = StyleSheet.create({
     borderRadius: 14,
   },
   shopButtonText: { color: '#f97316', fontWeight: '800', fontSize: 11 },
-  planTagRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 6 },
-  planTag: { backgroundColor: '#ffedd5', color: '#c2410c', fontSize: 10, fontWeight: '800', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 999 },
-  planDate: { color: '#d1d5db', fontSize: 10, fontWeight: '700' },
+  planTagRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 6, flexWrap: 'wrap' },
+  planTag: { backgroundColor: '#ffedd5', color: '#c2410c', fontSize: 10, fontWeight: '800', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 999, maxWidth: '100%' },
+  planDate: { color: '#d1d5db', fontSize: 10, fontWeight: '700', flexShrink: 1 },
   planTitle: { fontSize: 18, fontWeight: '800', color: '#111827' },
   darkButton: { backgroundColor: '#111827', paddingVertical: 10, paddingHorizontal: 16, borderRadius: 16 },
   darkButtonText: { color: '#ffffff', fontWeight: '800', fontSize: 12 },
@@ -4216,10 +4309,14 @@ const styles = StyleSheet.create({
   carbImage: { width: 70, height: 70, borderRadius: 16 },
   commitTitle: { fontSize: 26, fontWeight: '800', textAlign: 'center', color: '#111827', marginBottom: 12 },
   darkCard: { backgroundColor: '#111111', borderColor: 'transparent' },
-  listRow: { flexDirection: 'row', justifyContent: 'space-between', borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.1)', paddingVertical: 10 },
+  listRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.1)', paddingVertical: 10, gap: 12 },
+  listRowCompact: { flexDirection: 'column', gap: 6 },
+  listRowContent: { flex: 1, minWidth: 0 },
   listSectionLabel: { color: '#f97316', fontWeight: '800', fontSize: 12, marginTop: 12 },
-  listLabel: { color: '#e5e7eb', fontWeight: '700' },
-  listValue: { color: '#ffffff', fontWeight: '800' },
+  listLabel: { color: '#e5e7eb', fontWeight: '700', flexShrink: 1, lineHeight: 20 },
+  listValue: { color: '#ffffff', fontWeight: '800', flexShrink: 0, maxWidth: '48%' },
+  listValueCompact: { maxWidth: '100%' },
+  listSecondaryMeta: { color: '#9ca3af', fontWeight: '600', fontSize: 11, lineHeight: 16, marginTop: 4 },
   listUnit: { color: '#6b7280', fontWeight: '600' },
   sideCard: { borderLeftWidth: 6, borderLeftColor: '#d1d5db' },
   sideCardAccent: { borderLeftWidth: 6, borderLeftColor: '#f97316' },
@@ -4261,9 +4358,13 @@ const styles = StyleSheet.create({
   statValue: { fontSize: 12, fontWeight: '800', color: '#111827', marginTop: 4 },
   emptyState: { alignItems: 'center', marginTop: 80, gap: 16 },
   emptyTitleLarge: { fontSize: 18, fontWeight: '800', color: '#111827', textAlign: 'center' },
-  listCard: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#ffffff', padding: 16, borderRadius: 24, borderWidth: 1, borderColor: '#f3f4f6' },
-  listCardTitle: { fontWeight: '800', color: '#111827' },
-  listCardHint: { fontWeight: '700', color: '#9ca3af', fontSize: 12 },
+  listCard: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', backgroundColor: '#ffffff', padding: 16, borderRadius: 24, borderWidth: 1, borderColor: '#f3f4f6', gap: 12 },
+  listCardCompact: { flexDirection: 'column', gap: 8 },
+  listCardContent: { flex: 1, minWidth: 0 },
+  listCardTitle: { fontWeight: '800', color: '#111827', flexShrink: 1, lineHeight: 22 },
+  listCardSubtext: { marginTop: 6, fontWeight: '700', color: '#9ca3af', fontSize: 12, lineHeight: 18 },
+  listCardHint: { fontWeight: '800', color: '#9ca3af', fontSize: 12, flexShrink: 0, maxWidth: '42%' },
+  listCardHintCompact: { maxWidth: '100%' },
   cookPad: { flex: 1, padding: 24 },
   cookCenter: { flex: 1 },
   cookContent: { gap: 16, paddingBottom: 24 },
