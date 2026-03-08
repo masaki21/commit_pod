@@ -16,6 +16,29 @@ type AiRecommendationResponse = {
 const AI_FUNCTION_NAME = process.env.EXPO_PUBLIC_VEG_RECOMMENDER_FN || 'recommend_veggies';
 const AI_TIMEOUT_MS = 1800;
 
+const withAbort = async <T>(promise: Promise<T>, signal?: AbortSignal | null): Promise<T | null> => {
+  if (!signal) return promise;
+  if (signal.aborted) return null;
+
+  return new Promise<T | null>((resolve) => {
+    const onAbort = () => {
+      signal.removeEventListener('abort', onAbort);
+      resolve(null);
+    };
+
+    signal.addEventListener('abort', onAbort, { once: true });
+    promise
+      .then((value) => {
+        signal.removeEventListener('abort', onAbort);
+        resolve(value);
+      })
+      .catch(() => {
+        signal.removeEventListener('abort', onAbort);
+        resolve(null);
+      });
+  });
+};
+
 const withTimeout = async <T>(promise: Promise<T>, timeoutMs: number): Promise<T | null> => {
   const timeoutPromise = new Promise<null>((resolve) => {
     setTimeout(() => resolve(null), timeoutMs);
@@ -42,6 +65,8 @@ const parseAiPayload = (payload: unknown): AiRecommendationResponse | null => {
 
 export const supabaseAiProvider: VegRecommendationProvider = {
   async recommend(input: RecommendationInput): Promise<RecommendationResult | null> {
+    if (input.signal?.aborted) return null;
+
     const invokePromise = supabase.functions.invoke(AI_FUNCTION_NAME, {
       body: {
         soupBase: input.soupBase,
@@ -53,7 +78,7 @@ export const supabaseAiProvider: VegRecommendationProvider = {
       },
     });
 
-    const invokeResult = await withTimeout(invokePromise, AI_TIMEOUT_MS);
+    const invokeResult = await withAbort(withTimeout(invokePromise, AI_TIMEOUT_MS), input.signal);
     if (!invokeResult) {
       recommendationDebug('ai invoke timeout', { soupBase: input.soupBase, proteinId: input.proteinId });
       return null;

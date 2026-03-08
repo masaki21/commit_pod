@@ -55,6 +55,7 @@ export const getRecommendedVeggies = async (
   dependencies: RecommendationDependencies = defaultDependencies
 ): Promise<RecommendationResult> => {
   const startedAt = Date.now();
+  const isAborted = () => Boolean(input.signal?.aborted);
 
   const emit = (event: RecommendationEvent): void => {
     dependencies.observer?.emit(event);
@@ -64,8 +65,15 @@ export const getRecommendedVeggies = async (
     providerName: 'matrix' | 'ai' | 'fallback',
     provider: VegRecommendationProvider
   ): Promise<RecommendationResult | null> => {
+    if (isAborted()) {
+      return null;
+    }
+
     try {
       const result = await provider.recommend(input);
+      if (isAborted()) {
+        return null;
+      }
       if (!result) {
         emit({
           type: 'provider_miss',
@@ -92,6 +100,16 @@ export const getRecommendedVeggies = async (
     soupBase: input.soupBase,
     proteinId: input.proteinId,
   });
+
+  if (isAborted()) {
+    emit({
+      type: 'recommendation_failed',
+      soupBase: input.soupBase,
+      proteinId: input.proteinId,
+      durationMs: Date.now() - startedAt,
+    });
+    throw new Error('Recommendation aborted');
+  }
 
   const matrixResult = await runProvider('matrix', dependencies.matrixProvider);
   if (matrixResult) {

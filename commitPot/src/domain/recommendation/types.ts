@@ -9,6 +9,7 @@ export type RecommendationInput = {
   locale?: string;
   candidateVeggieIds: string[];
   candidateMushroomIds: string[];
+  signal?: AbortSignal | null;
 };
 
 export type RecommendationResult = {

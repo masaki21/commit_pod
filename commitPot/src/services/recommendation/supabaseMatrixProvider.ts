@@ -17,7 +17,7 @@ type SynergyMatrixRow = {
 
 export const supabaseMatrixProvider: VegRecommendationProvider = {
   async recommend(input: RecommendationInput): Promise<RecommendationResult | null> {
-    const { data, error } = await supabase
+    const request = supabase
       .from('synergy_matrix')
       .select('veggie_ids, mushroom_id, synergy_reason, is_active, priority')
       .eq('pot_base', input.soupBase)
@@ -25,6 +25,9 @@ export const supabaseMatrixProvider: VegRecommendationProvider = {
       .eq('is_active', true)
       .order('priority', { ascending: true })
       .order('updated_at', { ascending: false });
+    const query = input.signal ? request.abortSignal(input.signal) : request;
+
+    const { data, error } = await query;
 
     if (error || !data?.length) {
       recommendationDebug('matrix lookup miss or error', {
